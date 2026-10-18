@@ -6,13 +6,13 @@
 
 编辑体验：绘图输入后自动预览，输入有效时可直接点击插入/保存，或按 **Ctrl+Enter**，不必先点击预览。操作按钮采用统一 SVG 图标并保留文字；已保存图的语言切换同步更新，保留尚未保存的视图。
 
-当前版本：**0.6.3，桌面公开测试版（MVP）**。提供化学式、线性化学键、反应式、物理模板、单位排版与离线换算、118 元素表，界面目前仅支持**英语和简体中文**，后续计划逐步增加更多语言。提供本地方程绘图，包含以 Re / Im 为轴的复平面和图中平移、缩放。本插件尚未发布到 Obsidian 社区插件目录。范围见 [MVP.md](MVP.md)，实际验证环境和结果见 [TEST-REPORT.md](TEST-REPORT.md)。
+当前版本：**0.6.3，桌面公开测试版（MVP）**。提供化学式、线性化学键、反应式、物理模板、单位排版与离线换算、118 元素表，界面目前仅支持**英语和简体中文**，后续计划逐步增加更多语言。提供本地方程绘图，包含以 Re / Im 为轴的复平面和图中平移、缩放。[社区目录公开页面](https://community.obsidian.md/plugins/visual-math-editor)已创建；0.6.3 的自动检查仍为 **Pending（等待中）**，尚未确认可从 Obsidian 内安装。范围见 [MVP.md](MVP.md)，实际验证环境和结果见 [TEST-REPORT.md](TEST-REPORT.md)。
 
 ## 下载与安装
 
 **[下载 0.6.3 安装包](https://github.com/oranipost/visual-math-editor/releases/download/0.6.3/visual-math-editor-0.6.3.zip)** · [查看发布说明和校验值](https://github.com/oranipost/visual-math-editor/releases/tag/0.6.3) · [完整安装 / 更新 / 卸载说明](docs/INSTALLATION.md#简体中文)
 
-这是可手动安装的 GitHub 预览版，**尚未获得 Obsidian 社区插件目录批准**，目前不能按目录内插件的方式搜索安装。请下载 Release 的安装 ZIP；GitHub 的 **Code → Download ZIP** 和自动生成的 **Source code** 是源码，需要自行构建。
+在目录安装可用性确认前，请继续使用可手动安装的 GitHub 预览版。下载 Release 的安装 ZIP；GitHub 的 **Code → Download ZIP** 和自动生成的 **Source code** 是源码，需要自行构建。
 
 
 安装包已经编译完成，使用插件不需要 Node.js 或编程知识。
@@ -172,7 +172,7 @@ npm run preview
 
 欢迎修复、文案和翻译贡献，详见 [贡献指南](CONTRIBUTING.md)。本版维护完整英文与简体中文；没有内置所有语言。新增语言需要覆盖完整操作、错误提示和键盘辅助信息，并由熟悉该语言的人复核。
 
-GitHub 发布与 Obsidian 社区目录上架是两件事。本项目的目录提交准备、官方入口和待办见 [社区插件提交指南](docs/COMMUNITY-SUBMISSION.md)；是否通过审核以官方结果为准。公开前已使用官方工具进行 [源码前置检查](docs/CODE-REVIEW.md)，结果和保留的提示逐项记录；该检查不代表目录审核通过。
+GitHub 发布与 Obsidian 社区目录上架是两件事。本项目的目录提交状态、官方入口和待办见 [社区插件提交指南](docs/COMMUNITY-SUBMISSION.md)；是否通过审核以官方结果为准。公开前已使用官方工具进行 [源码前置检查](docs/CODE-REVIEW.md)，结果和保留的提示逐项记录；该检查不代表目录审核通过。
 
 ## 源码与第三方来源
 

@@ -2,7 +2,7 @@
 
 [English README](../README.md) · [中文说明](../README.zh-CN.md) · [发布维护](../RELEASING.md)
 
-资料核对日期：2026-10-18。GitHub 公开发布与 Obsidian 官方目录收录是两个步骤。本文件准备了提交资料，**不代表已经提交、审核通过或在插件商店上架**。
+资料核对日期：2026-10-18。插件已提交并创建[社区目录公开页面](https://community.obsidian.md/plugins/visual-math-editor)。**0.6.3 的自动检查仍为 Pending（等待中），页面的 Add to Obsidian 按钮尚不可用；尚未确认可从 Obsidian 内安装，也不代表审核通过。** 目前仍可使用 GitHub Release 安装 ZIP 手动安装。GitHub 公开发布、目录页面公开与可从 Obsidian 安装是不同状态。
 
 ## 当前应该在哪里提交
 

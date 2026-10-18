@@ -4,13 +4,13 @@ English · [简体中文](README.zh-CN.md)
 
 Edit equations directly inside Obsidian notes using **Visual**, **LaTeX** or **Hybrid** mode. Visual mode provides Word-like structures for fractions, roots, scripts, integrals and sums. Hybrid mode keeps the formatted equation and LaTeX source synchronized. Equations are saved as ordinary LaTeX/Markdown.
 
-**0.6.3 · Desktop public beta (MVP).** Also includes chemistry notation and balance suggestions, physics templates, offline unit conversion, a periodic table, real-function graphs and a Re/Im complex plane. The interface currently supports **English and Simplified Chinese only**. More languages are planned for future updates. The plugin is not yet listed in the Obsidian community directory. See [scope](MVP.md), [test observations](TEST-REPORT.md) and [language support](LANGUAGE-SUPPORT.md).
+**0.6.3 · Desktop public beta (MVP).** Also includes chemistry notation and balance suggestions, physics templates, offline unit conversion, a periodic table, real-function graphs and a Re/Im complex plane. The interface currently supports **English and Simplified Chinese only**. More languages are planned for future updates. A [public community-directory page](https://community.obsidian.md/plugins/visual-math-editor) has been created; automated checks for 0.6.3 are **Pending**, and installation from Obsidian has not yet been confirmed. See [scope](MVP.md), [test observations](TEST-REPORT.md) and [language support](LANGUAGE-SUPPORT.md).
 
 ## Download and install
 
 **[Download 0.6.3 installation ZIP](https://github.com/oranipost/visual-math-editor/releases/download/0.6.3/visual-math-editor-0.6.3.zip)** · [Release notes and checksums](https://github.com/oranipost/visual-math-editor/releases/tag/0.6.3) · [Detailed installation, updates and removal](docs/INSTALLATION.md#english)
 
-This is a manually installable GitHub preview. **It has not been approved for the Obsidian community plugin directory.** Download the release's installation ZIP, rather than **Code → Download ZIP** or GitHub's automatic **Source code** archives, which require building.
+Until directory installation is confirmed, use this manually installable GitHub preview. Download the release's installation ZIP, rather than **Code → Download ZIP** or GitHub's automatic **Source code** archives, which require building.
 
 
 The installation ZIP is already compiled. You do not need Node.js to use it.
