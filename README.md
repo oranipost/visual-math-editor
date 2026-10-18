@@ -4,14 +4,19 @@ English · [简体中文](README.zh-CN.md)
 
 Edit equations directly inside Obsidian notes using **Visual**, **LaTeX** or **Hybrid** mode. Visual mode provides Word-like structures for fractions, roots, scripts, integrals and sums. Hybrid mode keeps the formatted equation and LaTeX source synchronized. Equations are saved as ordinary LaTeX/Markdown.
 
-**0.6.3 · Desktop public beta (MVP).** Also includes chemistry notation and balance suggestions, physics templates, offline unit conversion, a periodic table, real-function graphs and a Re/Im complex plane. The interface currently supports **English and Simplified Chinese only**. More languages are planned for future updates. A [public community-directory page](https://community.obsidian.md/plugins/visual-math-editor) has been created; automated checks for 0.6.3 are **Pending**, and installation from Obsidian has not yet been confirmed. See [scope](MVP.md), [test observations](TEST-REPORT.md) and [language support](LANGUAGE-SUPPORT.md).
+**0.6.3 · Desktop public beta (MVP).** Also includes chemistry notation and balance suggestions, physics templates, offline unit conversion, a periodic table, real-function graphs and a Re/Im complex plane. The interface currently supports **English and Simplified Chinese only**. More languages are planned for future updates. The official review for 0.6.3 is **Completed**, with **Review Satisfactory**, and **Add to Obsidian** is enabled on the [community-directory page](https://community.obsidian.md/plugins/visual-math-editor). See [review observations](docs/COMMUNITY-SUBMISSION.md), [scope](MVP.md), [test observations](TEST-REPORT.md) and [language support](LANGUAGE-SUPPORT.md).
 
 ## Download and install
 
+**Recommended: [Install from the Obsidian community directory](https://community.obsidian.md/plugins/visual-math-editor).** Click **Add to Obsidian**, allow the link to open Obsidian, then choose **Install → Enable** in the plugin details. Open a Markdown note and click **∑** in its header or left ribbon. The directory's enabled installation link and a completed native installation test are separate observations; consult [TEST-REPORT.md](TEST-REPORT.md) for what has actually been tested.
+
+**Index availability, checked 2026-10-18:** the website's installation link is enabled, but native **Browse** returned no result for this plugin and the official installation index did not yet include its ID. If the plugin is unavailable in Obsidian, wait for index synchronization or use the manual installation below. The 0.6.3 native editing checks used a verified GitHub ZIP, not a completed community-directory installation.
+
+### Manual installation
+
 **[Download 0.6.3 installation ZIP](https://github.com/oranipost/visual-math-editor/releases/download/0.6.3/visual-math-editor-0.6.3.zip)** · [Release notes and checksums](https://github.com/oranipost/visual-math-editor/releases/tag/0.6.3) · [Detailed installation, updates and removal](docs/INSTALLATION.md#english)
 
-Until directory installation is confirmed, use this manually installable GitHub preview. Download the release's installation ZIP, rather than **Code → Download ZIP** or GitHub's automatic **Source code** archives, which require building.
-
+For manual installation, download the release's installation ZIP, rather than **Code → Download ZIP** or GitHub's automatic **Source code** archives, which require building.
 
 The installation ZIP is already compiled. You do not need Node.js to use it.
 
@@ -22,7 +27,7 @@ The installation ZIP is already compiled. You do not need Node.js to use it.
 
 On macOS, **⌘⇧.** shows hidden folders in Finder. If your vault uses a custom configuration directory, use that instead of `.obsidian`.
 
-Before updating, save or cancel open drafts, disable the plugin and back up its existing folder. Copy the new installation files into that folder, retain your existing `data.json` settings, then restart Obsidian to refresh MathLive. You do not need to edit code or download your vault again. After community-directory approval, use **Settings → Community plugins → Check for updates → Update**; community plugins do not update automatically. See [how updates work](docs/UPDATING.md#english).
+For directory updates, use **Settings → Community plugins → Check for updates → Update**; community plugins do not update automatically. For manual updates, save or cancel open drafts, disable the plugin and back up its existing folder. Copy the new installation files into that folder and retain your existing `data.json` settings. Save drafts before either update method, then restart Obsidian to refresh MathLive. You do not need to edit code or download your vault again. See [how updates work](docs/UPDATING.md#english).
 
 Requires **Obsidian 1.14.4 or later**. Native integration was tested on macOS with Obsidian 1.14.4. This release supports the desktop main window; Windows, Linux, mobile, detached pop-out windows and arbitrary third-party themes/plugins have not been verified. See [TEST-REPORT.md](TEST-REPORT.md) for actual observations.
 
@@ -101,6 +106,8 @@ A save performs one guarded note operation and supports Obsidian's native **Undo
 
 The runtime needs no account or network connection. MathLive, fonts, Convert and element data are bundled; parsing, checking, conversion and SVG generation run locally. There is no telemetry, CDN, remote font, OCR or cloud recognition. Initial dependency installation during development needs network access. Offline operation is not an independent security audit; report defects using [SECURITY.md](SECURITY.md).
 
+Clipboard access supports user-initiated cutting, copying and pasting in the equation editor. The plugin does not monitor the clipboard in the background or send its contents to a server.
+
 If another plugin has already registered an incompatible MathLive version, disable the conflicting plugin and restart Obsidian before retrying.
 
 ## Build, preview and contribute
@@ -134,7 +141,7 @@ Report a problem through the [bug report form](https://github.com/oranipost/visu
 
 Code, wording fixes and translation contributions are welcome; read [CONTRIBUTING.md](CONTRIBUTING.md) first. English and Simplified Chinese are maintained today. A new locale should cover full workflows, errors and accessibility labels and receive fluent-speaker review.
 
-A GitHub release is separate from approval for Obsidian's community directory. The [community submission guide](docs/COMMUNITY-SUBMISSION.md) records the official process and remaining checks; this README does not claim directory approval.
+A GitHub release is separate from approval for Obsidian's community directory. The [community submission guide](docs/COMMUNITY-SUBMISSION.md) records the completed 0.6.3 review, remaining nonblocking warnings and maintenance process. Review results do not replace the runtime observations in [TEST-REPORT.md](TEST-REPORT.md).
 
 ## License and dependencies
 

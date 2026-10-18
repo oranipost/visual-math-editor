@@ -6,14 +6,19 @@
 
 编辑体验：绘图输入后自动预览，输入有效时可直接点击插入/保存，或按 **Ctrl+Enter**，不必先点击预览。操作按钮采用统一 SVG 图标并保留文字；已保存图的语言切换同步更新，保留尚未保存的视图。
 
-当前版本：**0.6.3，桌面公开测试版（MVP）**。提供化学式、线性化学键、反应式、物理模板、单位排版与离线换算、118 元素表，界面目前仅支持**英语和简体中文**，后续计划逐步增加更多语言。提供本地方程绘图，包含以 Re / Im 为轴的复平面和图中平移、缩放。[社区目录公开页面](https://community.obsidian.md/plugins/visual-math-editor)已创建；0.6.3 的自动检查仍为 **Pending（等待中）**，尚未确认可从 Obsidian 内安装。范围见 [MVP.md](MVP.md)，实际验证环境和结果见 [TEST-REPORT.md](TEST-REPORT.md)。
+当前版本：**0.6.3，桌面公开测试版（MVP）**。提供化学式、线性化学键、反应式、物理模板、单位排版与离线换算、118 元素表，界面目前仅支持**英语和简体中文**，后续计划逐步增加更多语言。提供本地方程绘图，包含以 Re / Im 为轴的复平面和图中平移、缩放。0.6.3 官方审核状态为 **Completed（已完成）**，结论为 **Review Satisfactory（审核满意）**，[社区目录页面](https://community.obsidian.md/plugins/visual-math-editor)的 **Add to Obsidian** 已启用。审核观察见[提交指南](docs/COMMUNITY-SUBMISSION.md)，范围见 [MVP.md](MVP.md)，实际验证环境和结果见 [TEST-REPORT.md](TEST-REPORT.md)。
 
 ## 下载与安装
 
+**推荐：[从 Obsidian 社区插件目录安装](https://community.obsidian.md/plugins/visual-math-editor)。** 点击 **Add to Obsidian**，允许链接打开 Obsidian，再在插件详情中选择 **Install（安装）→ Enable（启用）**。打开 Markdown 笔记，点击右上角或左侧工具栏的 **∑**。目录安装入口启用与完成原生安装实测是不同观察，实际测试以 [TEST-REPORT.md](TEST-REPORT.md) 为准。
+
+**索引可用性，2026-10-18 核对：** 网站安装入口已启用，但原生 **Browse** 搜索尚无本插件结果，官方安装索引也尚未包含本插件 ID。如果 Obsidian 中暂不可用，请等待索引同步，或按下文手动安装。本次 0.6.3 原生编辑实测使用已校验的 GitHub ZIP，没有完成从原生社区目录安装。
+
+### 手动安装
+
 **[下载 0.6.3 安装包](https://github.com/oranipost/visual-math-editor/releases/download/0.6.3/visual-math-editor-0.6.3.zip)** · [查看发布说明和校验值](https://github.com/oranipost/visual-math-editor/releases/tag/0.6.3) · [完整安装 / 更新 / 卸载说明](docs/INSTALLATION.md#简体中文)
 
-在目录安装可用性确认前，请继续使用可手动安装的 GitHub 预览版。下载 Release 的安装 ZIP；GitHub 的 **Code → Download ZIP** 和自动生成的 **Source code** 是源码，需要自行构建。
-
+选择手动安装时，请下载 Release 的安装 ZIP；GitHub 的 **Code → Download ZIP** 和自动生成的 **Source code** 是源码，需要自行构建。
 
 安装包已经编译完成，使用插件不需要 Node.js 或编程知识。
 
@@ -22,7 +27,7 @@
 3. 重启 Obsidian，进入 **Settings → Community plugins**。首次使用社区插件时选择 **Turn on community plugins**，然后启用 **Visual Math Editor**。
 4. 打开 Markdown 笔记，右上角和左侧工具栏出现 **∑** 后即可使用。
 
-从旧版更新时，先保存或取消未提交的公式草稿，关闭插件，备份现有 `visual-math-editor` 文件夹，再把新版安装文件复制到该文件夹，保留已有的 `data.json` 设置，最后重启 Obsidian 以刷新 MathLive。无需自行补代码，也不必重新下载笔记库。社区目录审核通过后，可在 **设置 → 第三方插件 → 检查更新 → 更新** 中操作；社区插件不会自动更新。详见[更新机制](docs/UPDATING.md#简体中文)。
+目录更新可在 **设置 → 第三方插件 → 检查更新 → 更新** 中操作；社区插件不会自动更新。手动更新时，先保存或取消未提交的公式草稿，关闭插件，备份现有 `visual-math-editor` 文件夹，再把新版安装文件复制到该文件夹，保留已有的 `data.json` 设置。两种方式都应先保存草稿，完成后重启 Obsidian 以刷新 MathLive。无需自行补代码，也不必重新下载笔记库。详见[更新机制](docs/UPDATING.md#简体中文)。
 
 运行必需文件为 `main.js`、`manifest.json`、`styles.css`。字体已经嵌入样式文件；分发安装包时请同时保留 `LICENSE`、`MATHLIVE-LICENSE.txt`、`KATEX-FONTS-LICENSE.txt`、`MHCHEM-LICENSE.txt`、`CONVERT-LICENSE.txt` 和 `THIRD-PARTY-NOTICES.md`。
 
@@ -136,6 +141,8 @@ macOS 的 Finder 可用 **⌘⇧.** 显示隐藏文件夹。如果 vault 使用�
 
 插件运行时无需账号或网络，没有遥测、云端识别或计算服务。MathLive 代码、Convert 换算库、数学字体和元素数据随安装包提供，守恒检查与函数解析、数值采样和 SVG 绘图也在本机执行；远程字体、音效和 Compute Engine 加载均已关闭。公式与图像定义保存在当前笔记中。本版不包含手写识别、图片识别、自然语言生成、通用方程求解、矩阵专用工具或同步服务。
 
+剪贴板功能用于用户主动在公式编辑器中剪切、复制和粘贴。插件不会在后台监控剪贴板，也不会把其中的内容发送到服务器。
+
 若启用时提示其他插件加载了不同版本的 MathLive，请暂时关闭冲突插件并重启 Obsidian，再启用本插件。
 
 ## 从源码构建
@@ -172,7 +179,7 @@ npm run preview
 
 欢迎修复、文案和翻译贡献，详见 [贡献指南](CONTRIBUTING.md)。本版维护完整英文与简体中文；没有内置所有语言。新增语言需要覆盖完整操作、错误提示和键盘辅助信息，并由熟悉该语言的人复核。
 
-GitHub 发布与 Obsidian 社区目录上架是两件事。本项目的目录提交状态、官方入口和待办见 [社区插件提交指南](docs/COMMUNITY-SUBMISSION.md)；是否通过审核以官方结果为准。公开前已使用官方工具进行 [源码前置检查](docs/CODE-REVIEW.md)，结果和保留的提示逐项记录；该检查不代表目录审核通过。
+GitHub 发布与 Obsidian 社区目录上架是两件事。0.6.3 已完成官方目录审核，结论、保留的非阻断提醒和维护流程见 [社区插件提交指南](docs/COMMUNITY-SUBMISSION.md)。公开前使用官方工具进行的 [0.6.2 源码前置检查](docs/CODE-REVIEW.md)仍独立保留；本地检查、目录审核和实际运行测试分别记录。
 
 ## 源码与第三方来源
 

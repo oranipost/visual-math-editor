@@ -6,7 +6,7 @@ This report distinguishes automated checks, browser components and native Obsidi
 
 ## Environment and automated checks
 
-- Native application: **Obsidian 1.14.4 on macOS**, main window, a separate test vault and example notes.
+- Native application: **Obsidian 1.14.4 on macOS**, main window. The 0.6.2 baseline used a separate test vault; the 0.6.3 follow-up used a newly created demonstration note with invented formula inputs in an existing desktop vault.
 - Locked runtime dependencies: MathLive **0.111.1** and Convert **8.0.2**.
 - **156 automated tests pass**, with TypeScript checking and the production build passing.
 - Hosted CI checks clean dependency installation, types, tests and builds on **Node.js 22 and 24**. Node 24 also checks release packaging. Results are available under [Actions](https://github.com/oranipost/visual-math-editor/actions).
@@ -23,6 +23,25 @@ This report distinguishes automated checks, browser components and native Obsidi
 | Real usage screenshots | Four screenshots in [docs/images](docs/images) show Visual, Hybrid, a saved complex plane and optional reaction balancing in the actual application. They use a separate test vault and invented examples. |
 
 The full browser component suite was **not completed again for 0.6.2 or 0.6.3**. The 0.6.2 preview builds and loads, but there is no new full-suite result for these versions. The 0.6.3 change adds redistribution notices and contact/update documentation; it does not change editor behavior. In particular, the interaction styling's enable/disable/destroy behavior has not received a fresh browser pass. Native zoom/save observations above and logic tests have narrower, explicitly stated coverage.
+
+## Native follow-up (0.6.3, 2026-10-18)
+
+This follow-up used the **0.6.3 GitHub Release installation ZIP**, verified against its published SHA-256 checksum. It was a manual replacement installation, not an installation completed through Obsidian's native community directory.
+
+| Workflow | Observed result |
+| --- | --- |
+| Replace the existing plugin | The earlier 0.6.1 plugin, settings and existing demonstration note were backed up. With Obsidian closed, the active plugin directory was replaced with the full 0.6.3 ZIP contents. The existing `data.json` settings were retained byte-for-byte, and the previous demonstration note was unchanged. |
+| Restart and verify | After restart, native **Settings → Community plugins** showed **0.6.3** enabled. |
+| Visual fraction | A new demonstration note's editor accepted a visual fraction with numerator `3` and denominator `4`. |
+| Hybrid source → formula | Entering `\frac{5}{8}+1` in the left source area updated the formatted equation on the right. |
+| Hybrid formula → source | Entering `+2` at the end of the formatted equation updated the left source to `\frac58+1+2`, an equivalent compact LaTeX serialization. |
+| LaTeX mode | Switching to LaTeX mode retained the draft input. |
+| Insert and reopen | Insertion saved the equation as a `$$` display-math block. The note-header **∑** successfully reopened it with **Save changes** and the same source. The reopened editor was left in Hybrid mode for further use. |
+| Double-click reopening | The attempted double-click did not reopen the equation in this session. The **∑** route succeeded; double-click should not be treated as verified by this follow-up. |
+
+The official website showed **Completed / Review Satisfactory** and an enabled **Add to Obsidian** button. However, native **Browse** returned **0 results** for the plugin, **Check for updates** offered no update, and the official `obsidian-releases/community-plugins.json` installation index did not yet contain `visual-math-editor`. Website approval and native index availability were therefore recorded separately. Wait for the installation index to synchronize or use the manual ZIP procedure; this report does not claim a successful native community-directory installation.
+
+This was a targeted three-mode and reopening check. Chemistry, conversion, graph navigation, Undo and the full browser suite were not rerun as part of this follow-up; their earlier observations and limitations remain as stated elsewhere in this report.
 
 ## Redistribution notices
 
@@ -65,4 +84,4 @@ For native integration, install the compiled plugin into a disposable Obsidian v
 
 ## 中文摘要
 
-当前版本的类型检查、156 项自动测试和生产构建通过。原生操作在 macOS / Obsidian 1.14.4 主窗口与独立测试库中验证；四张演示截图来自实际应用。0.6.3 补充程序文件内的完整许可通知及联系、更新说明；原生操作和截图为 0.6.2 基线。此版本没有新完成浏览器组件全套复测，未验证的平台与交互范围已在上文列出。开发预览地址只用于开发者自己的电脑，普通用户无需启动或访问。
+当前版本的类型检查、156 项自动测试和生产构建通过。0.6.2 原生基线在 macOS / Obsidian 1.14.4 主窗口与独立测试库中验证；四张演示截图来自实际应用。0.6.3 新增原生复测使用通过 SHA-256 校验的 GitHub ZIP 手动替换旧插件，保留已有设置，重启后确认 0.6.3 已启用。新建演示笔记验证了 Visual 的 `3/4`、Hybrid 的双向同步、切到 LaTeX 后保留输入、保存为 `$$` 区块，以及通过 **∑** 再次编辑。此次双击未成功，未记为通过。官方目录审核已完成且网站安装按钮启用，但原生 Browse 搜索为 0、检查更新无更新，安装索引尚无本插件 ID；尚未完成从原生社区目录安装。化学、换算、绘图、撤销和浏览器全套测试没有在本次针对性复测中重跑。开发预览地址只用于开发者自己的电脑，普通用户无需启动或访问。

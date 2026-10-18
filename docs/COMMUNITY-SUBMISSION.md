@@ -2,7 +2,24 @@
 
 [English README](../README.md) · [中文说明](../README.zh-CN.md) · [发布维护](../RELEASING.md)
 
-资料核对日期：2026-10-18。插件已提交并创建[社区目录公开页面](https://community.obsidian.md/plugins/visual-math-editor)。**0.6.3 的自动检查仍为 Pending（等待中），页面的 Add to Obsidian 按钮尚不可用；尚未确认可从 Obsidian 内安装，也不代表审核通过。** 目前仍可使用 GitHub Release 安装 ZIP 手动安装。GitHub 公开发布、目录页面公开与可从 Obsidian 安装是不同状态。
+资料核对日期：2026-10-18。[社区目录页面](https://community.obsidian.md/plugins/visual-math-editor)显示 **0.6.3 官方审核 Completed（已完成）**，结论为 **Review Satisfactory（审核满意）**，**Add to Obsidian** 按钮已启用。推荐从该目录入口打开 Obsidian 安装；GitHub Release 安装 ZIP 继续作为手动安装选项。目录入口启用与完成原生安装测试是不同观察，后者以 [TEST-REPORT.md](../TEST-REPORT.md) 中实际记录为准。
+
+同日检查原生 **Browse**，本插件搜索结果为 0；**Check for updates** 未提供更新。只读检查官方 [`community-plugins.json`](https://github.com/obsidianmd/obsidian-releases/blob/master/community-plugins.json) 也尚未发现 `visual-math-editor`。因此目前不能声称已从原生社区目录安装成功；遇到这一情况应等待安装索引同步，或使用[手动 ZIP 安装](INSTALLATION.md)。本次 0.6.3 原生三模式与再次编辑验证使用了手动替换安装。
+
+## 0.6.3 官方审核观察
+
+本次官方页面未显示 Error。源码与分发构建的逐字节一致性检查、依赖漏洞检查、代码混淆检查均显示 **Pass**。审核仍保留以下非阻断提醒，不能把 **Review Satisfactory** 解读为没有提醒、完整安全审计或所有平台实测通过。
+
+| 提醒 | 用途与处理 |
+| --- | --- |
+| `prefer-create-el`，11 处 | 共用界面、独立浏览器预览、MathLive 自定义元素及 SVG 使用标准 DOM 创建方法；保留原生方法以兼容这些场景。 |
+| CSS `!important`，2 处 | 仅限 `.vme-editor`：确保 `hidden` 元素不被组件布局样式显示，以及尊重系统的减少动画偏好。直接删除可能破坏隐藏状态或无障碍设置。 |
+| 自定义 `math-field` 标签 | MathLive 已注册的公式编辑与预览元素，相关选择器限定在插件容器中。 |
+| Clipboard Access | MathLive 提供用户主动剪切、复制和粘贴。插件自己的粘贴处理只读取当前粘贴事件的纯文本；未发现后台监控或上传剪贴板内容的实现。 |
+| 缺少 attestations | 发布附件尚无构建来源证明。页面将其列为建议，当前不阻止安装；它与已通过的源码/构建逐字节一致性检查是不同项目。 |
+| 额外 Release 附件 | ZIP、校验值和许可证附件作为便利下载保留；目录所需的三个独立程序附件仍齐全。页面对此仅给出建议，并非缺失必需附件或审核错误。 |
+
+这些提醒已结合源码复核，目前没有需要立即修改运行时代码的阻断项；若官方后续给出具体修改要求，仍须处理。本记录属于 **0.6.3 官方目录审核**；[CODE-REVIEW.md](CODE-REVIEW.md) 独立保留 **0.6.2 使用官方 lint 工具进行的本地前置检查**，两者不能互相替代。
 
 ## 当前应该在哪里提交
 
@@ -66,7 +83,7 @@ Obsidian 当前的[官方提交指南](https://docs.obsidian.md/Plugins/Releasin
 }
 ```
 
-本次实时检查官方现有索引（9,111 条）和已移除插件列表，未发现这个 ID 或名称；这并不预留名称，提交时仍需由目录验证唯一性。
+首次提交前，检查当时官方现有索引（9,111 条）和已移除插件列表，未发现这个 ID 或名称；这是提交前的历史核对，不表示当前目录仍无本项目条目。
 
 ## 其他类似插件是怎样介绍自己的
 
