@@ -4,7 +4,7 @@ English · [简体中文](README.zh-CN.md)
 
 Edit equations directly inside Obsidian notes using **Visual**, **LaTeX** or **Hybrid** mode. Visual mode provides Word-like structures for fractions, roots, scripts, integrals and sums. Hybrid mode keeps the formatted equation and LaTeX source synchronized. Equations are saved as ordinary LaTeX/Markdown.
 
-**0.6.2 · Desktop public beta (MVP).** Also includes chemistry notation and balance suggestions, physics templates, offline unit conversion, a periodic table, real-function graphs and a Re/Im complex plane. The interface supports English and Simplified Chinese. The plugin is not yet listed in the Obsidian community directory. See [scope](MVP.md), [test observations](TEST-REPORT.md) and [language support](LANGUAGE-SUPPORT.md).
+**0.6.2 · Desktop public beta (MVP).** Also includes chemistry notation and balance suggestions, physics templates, offline unit conversion, a periodic table, real-function graphs and a Re/Im complex plane. The interface currently supports **English and Simplified Chinese only**. More languages are planned for future updates. The plugin is not yet listed in the Obsidian community directory. See [scope](MVP.md), [test observations](TEST-REPORT.md) and [language support](LANGUAGE-SUPPORT.md).
 
 ## Download and install
 
@@ -93,7 +93,7 @@ Balance checking supports a bounded subset of chemistry notation and stops on un
 
 ## Language, saving and privacy
 
-Choose **Follow Obsidian**, **简体中文** or **English**. The preference is stored locally for the current vault. Follow Obsidian uses the app's language when its public API is available, with a browser-locale fallback on older hosts. Other languages fall back to English; Chinese regional variants currently use Simplified Chinese. Changing the interface language does not translate formula source, note text or saved ranges. See the evidence and contribution policy in [LANGUAGE-SUPPORT.md](LANGUAGE-SUPPORT.md).
+The interface currently supports **English and Simplified Chinese**. Choose **Follow Obsidian**, **简体中文** or **English**; the preference is stored locally for the current vault. **Follow Obsidian selects from these available translations**: Chinese locales use Simplified Chinese, while English and unsupported languages use English. For example, setting Obsidian to **Spanish still displays this plugin in English**. More languages, including Spanish, are planned for future updates after translation and review. Chinese regional variants currently share Simplified Chinese. The app's language is read through its public API, with a browser-locale fallback on older hosts. Changing the interface language does not translate formula source, note text or saved ranges. See [LANGUAGE-SUPPORT.md](LANGUAGE-SUPPORT.md) for the current scope and contribution process.
 
 Equations use `$…$` or `$$…$$`. Standard mathematics remains native Obsidian math after the plugin is disabled; chemistry/units require mhchem support. Other export targets must support the relevant commands. Complex TeX, custom macros and other plugins' syntax may not be visually compatible. Tables/lists/quotes/callouts support inline equations only; code, YAML properties, comments and link destinations are protected insertion locations.
 

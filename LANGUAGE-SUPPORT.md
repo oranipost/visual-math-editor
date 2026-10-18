@@ -2,6 +2,21 @@
 
 Visual Math Editor currently maintains **English and Simplified Chinese**. The language menu offers **Follow Obsidian**, **简体中文**, and **English**. The stored `system` setting remains compatible with earlier releases; it now follows Obsidian's configured interface language first. Unsupported app languages use English. Chinese regional/script tags currently use the same Simplified Chinese translation; a dedicated Traditional Chinese translation is not yet provided.
 
+## Follow Obsidian: current behavior
+
+Follow Obsidian selects one of the plugin's **two available translations**; it does not supply translations for every language supported by the host.
+
+| Obsidian interface language | This plugin's interface |
+| --- | --- |
+| English (`en`, `en-US`, etc.) | English |
+| Chinese (`zh`, `zh-CN`, `zh-TW`, etc.) | Simplified Chinese |
+| Spanish (`es`, `es-ES`, `es-MX`) | English fallback |
+| Other unsupported languages | English fallback |
+
+**More languages, including Spanish, are planned for future updates.** They will be offered as translations are completed and reviewed. Currently shipped support remains English and Simplified Chinese.
+
+**中文说明：** 目前只提供英语和简体中文。“跟随 Obsidian”会从已有翻译中选择；西班牙语等尚未支持的语言会使用英语。后续计划逐步增加更多语言，完成翻译与审核后再提供。
+
 Changing the plugin language must update its own mounted controls and graph toolbars without changing formula source, note text, complex points, saved ranges, or an unsaved graph view. A language change is not a graph save. `Visual`, `LaTeX`, `Hybrid`, `Re`, `Im`, element symbols, unit symbols, and formula commands keep their technical spellings.
 
 ## What other plugins do
