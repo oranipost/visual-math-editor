@@ -1,0 +1,16 @@
+node_modules/
+dist/
+test-results/
+playwright-report/
+.DS_Store
+.packaging/
+release/
+work/
+outputs/
+.obsidian/
+data.json
+*.log
+.env
+.env.*
+!.env.example
+coverage/

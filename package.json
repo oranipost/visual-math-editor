@@ -1,0 +1,28 @@
+{
+  "name": "visual-math-editor",
+  "version": "0.6.2",
+  "private": true,
+  "description": "Offline math, science, function graphs and complex planes for Obsidian",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "check": "npm run typecheck && npm test && npm run build",
+    "preview": "node scripts/build.mjs --preview && node scripts/serve.mjs",
+    "package": "node scripts/package.mjs"
+  },
+  "dependencies": {
+    "convert": "8.0.2",
+    "mathlive": "0.111.1"
+  },
+  "devDependencies": {
+    "@codemirror/state": "6.7.6",
+    "@codemirror/view": "6.43.13",
+    "@types/node": "26.6.5",
+    "esbuild": "0.28.2",
+    "obsidian": "1.14.4",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2"
+  }
+}

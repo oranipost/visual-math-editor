@@ -1,0 +1,48 @@
+name: Prepare draft release
+
+# This workflow never publishes a release. A maintainer must review the draft.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing version tag, matching manifest.json exactly (for example 0.6.2)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: draft-release-${{ inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: refs/tags/${{ inputs.tag }}
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Verify exact release tag
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          node --input-type=module -e 'import { readFileSync } from "node:fs"; const tag = process.env.RELEASE_TAG; const manifest = JSON.parse(readFileSync("manifest.json", "utf8")); if (!/^\d+\.\d+\.\d+$/.test(tag ?? "") || tag !== manifest.version) throw new Error("Tag must match manifest.json exactly, without a v prefix");'
+      - run: npm ci
+      - run: npm run check
+      - run: npm run package
+      - name: Create draft with installer, source, runtime assets and licenses
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          gh release create "$RELEASE_TAG" --verify-tag --draft --title "Visual Math Editor $RELEASE_TAG — Public beta" --notes-file CHANGELOG.md dist/main.js dist/manifest.json dist/styles.css dist/LICENSE dist/MATHLIVE-LICENSE.txt dist/KATEX-FONTS-LICENSE.txt dist/MHCHEM-LICENSE.txt dist/CONVERT-LICENSE.txt dist/THIRD-PARTY-NOTICES.md release/*.zip release/SHA256SUMS.txt

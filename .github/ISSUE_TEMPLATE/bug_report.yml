@@ -1,0 +1,48 @@
+name: Bug report / 问题反馈
+description: Report a reproducible editor, graph or saving problem.
+body:
+  - type: markdown
+    attributes:
+      value: Use a small invented example. Do not upload your real vault, private notes, tokens or plugin settings. 中文和 English 均可。
+  - type: input
+    id: version
+    attributes:
+      label: Plugin version / 插件版本
+      placeholder: 0.6.1
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Obsidian version and operating system / Obsidian 版本与系统
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected feature / 功能
+      options:
+        - Visual / LaTeX / Hybrid editor
+        - Insert, reopen, save or Undo
+        - Function graph or complex plane
+        - Chemistry, elements or units
+        - Language, appearance or keyboard navigation
+        - Other
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps and small input / 操作步骤及最小输入
+      description: Include the view mode, exact formula or graph input, and the actions that reproduce the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Expected and actual result / 预期与实际结果
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Optional screenshot or diagnostics / 可选截图或错误信息
+      description: Remove private note names and personal paths. Say whether it also occurs in a disposable vault with other plugins disabled.
