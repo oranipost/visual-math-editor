@@ -4,11 +4,11 @@ English · [简体中文](README.zh-CN.md)
 
 Edit equations directly inside Obsidian notes using **Visual**, **LaTeX** or **Hybrid** mode. Visual mode provides Word-like structures for fractions, roots, scripts, integrals and sums. Hybrid mode keeps the formatted equation and LaTeX source synchronized. Equations are saved as ordinary LaTeX/Markdown.
 
-**0.6.2 · Desktop public beta (MVP).** Also includes chemistry notation and balance suggestions, physics templates, offline unit conversion, a periodic table, real-function graphs and a Re/Im complex plane. The interface currently supports **English and Simplified Chinese only**. More languages are planned for future updates. The plugin is not yet listed in the Obsidian community directory. See [scope](MVP.md), [test observations](TEST-REPORT.md) and [language support](LANGUAGE-SUPPORT.md).
+**0.6.3 · Desktop public beta (MVP).** Also includes chemistry notation and balance suggestions, physics templates, offline unit conversion, a periodic table, real-function graphs and a Re/Im complex plane. The interface currently supports **English and Simplified Chinese only**. More languages are planned for future updates. The plugin is not yet listed in the Obsidian community directory. See [scope](MVP.md), [test observations](TEST-REPORT.md) and [language support](LANGUAGE-SUPPORT.md).
 
 ## Download and install
 
-**[Download 0.6.2 installation ZIP](https://github.com/oranipost/visual-math-editor/releases/download/0.6.2/visual-math-editor-0.6.2.zip)** · [Release notes and checksums](https://github.com/oranipost/visual-math-editor/releases/tag/0.6.2) · [Detailed installation, updates and removal](docs/INSTALLATION.md#english)
+**[Download 0.6.3 installation ZIP](https://github.com/oranipost/visual-math-editor/releases/download/0.6.3/visual-math-editor-0.6.3.zip)** · [Release notes and checksums](https://github.com/oranipost/visual-math-editor/releases/tag/0.6.3) · [Detailed installation, updates and removal](docs/INSTALLATION.md#english)
 
 This is a manually installable GitHub preview. **It has not been approved for the Obsidian community plugin directory.** Download the release's installation ZIP, rather than **Code → Download ZIP** or GitHub's automatic **Source code** archives, which require building.
 
@@ -22,7 +22,7 @@ The installation ZIP is already compiled. You do not need Node.js to use it.
 
 On macOS, **⌘⇧.** shows hidden folders in Finder. If your vault uses a custom configuration directory, use that instead of `.obsidian`.
 
-Before updating, save or cancel open drafts, disable the plugin and back up its existing folder. Replace the installation files, retain your existing `data.json` settings, then restart Obsidian. Do not replace the whole vault or `.obsidian` directory.
+Before updating, save or cancel open drafts, disable the plugin and back up its existing folder. Copy the new installation files into that folder, retain your existing `data.json` settings, then restart Obsidian to refresh MathLive. You do not need to edit code or download your vault again. After community-directory approval, use **Settings → Community plugins → Check for updates → Update**; community plugins do not update automatically. See [how updates work](docs/UPDATING.md#english).
 
 Requires **Obsidian 1.14.4 or later**. Native integration was tested on macOS with Obsidian 1.14.4. This release supports the desktop main window; Windows, Linux, mobile, detached pop-out windows and arbitrary third-party themes/plugins have not been verified. See [TEST-REPORT.md](TEST-REPORT.md) for actual observations.
 
@@ -127,6 +127,8 @@ Then open [http://127.0.0.1:8471](http://127.0.0.1:8471) and use the component-t
 The repository includes Node.js 22/24 CI and packaging checks. A separate manual workflow prepares a draft release titled Public beta from an existing exact-version tag; it does not publish automatically. Hosted workflow results are available under [Actions](https://github.com/oranipost/visual-math-editor/actions). See [CONTRIBUTING.md](CONTRIBUTING.md) and [RELEASING.md](RELEASING.md) for the development and release process. The [local code precheck](docs/CODE-REVIEW.md) records the official lint-tool results and remaining warnings; it is separate from community-directory approval.
 
 ## Feedback and contributions
+
+Developer: [Dongfang Wang / oranipost](https://github.com/oranipost). For private contact, email [oranipost@outlook.com](mailto:oranipost@outlook.com). GitHub profiles do not provide direct messages; use email for private enquiries and [Issues](https://github.com/oranipost/visual-math-editor/issues) for public feedback.
 
 Report a problem through the [bug report form](https://github.com/oranipost/visual-math-editor/issues/new?template=bug_report.yml). Include your plugin/Obsidian versions, operating system, view mode, a small invented input and reproduction steps. English and Chinese are welcome. Do not attach a real vault, private notes or settings. Use the [feature request form](https://github.com/oranipost/visual-math-editor/issues/new?template=feature_request.yml) for suggestions.
 

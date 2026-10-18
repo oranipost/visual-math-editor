@@ -11,13 +11,13 @@ Obsidian 当前的[官方提交指南](https://docs.obsidian.md/Plugins/Releasin
 流程如下：
 
 1. 在 GitHub 公开源代码，仓库根目录放好 `README.md`、`LICENSE`、`manifest.json`。
-2. 发布与 manifest 版本号完全一致的 GitHub Release。本次版本为 **`0.6.2`**，tag 也必须是 **`0.6.2`**，不要加 `v`。
+2. 发布与 manifest 版本号完全一致的 GitHub Release。本次版本为 **`0.6.3`**，tag 也必须是 **`0.6.3`**，不要加 `v`。
 3. Release 附件单独上传 **`main.js`、`manifest.json`、`styles.css`**；安装 ZIP 和源码 ZIP 是额外的便利下载，不能替代这三个单独附件。
 4. 在社区网站登录 Obsidian 账号，在个人资料的 **GitHub → Connect** 关联 `oranipost`。这是网站用来验证仓库所有权的步骤。
 5. 进入侧栏 **Plugins → New plugin**，填入仓库 URL，Owner 选择自己，阅读开发者政策与维护承诺后提交。
 6. 查看网站给出的自动检查结果。需要修正时修改源码，增加版本号，重新发布对应 Release，再按照页面提示处理。公开显示条目和能在 Obsidian 内安装是不同状态，应确认所有阻止安装的错误均已解决。
 
-首次提交后，后续版本通常只需发布新的 GitHub Release；不必为每个更新重新申请目录条目。具体账号关联和表单步骤见[官方账号与新增插件说明](https://docs.obsidian.md/community-directory/set-up-and-claim)，更新规则见[官方 FAQ](https://docs.obsidian.md/community-directory/faq)。
+首次提交后，不必为每个更新重新申请目录条目，但每个新 Release 仍会触发目录的自动检查，包括 manifest、附件、源码与构建一致性。修复后发布增加版本号的新版本；需要时可在条目菜单选择 **Check for new releases / Request review**。有错误时以页面要求为准，不能把发布 Release 当作审核完成。具体账号关联和表单步骤见[官方账号与新增插件说明](https://docs.obsidian.md/community-directory/set-up-and-claim)，维护操作见[官方条目管理说明](https://docs.obsidian.md/community-directory/manage-entry)。
 
 ## 本项目可以直接填写的资料
 
@@ -28,12 +28,13 @@ Obsidian 当前的[官方提交指南](https://docs.obsidian.md/Plugins/Releasin
 | ID | `visual-math-editor` |
 | Author | `Dongfang Wang` |
 | Author URL | `https://github.com/oranipost` |
-| Version / release tag | `0.6.2` |
+| Version / release tag | `0.6.3` |
 | Minimum Obsidian version | `1.14.4` |
 | Platforms | Desktop only；目前实际验证 macOS，Windows / Linux 尚未做原生应用测试 |
 | License | MIT；依赖与字体遵循各自许可证，见 [Third-party notices](../THIRD-PARTY-NOTICES.md) |
 | Payment | Free |
 | Support | `https://github.com/oranipost/visual-math-editor/issues` |
+| Contact email | `oranipost@outlook.com`（私下联系；放在 README 与详细介绍中） |
 
 英文短描述与 `manifest.json` 保持一致：
 
@@ -41,11 +42,15 @@ Obsidian 当前的[官方提交指南](https://docs.obsidian.md/Plugins/Releasin
 
 中文介绍可用：
 
-> 在笔记正文中可视化编辑数学公式，也可切换 LaTeX 和双栏同步模式。内置化学式、配平建议、元素信息、单位换算、实函数图像与复平面。全部在本地运行；公式保存为 LaTeX/Markdown，图像保存为可再次编辑的配置。
+> 在笔记正文中可视化编辑数学公式，也可切换 LaTeX 和双栏同步模式。内置化学式、配平建议、元素信息、单位换算、实函数图像与复平面。全部在本地运行；公式保存为 LaTeX/Markdown，图像保存为可再次编辑的配置。开发者：[Dongfang Wang / oranipost](https://github.com/oranipost)。公开问题反馈请用 [GitHub Issues](https://github.com/oranipost/visual-math-editor/issues)；私下联系请发邮件至 [oranipost@outlook.com](mailto:oranipost@outlook.com)。
 
 英文详细介绍可用：
 
 > Write and revise equations inside your notes with Visual, LaTeX, and synchronized Hybrid modes. Insert fractions, roots, scripts, sums, and integrals without learning LaTeX. Use chemistry notation, optional balancing suggestions, element details, and deterministic unit conversion. Plot a real function or mark complex numbers on a Re/Im plane, pan and zoom, and explicitly save the view for later editing. Everything runs locally without accounts or runtime network requests. Formulas remain LaTeX/Markdown; editable graphs use a `vme-plot` code block. This desktop public beta is tested in Obsidian 1.14.4 on macOS. It is not a computer algebra system or a chemical structure drawing application.
+>
+> Developer: [Dongfang Wang / oranipost](https://github.com/oranipost). Report public issues on [GitHub Issues](https://github.com/oranipost/visual-math-editor/issues), or email [oranipost@outlook.com](mailto:oranipost@outlook.com) for private contact.
+
+普通 GitHub 个人主页没有私信功能。Manifest 的 `authorUrl` 指向 GitHub；不要添加未定义的 email 字段，也不要将 `fundingUrl` 用作支持或联系链接。社区 Profile 可配置 Website 与 Social accounts；邮箱作为 README 和目录长介绍中的联系链接。
 
 如果目录表单提供分类或关键词，可以优先选择现有的 **Math / LaTeX / Graph**，再按页面实际选项补充 Chemistry；不要在 manifest 中添加未定义的 `tags` 字段。
 
@@ -80,6 +85,7 @@ Obsidian 当前的[官方提交指南](https://docs.obsidian.md/Plugins/Releasin
 - `manifest.json` 描述不超过 250 字符、以句号结尾，不加表情；ID 不含 `obsidian`，作者主页指向实际维护者。
 - 不把未测试的旧 Obsidian 版本或移动端写成已兼容。当前保守地以实际验证的 `1.14.4` 为最低版本。
 - 英文 README 作为仓库首屏，中文 README 可一键切换；截图使用仓库相对路径，别人打开仓库和目录条目时都能加载。
+- 目录桌面截图最多 5 张，每张 1200 × 800 像素且不超过 5 MB，格式为 JPEG、PNG 或 WebP。使用真实 Obsidian 测试库截图，必要时制作等比缩放或裁切副本，不放私人笔记。
 - 两种手动安装方法都说明清楚：下载完整安装 ZIP，或者下载三个独立插件文件放入 `.obsidian/plugins/visual-math-editor/`；完成后在 Community plugins 启用。目录审核通过前不声称能在 Browse 中搜索到本项目。
 - README 披露实际行为：无账户、无费用、无遥测、无运行时网络；只在用户明确插入/保存时修改当前笔记；草稿目前只暂存在内存，重启前要保存。
 - 说明功能边界：复数是每行一个 `a+bi` 数值点；实函数有范围与采样限制；配平建议可选，不阻止保留原式；元素电子排布与壳层数据有来源与预测标记；没有通用符号求解、OCR 或分子结构绘图。
@@ -91,4 +97,4 @@ Obsidian 当前的[官方提交指南](https://docs.obsidian.md/Plugins/Releasin
 
 ## 后续维护
 
-维护者应关注社区网站的检查结果和仓库 Issues。收到有效错误反馈后，先复现并修复，再发布增加版本号的 Release。未来增加移动端或更低 Obsidian 版本支持，应先完成对应原生环境测试，再更改兼容元数据。维护者无法继续支持时，按社区网站提供的归档或转移流程处理。
+维护者应关注社区网站的检查结果、仓库 Issues 和联系邮箱。收到有效错误反馈后，先复现并修复，再发布增加版本号的 Release，不覆盖已发布版本的标签或程序附件。用户在 Obsidian 内手动检查并确认更新；手动安装的用户下载新版安装包覆盖插件分发文件，保留 `data.json` 和笔记。完整中英文说明见[更新机制](UPDATING.md)。未来增加移动端或更低 Obsidian 版本支持，应先完成对应原生环境测试，再更改兼容元数据。维护者无法继续支持时，按社区网站提供的归档或转移流程处理。

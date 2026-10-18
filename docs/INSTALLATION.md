@@ -7,15 +7,15 @@
 ### Requirements and download
 
 - Obsidian **1.14.4 or later**, desktop main window. Native integration was checked on macOS with 1.14.4; other desktop systems have not been verified.
-- [Download the 0.6.2 installation ZIP](https://github.com/oranipost/visual-math-editor/releases/download/0.6.2/visual-math-editor-0.6.2.zip) from the [0.6.2 release](https://github.com/oranipost/visual-math-editor/releases/tag/0.6.2).
+- [Download the 0.6.3 installation ZIP](https://github.com/oranipost/visual-math-editor/releases/download/0.6.3/visual-math-editor-0.6.3.zip) from the [0.6.3 release](https://github.com/oranipost/visual-math-editor/releases/tag/0.6.3).
 - You do **not** need Node.js, npm, an account or an API key to use the compiled plugin.
 
-This is a GitHub preview, not an approved community-directory release. **Code → Download ZIP**, `visual-math-editor-source-0.6.2.zip` and GitHub's automatic **Source code** downloads are for developers; they are not the ready-to-install plugin.
+This is a GitHub preview, not an approved community-directory release. **Code → Download ZIP**, `visual-math-editor-source-0.6.3.zip` and GitHub's automatic **Source code** downloads are for developers; they are not the ready-to-install plugin.
 
 ### Manual installation
 
 1. In Obsidian, open the vault in which you want to use the plugin. Locate that vault's folder in your file manager.
-2. Extract `visual-math-editor-0.6.2.zip`. Copy its entire `visual-math-editor` folder into the vault's `.obsidian/plugins/` folder. Create `plugins` if necessary.
+2. Extract `visual-math-editor-0.6.3.zip`. Copy its entire `visual-math-editor` folder into the vault's `.obsidian/plugins/` folder. Create `plugins` if necessary.
 3. Check the layout below. `main.js` must be directly inside `visual-math-editor`, with no second nested plugin folder.
 4. Restart Obsidian. Open **Settings → Community plugins**, turn on community plugins if necessary, and enable **Visual Math Editor**.
 5. Open a Markdown note. Click **∑** in the note header or left ribbon, or run **Visual Math Editor: Insert or edit equation** from the command palette.
@@ -54,12 +54,16 @@ To open the editor by keyboard, assign a shortcut to **Insert or edit equation**
 
 ### Updating
 
+Once the plugin is approved and available in the community directory, open **Settings → Community plugins → Check for updates**, then **Update** next to Visual Math Editor. Community plugins do not update automatically. The updater downloads the new program files (`main.js`, `manifest.json`, `styles.css`), not your vault. You do not apply code patches yourself. Save open drafts first, and restart Obsidian afterwards to refresh MathLive.
+
+For the current manual installation, use these steps:
+
 1. Save or cancel open editor drafts; drafts are not persisted across restarts.
 2. Disable the plugin and back up its existing `visual-math-editor` folder.
 3. Replace its distributed files with the new installation folder's contents. Retain an existing `data.json`, which contains your local plugin preferences; installation ZIPs do not supply that file.
 4. Restart the full Obsidian window and enable the plugin. A full restart also refreshes the bundled MathLive component.
 
-Do not replace the entire vault, `.obsidian` directory or other plugins. Old `vme-plot` version 1 function blocks remain readable by this release.
+Do not delete the existing plugin folder or replace the entire vault, `.obsidian` directory or other plugins. Normal updates retain your settings and notes. Old `vme-plot` version 1 function blocks remain readable by this release. See [Updating](UPDATING.md#english) for the user and maintainer workflows.
 
 ### Optional BRAT beta installation
 
@@ -80,20 +84,22 @@ To remove the plugin, save drafts, disable it in Community plugins, then remove 
 
 For unresolved problems, use the [bug report form](https://github.com/oranipost/visual-math-editor/issues/new?template=bug_report.yml) with an invented example, versions and exact steps. Do not attach private notes or your entire vault.
 
+Developer: [Dongfang Wang / oranipost](https://github.com/oranipost). Public feedback: [GitHub Issues](https://github.com/oranipost/visual-math-editor/issues). Private contact: [oranipost@outlook.com](mailto:oranipost@outlook.com). GitHub profiles do not provide direct messages.
+
 ## 简体中文
 
 ### 要求与下载
 
 - Obsidian **1.14.4 或更新版本**，目前支持桌面主窗口。原生测试使用 macOS 与 1.14.4，其他桌面系统尚未验证。
-- 从 [0.6.2 发布页](https://github.com/oranipost/visual-math-editor/releases/tag/0.6.2) 下载 [0.6.2 安装 ZIP](https://github.com/oranipost/visual-math-editor/releases/download/0.6.2/visual-math-editor-0.6.2.zip)。
+- 从 [0.6.3 发布页](https://github.com/oranipost/visual-math-editor/releases/tag/0.6.3) 下载 [0.6.3 安装 ZIP](https://github.com/oranipost/visual-math-editor/releases/download/0.6.3/visual-math-editor-0.6.3.zip)。
 - 使用编译好的插件**不需要** Node.js、npm、账号或 API 密钥。
 
-这是 GitHub 预览版，尚未获得 Obsidian 社区插件目录批准。**Code → Download ZIP**、`visual-math-editor-source-0.6.2.zip` 和 GitHub 自动生成的 **Source code** 均是开发源码，需要自行构建。
+这是 GitHub 预览版，尚未获得 Obsidian 社区插件目录批准。**Code → Download ZIP**、`visual-math-editor-source-0.6.3.zip` 和 GitHub 自动生成的 **Source code** 均是开发源码，需要自行构建。
 
 ### 手动安装
 
 1. 在 Obsidian 中打开准备使用插件的 vault，找到该 vault 在电脑中的文件夹。
-2. 解压 `visual-math-editor-0.6.2.zip`，将其中整个 `visual-math-editor` 文件夹放入 vault 的 `.obsidian/plugins/`。没有 `plugins` 时可新建。
+2. 解压 `visual-math-editor-0.6.3.zip`，将其中整个 `visual-math-editor` 文件夹放入 vault 的 `.obsidian/plugins/`。没有 `plugins` 时可新建。
 3. 对照上方目录示例：`main.js`、`manifest.json`、`styles.css` 必须直接位于 `visual-math-editor` 中，避免多嵌套一层同名目录。
 4. 重启 Obsidian，打开 **设置 → 第三方插件（Settings → Community plugins）**，需要时先开启第三方插件，再启用 **Visual Math Editor**。
 5. 打开 Markdown 笔记，点击笔记右上角或左侧工具栏的 **∑**；也可在命令面板运行 **Visual Math Editor: 插入或编辑公式**。
@@ -116,12 +122,16 @@ macOS 的 Finder 可按 **⌘⇧.** 显示隐藏文件；Windows 文件资源管
 
 ### 更新
 
+社区目录审核通过、可在目录内安装后，进入 **设置 → 第三方插件 → 检查更新**，点击 Visual Math Editor 旁的 **更新**。社区插件不会自动更新。更新器下载新版程序文件（`main.js`、`manifest.json`、`styles.css`），不会重新下载笔记库，也不需要用户自行补代码。更新前保存草稿，完成后重启 Obsidian，以刷新 MathLive。
+
+目前手动安装版本按以下步骤更新：
+
 1. 先保存或取消未提交草稿；草稿不会跨重启永久保留。
 2. 关闭插件，备份现有的 `visual-math-editor` 文件夹。
 3. 用新版安装文件替换该文件夹中的分发文件。保留已有的 `data.json`，它保存本地插件偏好；安装 ZIP 不包含该文件。
 4. 完整重启 Obsidian 窗口后启用插件，确保 MathLive 组件也载入新版本。
 
-不要替换整个 vault、`.obsidian` 或其他插件。旧版 `vme-plot` 版本 1 的函数区块仍可读取。
+不要先删除原插件文件夹，也不要替换整个 vault、`.obsidian` 或其他插件。正常更新保留设置与笔记。旧版 `vme-plot` 版本 1 的函数区块仍可读取。用户与维护者的完整流程见[更新机制](UPDATING.md#简体中文)。
 
 ### 可选的 BRAT 测试版安装
 
@@ -141,3 +151,5 @@ macOS 的 Finder 可按 **⌘⇧.** 显示隐藏文件；Windows 文件资源管
 卸载时先保存草稿，在第三方插件中停用，再只删除 `.obsidian/plugins/visual-math-editor/`。笔记中的 `$…$` / `$$…$$` 标准数学仍保留；化学和单位需要 mhchem 支持。`vme-plot` 定义也会保留，但需要本插件才能显示为图形。
 
 仍有问题时请用 [问题反馈表](https://github.com/oranipost/visual-math-editor/issues/new?template=bug_report.yml)，提供独立示例、版本和重现步骤；不要上传私人笔记或整个 vault。
+
+开发者：[Dongfang Wang / oranipost](https://github.com/oranipost)。公开反馈：[GitHub Issues](https://github.com/oranipost/visual-math-editor/issues)。私下联系：[oranipost@outlook.com](mailto:oranipost@outlook.com)。GitHub 普通个人主页没有私信功能。

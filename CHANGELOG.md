@@ -2,6 +2,12 @@
 
 This file records version changes. Builds before 0.6.2 were local MVP releases; 0.6.2 prepares the first public desktop beta. Publication status is shown on GitHub Releases. Neither a local package nor a public GitHub release implies Obsidian community-directory approval.
 
+## 0.6.3 — 2026-10-18
+
+- Included complete project/dependency notices in the JavaScript runtime and the font license in the stylesheet, so community installation of the three plugin files retains required redistribution notices.
+- Added developer contact links, the public support email, and bilingual update instructions for community and manual installations.
+- Kept the supported interface languages at English and Simplified Chinese, with English fallback for other Obsidian languages.
+
 ## 0.6.2 — 2026-10-18
 
 - Clarified that localhost preview instructions are for developers only and refreshed public documentation and download archives.

@@ -1,4 +1,4 @@
-# Visual Math Editor 0.6.2 · MVP 范围
+# Visual Math Editor 0.6.3 · MVP 范围
 
 **目标**：在 Obsidian 正文中插入和再次编辑数学与常用科学公式。提供不依赖 LaTeX 的操作入口，并允许熟悉源码的用户随时切换。后台保持 Markdown 数学格式，全部本地运行。
 
@@ -31,4 +31,4 @@
 
 ## 交付与验证
 
-交付编译安装包、可重建源码、中英文 README、[安装与使用说明](docs/INSTALLATION.md)、独立 Obsidian 测试库的演示截图、第三方许可证和 [验证记录](TEST-REPORT.md)。当前 155 项自动测试、类型检查和生产构建已通过；官方规则源码前置检查为 0 错误、17 提示，manifest 为 0 错误、0 提示，说明见 [源码检查记录](docs/CODE-REVIEW.md)。测试分别覆盖数据与安全写入、组件交互、实际 Obsidian 保存/重开；最终浏览器回归、原生截图和托管 CI 的状态以验证记录及 GitHub 实际结果为准。GitHub 公开下载与 Obsidian 社区目录批准是独立步骤。
+交付编译安装包、可重建源码、中英文 README、[安装与使用说明](docs/INSTALLATION.md)、[更新机制](docs/UPDATING.md)、独立 Obsidian 测试库的演示截图、第三方许可证和 [验证记录](TEST-REPORT.md)。当前自动测试数量、类型检查、生产构建和实际通过情况以验证记录为准。官方规则源码前置检查为 0 错误、17 提示，manifest 为 0 错误、0 提示，说明见 [源码检查记录](docs/CODE-REVIEW.md)。测试分别覆盖数据与安全写入、组件交互、实际 Obsidian 保存/重开；最终浏览器回归、原生截图和托管 CI 的状态以验证记录及 GitHub 实际结果为准。GitHub 公开下载与 Obsidian 社区目录批准是独立步骤。

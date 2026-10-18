@@ -2,6 +2,25 @@ import { build } from "esbuild";
 import { readFile, writeFile, mkdir, copyFile } from "node:fs/promises";
 import path from "node:path";
 
+async function licenseBanner(files) {
+  const sections = await Promise.all(files.map(async file => {
+    const contents = await readFile(file, "utf8");
+    // Keep the complete notice unchanged. Fail rather than silently rewriting
+    // a future notice that cannot be safely embedded in a block comment.
+    if (contents.includes("*/")) throw new Error(`License notice contains a comment terminator: ${file}`);
+    return `--- ${path.basename(file)} ---\n${contents}`;
+  }));
+  return `/*! Visual Math Editor licensing notices\n\n${sections.join("\n\n")}\n*/`;
+}
+
+// Community installation downloads only the three runtime files, so those
+// files must carry the notices without depending on extra release attachments.
+const runtimeLicenses = await licenseBanner([
+  "LICENSE", "node_modules/mathlive/LICENSE.txt", "CONVERT-LICENSE.txt",
+  "MHCHEM-LICENSE.txt", "THIRD-PARTY-NOTICES.md",
+]);
+const fontLicense = await licenseBanner(["KATEX-FONTS-LICENSE.txt"]);
+
 await mkdir("dist", { recursive: true });
 const offlineMathLive = {
   name: "offline-mathlive-source-location",
@@ -33,6 +52,7 @@ await build({
   conditions: ["browser", "production"],
   external: ["obsidian", "electron", "@codemirror/view", "@codemirror/state", "@codemirror/language"],
   legalComments: "eof", sourcemap: false,
+  banner: { js: runtimeLicenses },
   plugins: [offlineMathLive],
 });
 let fonts = await readFile("node_modules/mathlive/mathlive-fonts.css", "utf8");
@@ -41,7 +61,7 @@ for (const match of files) {
   const data = await readFile(path.join("node_modules/mathlive", match[1]));
   fonts = fonts.replace(match[0], `url(data:font/woff2;base64,${data.toString("base64")})`);
 }
-await writeFile("dist/styles.css", `${fonts}\n${await readFile("styles.css", "utf8")}`);
+await writeFile("dist/styles.css", `${fontLicense}\n${fonts}\n${await readFile("styles.css", "utf8")}`);
 await copyFile("manifest.json", "dist/manifest.json");
 await copyFile("node_modules/mathlive/LICENSE.txt", "dist/MATHLIVE-LICENSE.txt");
 await copyFile("LICENSE", "dist/LICENSE");

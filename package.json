@@ -1,6 +1,6 @@
 {
   "name": "visual-math-editor",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "private": true,
   "description": "Offline math, science, function graphs and complex planes for Obsidian",
   "type": "module",

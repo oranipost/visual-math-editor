@@ -6,11 +6,11 @@
 
 编辑体验：绘图输入后自动预览，输入有效时可直接点击插入/保存，或按 **Ctrl+Enter**，不必先点击预览。操作按钮采用统一 SVG 图标并保留文字；已保存图的语言切换同步更新，保留尚未保存的视图。
 
-当前版本：**0.6.2，桌面公开测试版（MVP）**。提供化学式、线性化学键、反应式、物理模板、单位排版与离线换算、118 元素表，界面目前仅支持**英语和简体中文**，后续计划逐步增加更多语言。提供本地方程绘图，包含以 Re / Im 为轴的复平面和图中平移、缩放。本插件尚未发布到 Obsidian 社区插件目录。范围见 [MVP.md](MVP.md)，实际验证环境和结果见 [TEST-REPORT.md](TEST-REPORT.md)。
+当前版本：**0.6.3，桌面公开测试版（MVP）**。提供化学式、线性化学键、反应式、物理模板、单位排版与离线换算、118 元素表，界面目前仅支持**英语和简体中文**，后续计划逐步增加更多语言。提供本地方程绘图，包含以 Re / Im 为轴的复平面和图中平移、缩放。本插件尚未发布到 Obsidian 社区插件目录。范围见 [MVP.md](MVP.md)，实际验证环境和结果见 [TEST-REPORT.md](TEST-REPORT.md)。
 
 ## 下载与安装
 
-**[下载 0.6.2 安装包](https://github.com/oranipost/visual-math-editor/releases/download/0.6.2/visual-math-editor-0.6.2.zip)** · [查看发布说明和校验值](https://github.com/oranipost/visual-math-editor/releases/tag/0.6.2) · [完整安装 / 更新 / 卸载说明](docs/INSTALLATION.md#简体中文)
+**[下载 0.6.3 安装包](https://github.com/oranipost/visual-math-editor/releases/download/0.6.3/visual-math-editor-0.6.3.zip)** · [查看发布说明和校验值](https://github.com/oranipost/visual-math-editor/releases/tag/0.6.3) · [完整安装 / 更新 / 卸载说明](docs/INSTALLATION.md#简体中文)
 
 这是可手动安装的 GitHub 预览版，**尚未获得 Obsidian 社区插件目录批准**，目前不能按目录内插件的方式搜索安装。请下载 Release 的安装 ZIP；GitHub 的 **Code → Download ZIP** 和自动生成的 **Source code** 是源码，需要自行构建。
 
@@ -22,7 +22,7 @@
 3. 重启 Obsidian，进入 **Settings → Community plugins**。首次使用社区插件时选择 **Turn on community plugins**，然后启用 **Visual Math Editor**。
 4. 打开 Markdown 笔记，右上角和左侧工具栏出现 **∑** 后即可使用。
 
-从旧版更新时，先提交或取消未保存的公式草稿，关闭插件，备份现有 `visual-math-editor` 文件夹后用新版安装文件替换，再重新启用。不要覆盖 vault 的其他文件或整个 `.obsidian` 目录。
+从旧版更新时，先保存或取消未提交的公式草稿，关闭插件，备份现有 `visual-math-editor` 文件夹，再把新版安装文件复制到该文件夹，保留已有的 `data.json` 设置，最后重启 Obsidian 以刷新 MathLive。无需自行补代码，也不必重新下载笔记库。社区目录审核通过后，可在 **设置 → 第三方插件 → 检查更新 → 更新** 中操作；社区插件不会自动更新。详见[更新机制](docs/UPDATING.md#简体中文)。
 
 运行必需文件为 `main.js`、`manifest.json`、`styles.css`。字体已经嵌入样式文件；分发安装包时请同时保留 `LICENSE`、`MATHLIVE-LICENSE.txt`、`KATEX-FONTS-LICENSE.txt`、`MHCHEM-LICENSE.txt`、`CONVERT-LICENSE.txt` 和 `THIRD-PARTY-NOTICES.md`。
 
@@ -165,6 +165,8 @@ npm run preview
 预览仅绑定本机地址，CSP 禁止组件向外连接。公式保存只写入页面的测试内存，不会修改 Obsidian vault；图像可在此预览，实际插入需要在 Obsidian 中操作。组件测试与实际 Obsidian 集成分别验证；通过项目及未验证范围记录在 [TEST-REPORT.md](TEST-REPORT.md)。
 
 ## 反馈、贡献与社区插件目录
+
+开发者：[Dongfang Wang / oranipost](https://github.com/oranipost)。私下联系请发邮件至 [oranipost@outlook.com](mailto:oranipost@outlook.com)；公开反馈可使用 [GitHub Issues](https://github.com/oranipost/visual-math-editor/issues)。GitHub 普通个人主页没有私信功能。
 
 请通过 [问题反馈](https://github.com/oranipost/visual-math-editor/issues/new?template=bug_report.yml) 提供插件版本、Obsidian 版本、操作系统、视图模式、最小公式和重现步骤。中英文均可。截图请只包含独立示例，不上传私人笔记、整个 vault 或设置文件。功能建议可用 [功能请求](https://github.com/oranipost/visual-math-editor/issues/new?template=feature_request.yml)。
 

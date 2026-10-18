@@ -1,6 +1,6 @@
 # Test report / 测试记录
 
-Version: **0.6.2**, desktop public beta. Updated: **2026-10-18**.
+Version: **0.6.3**, desktop public beta. Updated: **2026-10-18**.
 
 This report distinguishes automated checks, browser components and native Obsidian integration. Passing one does not establish that the others passed. Public release status is shown on [GitHub Releases](https://github.com/oranipost/visual-math-editor/releases); community-directory approval is separate.
 
@@ -8,11 +8,11 @@ This report distinguishes automated checks, browser components and native Obsidi
 
 - Native application: **Obsidian 1.14.4 on macOS**, main window, a separate test vault and example notes.
 - Locked runtime dependencies: MathLive **0.111.1** and Convert **8.0.2**.
-- **155 logic tests pass**, with TypeScript checking and the production build passing.
+- **156 automated tests pass**, with TypeScript checking and the production build passing.
 - Hosted CI checks clean dependency installation, types, tests and builds on **Node.js 22 and 24**. Node 24 also checks release packaging. Results are available under [Actions](https://github.com/oranipost/visual-math-editor/actions).
 - The official source-rule precheck recorded **0 errors and 17 reviewed warnings**; explicit manifest validation recorded **0 errors and 0 warnings**. See [code precheck](docs/CODE-REVIEW.md) for tool versions and the remaining warnings. This is not an independent security audit or a guarantee of no defects.
 
-## Current native integration observations
+## Native integration baseline (0.6.2)
 
 | Workflow | Observed result |
 | --- | --- |
@@ -22,7 +22,11 @@ This report distinguishes automated checks, browser components and native Obsidi
 | Save a complex-plane view | **Zoom in → Save view** changes both saved axis ranges from [-5,5] to [-4,4]. Switching notes and reopening preserves the range and the three complex points. |
 | Real usage screenshots | Four screenshots in [docs/images](docs/images) show Visual, Hybrid, a saved complex plane and optional reaction balancing in the actual application. They use a separate test vault and invented examples. |
 
-The full browser component suite was **not completed again for 0.6.2**. The preview builds and loads, but there is no new full-suite result for this version. In particular, the interaction styling's enable/disable/destroy behavior has not received a fresh browser pass. Native zoom/save observations above and logic tests have narrower, explicitly stated coverage.
+The full browser component suite was **not completed again for 0.6.2 or 0.6.3**. The 0.6.2 preview builds and loads, but there is no new full-suite result for these versions. The 0.6.3 change adds redistribution notices and contact/update documentation; it does not change editor behavior. In particular, the interaction styling's enable/disable/destroy behavior has not received a fresh browser pass. Native zoom/save observations above and logic tests have narrower, explicitly stated coverage.
+
+## Redistribution notices
+
+Community installation downloads only `main.js`, `manifest.json` and `styles.css`. The 0.6.3 build embeds complete project/dependency notices in the JavaScript file and the complete font license in the stylesheet. A build-level regression checks the delivered files rather than relying on extra ZIP attachments.
 
 ## Automated regression coverage
 
@@ -61,4 +65,4 @@ For native integration, install the compiled plugin into a disposable Obsidian v
 
 ## 中文摘要
 
-当前版本的类型检查、155 项逻辑测试和生产构建通过。原生操作在 macOS / Obsidian 1.14.4 主窗口与独立测试库中验证；四张演示截图来自实际应用。此版本没有新完成浏览器组件全套复测，未验证的平台与交互范围已在上文列出。开发预览地址只用于开发者自己的电脑，普通用户无需启动或访问。
+当前版本的类型检查、156 项自动测试和生产构建通过。原生操作在 macOS / Obsidian 1.14.4 主窗口与独立测试库中验证；四张演示截图来自实际应用。0.6.3 补充程序文件内的完整许可通知及联系、更新说明；原生操作和截图为 0.6.2 基线。此版本没有新完成浏览器组件全套复测，未验证的平台与交互范围已在上文列出。开发预览地址只用于开发者自己的电脑，普通用户无需启动或访问。
