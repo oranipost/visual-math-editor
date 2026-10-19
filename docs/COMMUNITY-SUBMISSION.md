@@ -2,9 +2,9 @@
 
 [English README](../README.md) · [中文说明](../README.zh-CN.md) · [发布维护](../RELEASING.md)
 
-资料核对日期：2026-10-18。上一次核对[社区目录页面](https://community.obsidian.md/plugins/visual-math-editor)时，**0.6.3 官方审核 Completed（已完成）**，结论为 **Review Satisfactory（审核满意）**，**Add to Obsidian** 按钮已启用。**当前源码准备版本为 0.6.4，尚未运行该版本的官方发行版检查；0.6.3 的结论不能直接延用。**推荐从目录入口安装获准版本；GitHub Release 安装 ZIP 继续作为手动安装选项。目录入口启用与完成原生安装测试是不同观察，后者以 [TEST-REPORT.md](../TEST-REPORT.md) 中实际记录为准。
+资料核对日期：本地 2026-10-18；当前目录审核页面日期为 **2026-10-19 UTC**。[0.6.4 已作为普通 latest GitHub Release 发布](https://github.com/oranipost/visual-math-editor/releases/tag/0.6.4)，六个下载附件的构建来源证明均已验证。[社区目录页面](https://community.obsidian.md/plugins/visual-math-editor)的 **0.6.4 审核目前为 Pending（待完成）**，尚无最终结论。历史 0.6.3 官方审核为 **Completed / Review Satisfactory**，不能直接延用至本版。GitHub Release 安装 ZIP 可用于手动安装；目录入口启用与完成原生安装测试是不同观察，后者以 [TEST-REPORT.md](../TEST-REPORT.md) 中实际记录为准。
 
-同日检查原生 **Browse**，本插件搜索结果为 0；**Check for updates** 未提供更新。只读检查官方 [`community-plugins.json`](https://github.com/obsidianmd/obsidian-releases/blob/master/community-plugins.json) 也尚未发现 `visual-math-editor`。因此目前不能声称已从原生社区目录安装成功；遇到这一情况应等待安装索引同步，或使用[手动 ZIP 安装](INSTALLATION.md)。本次 0.6.3 原生三模式与再次编辑验证使用了手动替换安装。
+此前原生 **Browse** 实测结果为 0，**Check for updates** 未提供更新。最新获取的官方 [`community-plugins.json`](https://github.com/obsidianmd/obsidian-releases/blob/master/community-plugins.json) 含 **9,116 条**记录，仍未包含 `visual-math-editor`。官方仓库[安装机制](https://github.com/obsidianmd/obsidian-releases#how-community-plugins-are-pulled)说明应用使用该列表搜索，网站展示和应用索引可用性需分别核对。Obsidian [官方上线公告](https://obsidian.md/blog/future-of-plugins/)说明，项目审核通过后会在 **24 小时内**进入应用搜索与下载；这不是本条目已同步的证明，也不保证确切同步时刻。若通过审核超过 24 小时仍无结果，应向官方反馈。原生编辑验证通过[手动安装](INSTALLATION.md)完成，不能声称已从原生社区目录安装成功。
 
 ## 0.6.3 官方审核观察
 
@@ -21,17 +21,19 @@
 
 这些提醒已结合源码复核，该次检查没有要求立即修改运行时代码的阻断项；若官方后续给出具体修改要求，仍须处理。本记录属于 **0.6.3 官方目录审核**；[CODE-REVIEW.md](CODE-REVIEW.md) 独立保留 **0.6.2 使用官方 lint 工具进行的本地前置检查**，两者不能互相替代。
 
-## 0.6.4 改进与待验证事项
+## 0.6.4 发行与审核跟进
 
-0.6.4 针对上述提醒调整界面与发行流程，当前尚无该版本的官方检查结果：
+0.6.4 针对上述提醒调整界面与发行流程。GitHub 发行版已公开，官方目录审核于 **2026-10-19 UTC** 显示 **Pending**，检查仍在进行，尚无最终审核结果：
 
 - 标准 HTML/SVG 使用 Obsidian 提供的创建辅助方法；独立浏览器预览保留兼容回退，MathLive 仍使用已注册的自定义元素。预览样式改按插件类名限定，调整隐藏状态与减少动画规则的顺序和选择器，不依赖 `!important`。
 - 命令名称和界面语言无障碍标签按所选支持语言显示；仍仅支持英语和简体中文，未扩展科学工具或平台范围。
 - 用户主动剪切、复制、粘贴功能继续保留；没有新增后台剪贴板读取或 MathLive 补丁。该依赖所带的主动剪贴板 API 仍可能触发用途告知，不能在未经复审时宣称相关提示已消失。
-- 发布流程已准备固定 SHA 的官方 GitHub 来源证明 Action，并要求在同名版本标签上构建。只有托管流程实际完成、下载文件验证通过后，才能记录该版本已有来源证明；目前只是流程准备。
+- 固定 SHA 的官方 GitHub 来源证明 Action 已在同名版本标签上运行成功：[发布流程 39179067951](https://github.com/oranipost/visual-math-editor/actions/runs/39179067951)。六个附件均通过下载后的来源证明验证，并核对准确源码提交、标签和签名工作流。独立程序附件与安装 ZIP、本地构建、已安装程序逐字节一致，详见 [TEST-REPORT.md](../TEST-REPORT.md)。
 - 新发行版不再重复上传独立许可证附件；完整条款保留在程序文件与 ZIP。手动安装/源码 ZIP 和校验文件保留，目录仍可能提示这些属于安装器不使用的额外附件。
 
-本地测试结果与原生验证只记入 [TEST-REPORT.md](../TEST-REPORT.md)。发布后须查看 0.6.4 的实际目录扫描反馈；不能把本地通过、GitHub 发布或历史 0.6.3 结论写成该版本已获官方通过。
+目前扫描已将 `main.js`、`styles.css` 的 **verified GitHub artifact attestation** 列为 **Pass**，额外附件建议仅列出 `SHA256SUMS.txt` 和两个 ZIP。其他检查尚在运行；这两项 Pass 不表示整版已通过审核。
+
+本地测试、托管发行验证与原生观察分别记入 [TEST-REPORT.md](../TEST-REPORT.md)。继续以 0.6.4 的实际目录扫描结果为准；不能把本地通过、GitHub 发布、个别检查 Pass 或历史 0.6.3 结论写成该版本已获官方通过。
 
 ## 当前应该在哪里提交
 
@@ -40,7 +42,7 @@ Obsidian 当前的[官方提交指南](https://docs.obsidian.md/Plugins/Releasin
 流程如下：
 
 1. 在 GitHub 公开源代码，仓库根目录放好 `README.md`、`LICENSE`、`manifest.json`。
-2. 发布与 manifest 版本号完全一致的 GitHub Release。本次准备版本为 **`0.6.4`**，tag 也必须是 **`0.6.4`**，不要加 `v`。
+2. 发布与 manifest 版本号完全一致的 GitHub Release。当前发行版为 **`0.6.4`**，tag 为 **`0.6.4`**，不要加 `v`。
 3. Release 附件单独上传 **`main.js`、`manifest.json`、`styles.css`**；安装 ZIP 和源码 ZIP 是额外的便利下载，不能替代这三个单独附件。
 4. 在社区网站登录 Obsidian 账号，在个人资料的 **GitHub → Connect** 关联 `oranipost`。这是网站用来验证仓库所有权的步骤。
 5. 进入侧栏 **Plugins → New plugin**，填入仓库 URL，Owner 选择自己，阅读开发者政策与维护承诺后提交。
@@ -57,7 +59,7 @@ Obsidian 当前的[官方提交指南](https://docs.obsidian.md/Plugins/Releasin
 | ID | `visual-math-editor` |
 | Author | `Dongfang Wang` |
 | Author URL | `https://github.com/oranipost` |
-| Version / release tag | `0.6.4`（当前准备版本；官方扫描尚未运行） |
+| Version / release tag | `0.6.4`（GitHub 已发布；2026-10-19 UTC 官方审核 Pending） |
 | Minimum Obsidian version | `1.14.4` |
 | Platforms | Desktop only；目前实际验证 macOS，Windows / Linux 尚未做原生应用测试 |
 | License | MIT；依赖与字体遵循各自许可证，见 [Third-party notices](../THIRD-PARTY-NOTICES.md) |

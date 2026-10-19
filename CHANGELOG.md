@@ -7,11 +7,11 @@ This file records version changes. Builds before 0.6.2 were local MVP releases; 
 - Use Obsidian's DOM creation helpers where available, with a fallback for the standalone browser preview and the registered MathLive custom element.
 - Scope MathLive preview styling through plugin classes and preserve hidden controls and reduced-motion behavior without CSS `!important` overrides.
 - Localize command names and the interface-language accessibility label to the selected supported language.
-- Prepare signed GitHub build provenance for the three runtime files and manual-download assets, with a pinned official action and an exact-tag workflow guard. The hosted workflow and downloaded-asset verification must succeed before provenance is reported as available.
+- Provide signed GitHub build provenance for the three runtime files and manual-download assets, with a pinned official action and an exact-tag workflow guard. The hosted release workflow succeeded and all six downloaded assets' provenance was verified against the exact source commit, tag and signing workflow; see [TEST-REPORT.md](TEST-REPORT.md).
 - Stop duplicating standalone license attachments in new releases; complete notices remain embedded in the runtime files and included in both ZIPs. Keep manual installation/source downloads and checksums available.
 - Preserve user-initiated equation cut/copy/paste and the documented absence of background clipboard monitoring; no clipboard feature is removed and no new MathLive compatibility patch is added.
 
-The 0.6.3 directory review is historical evidence for that version. Version 0.6.4 needs its own release scan; the changes above do not by themselves establish official approval. Actual tests and remaining limits are recorded separately in [TEST-REPORT.md](TEST-REPORT.md).
+Version 0.6.4 is published as the latest ordinary GitHub Release. Its community-directory review is **Pending**; the completed 0.6.3 review remains historical evidence for that version. The release and changes above do not establish official approval. Actual tests and remaining limits are recorded separately in [TEST-REPORT.md](TEST-REPORT.md).
 
 ## 0.6.3 — 2026-10-18
 

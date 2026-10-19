@@ -7,18 +7,18 @@
 ### Requirements and download
 
 - Obsidian **1.14.4 or later**, desktop main window. Native integration was checked on macOS with 1.14.4; other desktop systems have not been verified.
-- Recommended: [install from the community directory](https://community.obsidian.md/plugins/visual-math-editor). A [0.6.4 installation ZIP](https://github.com/oranipost/visual-math-editor/releases/download/0.6.4/visual-math-editor-0.6.4.zip) is also available for manual installation.
+- [Install from the community directory](https://community.obsidian.md/plugins/visual-math-editor) when the entry is available in the app's index. The published [0.6.4 installation ZIP](https://github.com/oranipost/visual-math-editor/releases/download/0.6.4/visual-math-editor-0.6.4.zip) is available for manual installation now.
 - You do **not** need Node.js, npm, an account or an API key to use the compiled plugin.
 
-The historical official 0.6.3 review is **Completed**, with **Review Satisfactory**, and the directory enabled **Add to Obsidian** for that version. The new 0.6.4 release scan has not yet run, so the previous result does not approve this update. This records directory observations, not a completed native installation test; see [review observations](COMMUNITY-SUBMISSION.md) and [TEST-REPORT.md](../TEST-REPORT.md) for their separate scopes. **Code → Download ZIP**, `visual-math-editor-source-0.6.4.zip` and GitHub's automatic **Source code** downloads are for developers; they are not the ready-to-install plugin.
+The historical official 0.6.3 review is **Completed**, with **Review Satisfactory**. Version **0.6.4 is published on GitHub**, with all six download assets' build provenance verified; its community-directory review is **Pending**. The previous review does not approve this update. This records directory observations, not a completed native installation test; see [review observations](COMMUNITY-SUBMISSION.md) and [TEST-REPORT.md](../TEST-REPORT.md) for their separate scopes. **Code → Download ZIP**, `visual-math-editor-source-0.6.4.zip` and GitHub's automatic **Source code** downloads are for developers; they are not the ready-to-install plugin.
 
-### Community-directory installation (recommended)
+### Community-directory installation (when available)
 
 1. Open the [Visual Math Editor directory page](https://community.obsidian.md/plugins/visual-math-editor) and click **Add to Obsidian**. Allow the browser to open Obsidian and choose the intended vault if prompted.
 2. In Obsidian's plugin details, choose **Install**, then **Enable**. Enable community plugins in **Settings → Community plugins** first if required.
 3. Open a Markdown note and click **∑** in the note header or left ribbon.
 
-At the **2026-10-18** check, the website's **Add to Obsidian** button was enabled, but native **Browse** returned no result and the official installation index did not yet include `visual-math-editor`; **Check for updates** also offered no update. If the details page cannot be found, wait for index synchronization or use the manual ZIP procedure below. The successful 0.6.3 native editing checks used that manual procedure; directory installation has not been completed in this report.
+At the **2026-10-18** check, the latest fetch of the official installation index still lacked `visual-math-editor`; the earlier native **Browse** and **Check for updates** checks had offered no result. Use the manual ZIP procedure below while it is unavailable. Obsidian's [official announcement](https://obsidian.md/blog/future-of-plugins/) says a project that passes review becomes searchable and downloadable in the app within 24 hours. If it remains absent more than 24 hours after a passing review, report the discrepancy to Obsidian; this guide does not confirm an exact synchronization time for this entry. Successful native editing checks used manual installation; directory installation has not been completed in this report.
 
 ### Manual installation
 
@@ -99,18 +99,18 @@ Developer: [Dongfang Wang / oranipost](https://github.com/oranipost). Public fee
 ### 要求与下载
 
 - Obsidian **1.14.4 或更新版本**，目前支持桌面主窗口。原生测试使用 macOS 与 1.14.4，其他桌面系统尚未验证。
-- 推荐[从社区目录安装](https://community.obsidian.md/plugins/visual-math-editor)；也可下载 [0.6.4 安装 ZIP](https://github.com/oranipost/visual-math-editor/releases/download/0.6.4/visual-math-editor-0.6.4.zip) 手动安装。
+- 插件进入应用索引后可[从社区目录安装](https://community.obsidian.md/plugins/visual-math-editor)；目前可下载已发布的 [0.6.4 安装 ZIP](https://github.com/oranipost/visual-math-editor/releases/download/0.6.4/visual-math-editor-0.6.4.zip) 手动安装。
 - 使用编译好的插件**不需要** Node.js、npm、账号或 API 密钥。
 
-历史记录中，0.6.3 官方审核状态为 **Completed（已完成）**，结论为 **Review Satisfactory（审核满意）**，目录曾为该版本启用 **Add to Obsidian**。0.6.4 尚未运行新的官方发行版检查，旧结果不代表本次更新已通过。这记录的是目录观察，不表示完成了原生安装实测；两类观察分别见[审核记录](COMMUNITY-SUBMISSION.md)和 [TEST-REPORT.md](../TEST-REPORT.md)。**Code → Download ZIP**、`visual-math-editor-source-0.6.4.zip` 和 GitHub 自动生成的 **Source code** 均是开发源码，需要自行构建。
+历史记录中，0.6.3 官方审核状态为 **Completed（已完成）**，结论为 **Review Satisfactory（审核满意）**。**0.6.4 已在 GitHub 发布**，六个下载附件的构建来源证明均已验证；该版社区目录审核目前为 **Pending（待完成）**，旧结果不代表本次更新已通过。这记录的是目录观察，不表示完成了原生安装实测；两类观察分别见[审核记录](COMMUNITY-SUBMISSION.md)和 [TEST-REPORT.md](../TEST-REPORT.md)。**Code → Download ZIP**、`visual-math-editor-source-0.6.4.zip` 和 GitHub 自动生成的 **Source code** 均是开发源码，需要自行构建。
 
-### 社区目录安装（推荐）
+### 社区目录安装（索引可用后）
 
 1. 打开 [Visual Math Editor 目录页面](https://community.obsidian.md/plugins/visual-math-editor)，点击 **Add to Obsidian**，允许浏览器打开 Obsidian；出现选择时使用目标笔记库。
 2. 在 Obsidian 插件详情中点击 **Install（安装）**，再点 **Enable（启用）**。需要时先在 **设置 → 第三方插件** 中开启社区插件。
 3. 打开 Markdown 笔记，点击笔记右上角或左侧工具栏的 **∑**。
 
-**2026-10-18** 核对时，网站的 **Add to Obsidian** 已启用，但原生 **Browse** 搜索尚无结果，官方安装索引也尚未包含 `visual-math-editor`；**检查更新** 同样未提供更新。如果详情页暂时找不到，请等待索引同步，或使用下方手动 ZIP 安装。本次 0.6.3 原生编辑实测通过的是手动安装路径，尚未完成原生社区目录安装。
+**2026-10-18** 最新获取的官方安装索引仍未包含 `visual-math-editor`；此前原生 **Browse** 和 **检查更新** 实测也未提供结果。暂不可用时请使用下方手动 ZIP 安装。Obsidian [官方公告](https://obsidian.md/blog/future-of-plugins/)说明，项目审核通过后会在 24 小时内进入应用搜索与下载。若通过审核超过 24 小时仍无结果，应向 Obsidian 反馈；本说明不保证本条目的确切同步时间。成功的原生编辑实测通过手动安装完成，尚未完成原生社区目录安装。
 
 ### 手动安装
 
