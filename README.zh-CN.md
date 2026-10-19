@@ -37,7 +37,7 @@
 
 **[打开 Obsidian 社区插件目录页面](https://community.obsidian.md/plugins/visual-math-editor)。** 插件进入应用安装索引后，点击 **Add to Obsidian**，允许链接打开 Obsidian，再在插件详情中选择 **Install（安装）→ Enable（启用）**。打开 Markdown 笔记，点击右上角或左侧工具栏的 **∑**。目录安装入口启用与完成原生安装实测是不同观察，实际测试以 [TEST-REPORT.md](TEST-REPORT.md) 为准。
 
-**0.8.0 发布前核对的目录与安装状态：** 最近已验证的目录审核对应 0.7.0，不表示 0.8.0 已获通过；官方安装索引包含 `visual-math-editor`，本次检查的索引名称仍为 **Visual Math Editor**。索引中存在条目与完成应用内商城安装是两类观察。现有 Personal vault 已从 0.7.0 ZIP 手动升级，设置与原有演示笔记字节一致，原生 About 显示 0.7.0；升级检查中打开了 Hybrid `y=x/2` 联动预览，但未保存新图。本次尚未完成原生社区目录安装，详见测试记录。
+**目录与安装状态（2026-10-18，America/Chicago）：** 0.8.0 / cd28d52 审核已 **Completed**，公开目录显示 **Current version 0.8.0 / Health Excellent / Review Satisfactory**，保留一项代码警告及三项建议。具体检查及限制见 [TEST-REPORT.md](TEST-REPORT.md)。此前核对的官方安装索引包含 `visual-math-editor`，名称仍为 **Visual Math Editor**；本次尚未完成 0.8.0 原生社区目录安装。用户现有 Personal vault 仍为手动安装的 0.7.0，目录发布不会自动升级本地插件。
 
 ### 手动安装
 

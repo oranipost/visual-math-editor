@@ -66,7 +66,7 @@ async function fixture(): Promise<string> {
   await write(root, 'versions.json', { [version]: '1.5.0' });
   await write(root, 'dist/manifest.json', manifest);
   for (const file of ['main.js', 'styles.css', 'MATHLIVE-LICENSE.txt']) await write(root, `dist/${file}`, 'build fixture');
-  for (const file of ['README.md', 'README.zh-CN.md', 'README.en.md', 'MVP.md', 'TEST-REPORT.md', 'LICENSE', 'MATHLIVE-LICENSE.txt', 'KATEX-FONTS-LICENSE.txt', 'MHCHEM-LICENSE.txt', 'CONVERT-LICENSE.txt', 'THIRD-PARTY-NOTICES.md', 'CONTRIBUTING.md', 'SECURITY.md', 'CHANGELOG.md', 'RELEASING.md', 'LANGUAGE-SUPPORT.md', 'ELEMENT-DATA-SOURCES.json', 'tsconfig.json', 'styles.css', '.gitignore', 'docs/INSTALLATION.md', 'docs/COMMUNITY-SUBMISSION.md', 'docs/images/example.jpg']) {
+  for (const file of ['README.md', 'README.zh-CN.md', 'README.en.md', 'README.es.md', 'MVP.md', 'TEST-REPORT.md', 'LICENSE', 'MATHLIVE-LICENSE.txt', 'KATEX-FONTS-LICENSE.txt', 'MHCHEM-LICENSE.txt', 'CONVERT-LICENSE.txt', 'THIRD-PARTY-NOTICES.md', 'CONTRIBUTING.md', 'SECURITY.md', 'CHANGELOG.md', 'RELEASING.md', 'LANGUAGE-SUPPORT.md', 'ELEMENT-DATA-SOURCES.json', 'tsconfig.json', 'styles.css', '.gitignore', 'docs/INSTALLATION.md', 'docs/COMMUNITY-SUBMISSION.md', 'docs/images/example.jpg']) {
     await write(root, file, 'source fixture');
   }
   await write(root, 'LICENSING.md', projectLicense);
@@ -93,12 +93,14 @@ test('release archives include GitHub sources and licenses, exclude vault/settin
     assert.match(sourceEntries, /\.github\/workflows\/ci\.yml/);
     assert.match(sourceEntries, /MATHLIVE-LICENSE\.txt/);
     assert.match(sourceEntries, /README\.en\.md/);
+    assert.equal(archivedFile(root, source, 'visual-math-editor-source/README.es.md'), 'source fixture');
     assert.match(sourceEntries, /third-party-sources\/mathlive-0\.111\.1-source\.tar\.gz/);
     assert.match(sourceEntries, /third-party-sources\/convert-8\.0\.2-npm\.tgz/);
     assert.equal(archivedFile(root, source, 'visual-math-editor-source/LICENSING.md'), projectLicense);
     assert.equal(archivedFile(root, installer, 'visual-math-editor/LICENSING.md'), projectLicense);
     assert.doesNotMatch(sourceEntries, /removed\.txt|private-note|data\.json|\.env|\.obsidian|node_modules/);
     assert.match(entries(root, installer), /README\.en\.md/);
+    assert.equal(archivedFile(root, installer, 'visual-math-editor/README.es.md'), 'source fixture');
     assert.match(entries(root, installer), /LANGUAGE-SUPPORT\.md/);
     assert.match(entries(root, installer), /README\.zh-CN\.md/);
     assert.match(entries(root, installer), /docs\/INSTALLATION\.md/);

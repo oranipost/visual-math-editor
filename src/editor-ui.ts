@@ -4,7 +4,7 @@ import { validateLatexSource } from './source-validation';
 import { mountScienceTools, type ScienceDraft } from './science-ui';
 import { localizeEditor, type Language } from './i18n';
 import { mountPlotTools, type PlotDraft } from './plot-ui';
-import { expressionFromLatex, graphFromLatex } from './plot-latex';
+import { graphFromLatex } from './plot-latex';
 import type { PlotSpec } from './plot-engine';
 import { createHtml, createSvgElement } from './dom';
 import { mountShortcutTools } from './shortcuts-ui';

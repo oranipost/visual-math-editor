@@ -24,7 +24,7 @@ export function parsePlotSpec(source: string): PlotSpec {
       spec.calculus = record[key] as PlotSpec['calculus'];
     } else {
       if (typeof record[key] !== 'number' || !Number.isFinite(record[key])) throw new Error('Invalid graph settings.');
-      spec[key] = record[key] as number;
+      spec[key] = record[key];
     }
   }
   const allowed = spec.mode === 'surface' ? ['zMin', 'zMax', 'azimuth', 'elevation']
