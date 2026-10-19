@@ -27,7 +27,7 @@ class AboutVisualMath extends Modal {
   constructor(private plugin: VisualMathEditor) { super(plugin.app); }
   onOpen(): void {
     this.setTitle('Visual Math');
-    this.contentEl.createEl('p', { text: `Visual Math ${this.plugin.manifest.version}` });
+    this.contentEl.createEl('p', { text: `${this.plugin.manifest.name} ${this.plugin.manifest.version} · ${this.plugin.manifest.author}` });
     this.contentEl.createEl('p', { text: 'Copyright (c) 2026 Dongfang Wang' });
     this.contentEl.createEl('p', { text: this.plugin.text('本插件采用 GNU GPLv3 许可，不提供任何担保。你可按许可使用、修改与再分发。笔记内容不受此许可约束。') });
     const license = this.contentEl.createEl('a', { text: this.plugin.text('查看许可与第三方声明') });

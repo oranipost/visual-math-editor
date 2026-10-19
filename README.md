@@ -6,6 +6,10 @@ Write **math, chemistry and physics notes** directly inside Obsidian with **Visu
 
 Built for quick science notes: optional chemical balance suggestions, physics templates, a periodic table, offline unit conversion, function graphs and a Re/Im complex plane. Everything runs locally without an account or runtime network connection.
 
+## 0.8.2 — Display name and developer
+
+The next metadata update uses **Visual Math / Oliver** in installed plugin details and public developer bylines. The plugin ID remains `visual-math-editor`. Community search follows a separately synchronized index; release and verification status are recorded in [TEST-REPORT.md](TEST-REPORT.md).
+
 ## 0.8.1 — Maintenance update
 
 Removes the unnecessary type assertion and unused import reported by the 0.8.0 directory scan, and includes complete Spanish documentation in both packages. Polar/XYZ graph features and saved formats are unchanged. See the [0.8.1 release page](https://github.com/oranipost/visual-math-editor/releases/tag/0.8.1) for availability and [TEST-REPORT.md](TEST-REPORT.md) for actual verification.
@@ -186,7 +190,7 @@ The repository includes Node.js 22/24 CI and packaging checks. A separate manual
 
 ## Feedback and contributions
 
-Developer: [Dongfang Wang / oranipost](https://github.com/oranipost). For private contact, email [oranipost@outlook.com](mailto:oranipost@outlook.com). GitHub profiles do not provide direct messages; use email for private enquiries and [Issues](https://github.com/oranipost/visual-math-editor/issues) for public feedback.
+Developer: [Oliver / oranipost](https://github.com/oranipost). For private contact, email [oranipost@outlook.com](mailto:oranipost@outlook.com). GitHub profiles do not provide direct messages; use email for private enquiries and [Issues](https://github.com/oranipost/visual-math-editor/issues) for public feedback.
 
 Report a problem through the [bug report form](https://github.com/oranipost/visual-math-editor/issues/new?template=bug_report.yml). Include your plugin/Obsidian versions, operating system, view mode, a small invented input and reproduction steps. English, Simplified Chinese and Spanish are welcome. Do not attach a real vault, private notes or settings. Use the [feature request form](https://github.com/oranipost/visual-math-editor/issues/new?template=feature_request.yml) for suggestions.
 

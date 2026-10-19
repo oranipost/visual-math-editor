@@ -1,6 +1,10 @@
 # GitHub and release preparation
 
-## 0.8.1 release target
+## 0.8.2 release target
+
+Display metadata update to **Visual Math / Oliver**. The plugin ID, storage, graph behavior and legal notices remain compatible. Release assets, native installed metadata and community search synchronization must be checked separately; do not overwrite earlier releases.
+
+## 0.8.1 release record
 
 Maintenance patch for the unnecessary type assertion, unused import, strict enum guards and manifest punctuation. Includes complete Spanish documentation in both archives. Local verification passed 194 automated tests, 368 browser component checks and focused native polar/XYZ insertion, navigation, explicit Save view, application restart and editor reopening on macOS with Obsidian 1.14.4. The local official-rule scan has zero source errors, three reviewed sentence-case warnings and zero manifest findings. Final hosted checks and the 0.8.1 directory review remain separate; see [TEST-REPORT.md](TEST-REPORT.md). Historical tags/assets must remain unchanged.
 
@@ -26,7 +30,7 @@ Do not rewrite a historical tag or replace 0.6.5/earlier MIT artifacts to apply 
 
 ## Before publishing
 
-1. Confirm the owner, repository name and maintainer identity against `manifest.json`, `LICENSE`, README links and repository settings. The maintainer is Dongfang Wang (`oranipost`).
+1. Confirm the owner, repository name and maintainer identity against `manifest.json`, `LICENSE`, README links and repository settings. The public maintainer name is Oliver (`oranipost`); legal copyright attribution remains Dongfang Wang.
 2. Inspect the exact staged files. `.gitignore` excludes local research, dependencies, generated builds, settings and vault directories, but already tracked files must still be reviewed.
 3. Review `README.md`, `MVP.md`, `TEST-REPORT.md`, third-party notices and the element-data provenance. Confirm every feature, test claim and compatibility claim against the current build.
 4. Decide the supported minimum Obsidian version from evidence. The current minimum is **1.14.4**, the version tested natively on macOS. It does not establish Windows/Linux or newer-version coverage.

@@ -101,7 +101,7 @@ To remove the plugin, save drafts, disable it in Community plugins, then remove 
 
 For unresolved problems, use the [bug report form](https://github.com/oranipost/visual-math-editor/issues/new?template=bug_report.yml) with an invented example, versions and exact steps. Do not attach private notes or your entire vault.
 
-Developer: [Dongfang Wang / oranipost](https://github.com/oranipost). Public feedback: [GitHub Issues](https://github.com/oranipost/visual-math-editor/issues). Private contact: [oranipost@outlook.com](mailto:oranipost@outlook.com). GitHub profiles do not provide direct messages.
+Developer: [Oliver / oranipost](https://github.com/oranipost). Public feedback: [GitHub Issues](https://github.com/oranipost/visual-math-editor/issues). Private contact: [oranipost@outlook.com](mailto:oranipost@outlook.com). GitHub profiles do not provide direct messages.
 
 ## 简体中文
 
@@ -182,4 +182,4 @@ macOS 的 Finder 可按 **⌘⇧.** 显示隐藏文件；Windows 文件资源管
 
 仍有问题时请用 [问题反馈表](https://github.com/oranipost/visual-math-editor/issues/new?template=bug_report.yml)，提供独立示例、版本和重现步骤；不要上传私人笔记或整个 vault。
 
-开发者：[Dongfang Wang / oranipost](https://github.com/oranipost)。公开反馈：[GitHub Issues](https://github.com/oranipost/visual-math-editor/issues)。私下联系：[oranipost@outlook.com](mailto:oranipost@outlook.com)。GitHub 普通个人主页没有私信功能。
+开发者：[Oliver / oranipost](https://github.com/oranipost)。公开反馈：[GitHub Issues](https://github.com/oranipost/visual-math-editor/issues)。私下联系：[oranipost@outlook.com](mailto:oranipost@outlook.com)。GitHub 普通个人主页没有私信功能。

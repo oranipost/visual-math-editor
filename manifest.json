@@ -1,10 +1,10 @@
 {
   "id": "visual-math-editor",
   "name": "Visual Math",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "minAppVersion": "1.14.4",
   "description": "Write math, chemistry and physics notes visually without learning LaTeX. Plot functions, polar curves and 3D surfaces. Explore calculus and convert units offline.",
-  "author": "Dongfang Wang",
+  "author": "Oliver",
   "isDesktopOnly": true,
   "authorUrl": "https://github.com/oranipost"
 }

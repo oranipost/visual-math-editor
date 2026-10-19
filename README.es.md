@@ -4,6 +4,10 @@
 
 Escribe apuntes de **matemáticas, química y física en Obsidian** sin aprender LaTeX. Visual Math ofrece edición visual, código LaTeX y un modo Hybrid sincronizado. Las fórmulas se guardan como LaTeX/Markdown; funciona localmente, sin cuenta ni conexión.
 
+## 0.8.2: nombre y autor
+
+La próxima actualización de metadatos usa **Visual Math / Oliver**. El identificador sigue siendo `visual-math-editor`. La búsqueda del catálogo se sincroniza por separado; consulta [TEST-REPORT.md](TEST-REPORT.md) para conocer el estado de publicación y verificación.
+
 ## 0.8.1: mantenimiento
 
 Elimina una aserción de tipo innecesaria y una importación sin usar detectadas en 0.8.0. Ambos paquetes incluyen este README en español. Conserva las gráficas polares/XYZ y los formatos guardados. Consulta la [versión 0.8.1](https://github.com/oranipost/visual-math-editor/releases/tag/0.8.1) y el [informe de pruebas](TEST-REPORT.md) para conocer disponibilidad y verificaciones reales.
@@ -65,4 +69,4 @@ No hay telemetría ni vigilancia del portapapeles. El acceso al portapapeles res
 
 Desde 0.7.0, el código nuevo y la distribución usan [GPLv3-only con una excepción limitada para Obsidian](LICENSING.md). Permite uso comercial conforme a GPL y exige el código fuente correspondiente al distribuir modificaciones cubiertas. No convierte tus notas en GPL. Los permisos MIT anteriores hasta 0.6.5 siguen vigentes; se conservan las [licencias de terceros](THIRD-PARTY-NOTICES.md).
 
-Desarrollador: [Dongfang Wang / oranipost](https://github.com/oranipost). [Comunica problemas](https://github.com/oranipost/visual-math-editor/issues) indicando versiones, sistema y ejemplo mínimo, sin notas privadas. Contacto: [oranipost@outlook.com](mailto:oranipost@outlook.com).
+Desarrollador: [Oliver / oranipost](https://github.com/oranipost). [Comunica problemas](https://github.com/oranipost/visual-math-editor/issues) indicando versiones, sistema y ejemplo mínimo, sin notas privadas. Contacto: [oranipost@outlook.com](mailto:oranipost@outlook.com).

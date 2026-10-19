@@ -6,6 +6,10 @@
 
 内置化学式与可选配平建议、物理模板、离线单位换算、118 元素表、函数图像和 Re / Im 复平面。全部本地运行，无需账号或运行时网络。
 
+## 0.8.2 — 名称与开发者显示
+
+下一项元数据更新统一显示为 **Visual Math / Oliver**，插件 ID 继续使用 `visual-math-editor`。社区搜索由独立索引同步；发布与实测状态见 [TEST-REPORT.md](TEST-REPORT.md)。
+
 ## 0.8.1 — 维护更新
 
 修复 0.8.0 目录扫描指出的多余类型声明与未使用导入，并把完整西班牙语说明加入安装包和源码包。极坐标、XYZ 等功能和保存格式保持兼容；公开状态以 [0.8.1 发行页](https://github.com/oranipost/visual-math-editor/releases/tag/0.8.1) 为准，实际验证见 [TEST-REPORT.md](TEST-REPORT.md)。
@@ -224,7 +228,7 @@ npm run preview
 
 ## 反馈、贡献与社区插件目录
 
-开发者：[Dongfang Wang / oranipost](https://github.com/oranipost)。私下联系请发邮件至 [oranipost@outlook.com](mailto:oranipost@outlook.com)；公开反馈可使用 [GitHub Issues](https://github.com/oranipost/visual-math-editor/issues)。GitHub 普通个人主页没有私信功能。
+开发者：[Oliver / oranipost](https://github.com/oranipost)。私下联系请发邮件至 [oranipost@outlook.com](mailto:oranipost@outlook.com)；公开反馈可使用 [GitHub Issues](https://github.com/oranipost/visual-math-editor/issues)。GitHub 普通个人主页没有私信功能。
 
 请通过 [问题反馈](https://github.com/oranipost/visual-math-editor/issues/new?template=bug_report.yml) 提供插件版本、Obsidian 版本、操作系统、视图模式、最小公式和重现步骤。英语、简体中文和西班牙语均可。截图请只包含独立示例，不上传私人笔记、整个 vault 或设置文件。功能建议可用 [功能请求](https://github.com/oranipost/visual-math-editor/issues/new?template=feature_request.yml)。
 

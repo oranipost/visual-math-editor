@@ -43,7 +43,7 @@ The initial directory entry is submitted once. New releases are checked again by
 
 ### Contact
 
-Developer: [Dongfang Wang / oranipost](https://github.com/oranipost). Public feedback: [GitHub Issues](https://github.com/oranipost/visual-math-editor/issues). Private contact: [oranipost@outlook.com](mailto:oranipost@outlook.com). GitHub profiles do not provide direct messages. Please include plugin/app versions, your operating system and a small invented example, rather than private notes or an entire vault.
+Developer: [Oliver / oranipost](https://github.com/oranipost). Public feedback: [GitHub Issues](https://github.com/oranipost/visual-math-editor/issues). Private contact: [oranipost@outlook.com](mailto:oranipost@outlook.com). GitHub profiles do not provide direct messages. Please include plugin/app versions, your operating system and a small invented example, rather than private notes or an entire vault.
 
 ## 简体中文
 
@@ -76,7 +76,7 @@ Visual Math（原 Visual Math Editor）通过 GitHub 分发公开测试版。目
 
 ### 联系开发者
 
-开发者：[Dongfang Wang / oranipost](https://github.com/oranipost)。公开问题反馈：[GitHub Issues](https://github.com/oranipost/visual-math-editor/issues)。私下联系：[oranipost@outlook.com](mailto:oranipost@outlook.com)。GitHub 普通个人主页没有私信功能。反馈时请提供插件/应用版本、操作系统和独立示例，不发送私人笔记或整个笔记库。
+开发者：[Oliver / oranipost](https://github.com/oranipost)。公开问题反馈：[GitHub Issues](https://github.com/oranipost/visual-math-editor/issues)。私下联系：[oranipost@outlook.com](mailto:oranipost@outlook.com)。GitHub 普通个人主页没有私信功能。反馈时请提供插件/应用版本、操作系统和独立示例，不发送私人笔记或整个笔记库。
 
 ## Official references / 官方依据
 

@@ -12,7 +12,7 @@ Include the plugin and Obsidian versions, operating system, an invented minimal 
 
 For an ordinary display or usability defect, use the bug report template instead. For suspected note corruption, preserve a copy of the affected note before further testing and reproduce in a disposable vault.
 
-Maintainer: [Dongfang Wang / oranipost](https://github.com/oranipost). Public bug reports: [GitHub Issues](https://github.com/oranipost/visual-math-editor/issues). GitHub profiles do not provide direct messages; use the email address for private contact.
+Maintainer: [Oliver / oranipost](https://github.com/oranipost). Public bug reports: [GitHub Issues](https://github.com/oranipost/visual-math-editor/issues). GitHub profiles do not provide direct messages; use the email address for private contact.
 
 ## 简体中文
 

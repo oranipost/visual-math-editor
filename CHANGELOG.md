@@ -2,6 +2,12 @@
 
 This file records version changes. Builds before 0.6.2 were local MVP releases; 0.6.2 prepares the first public desktop beta. Publication status is shown on GitHub Releases. Neither a local package nor a public GitHub release implies Obsidian community-directory approval.
 
+## 0.8.2 — 2026-10-18 · Display metadata
+
+- Use **Visual Math / Oliver** consistently for the installed plugin and public developer bylines. The About dialog reads the display name and author from the manifest.
+- Preserve the stable `visual-math-editor` ID, saved notes, settings, legal copyright attribution and third-party notices.
+- Community search uses a separately synchronized official index. A corrected manifest or community page does not prove that every app search cache has refreshed.
+
 ## 0.8.1 — 2026-10-18 · Desktop public beta
 
 - Remove the unnecessary numeric type assertion in saved graph validation reported by the 0.8.0 community scan. Existing numeric and mode validation stays in place.

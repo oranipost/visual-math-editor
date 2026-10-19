@@ -1,5 +1,14 @@
 # Test report / 测试记录
 
+## 0.8.2 — display metadata verification (2026-10-18)
+
+The prepared manifest uses **Visual Math / Oliver**, and public developer bylines match. About reads the name and author from this manifest. The stable plugin ID and original legal notices are retained. This patch does not change graph logic or note formats.
+
+At preparation time, the community page and live community JSON export already show **Visual Math / Oliver**. The official GitHub mirror still shows **Visual Math Editor / Oliver**. The official mirror workflow imports the community export hourly; native app search must be checked after synchronization. Hosted release and community-scan outcomes remain separate.
+
+- **194 automated tests**, TypeScript checks, the production build and installation/source packaging passed. **368 browser component checks passed**; these use test memory, not a vault. The local official-rule check reports **0 source errors / 3 reviewed sentence-case warnings**, and **0 manifest errors or warnings**.
+- **Native macOS / Obsidian 1.14.4:** saved the pending graph view, made a recoverable backup, installed the checksum-matched 0.8.2 ZIP and restarted. Community plugin settings show **Visual Math v0.8.2 By Oliver**. About shows **Visual Math 0.8.2 · Oliver** and retains the legal copyright notice. The saved graph example and data.json remain byte-identical to the pre-upgrade backup. This is a focused metadata/manual-upgrade check, not a fresh app-catalog install or a new full graph acceptance test.
+
 ## 0.8.1 — maintenance verification (2026-10-18)
 
 This maintenance build removes the unnecessary type assertion and unused import reported by the 0.8.0 directory scan, uses explicit string guards for saved enum values, and retains compatible valid graph formats. Spanish documentation is included in both packages.
