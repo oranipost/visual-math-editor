@@ -1,6 +1,6 @@
 # Test report / 测试记录
 
-Prepared version: **0.6.5**, desktop public beta; local checks and focused native follow-up completed. Last publicly verified release: **0.6.4**. Updated: **2026-10-18**.
+Version: **0.6.5**, published desktop public beta; local, focused native and hosted-release checks completed. Community-directory scan queued. Updated: **2026-10-18**.
 
 This report distinguishes automated checks, browser components and native Obsidian integration. Passing one does not establish that the others passed. Public release status is shown on [GitHub Releases](https://github.com/oranipost/visual-math-editor/releases); community-directory approval is separate.
 
@@ -12,8 +12,15 @@ This report distinguishes automated checks, browser components and native Obsidi
 - The local official-rule source precheck recorded **0 errors and 1 known mathematical-variable sentence-case warning**.
 - The checksum-verified local 0.6.5 installation ZIP replaced the previous plugin with existing settings retained. After restarting the Personal vault in Obsidian 1.14.4 on macOS, the inline editor's native accessibility name was **Inline equation editor** in English, immediately changed to **笔记内公式编辑器** when Chinese was selected, and immediately returned to English when switched back. The final preference was English.
 - This focused native check did not insert or save the existing formula or empty draft. A separate byte comparison confirmed that the demonstration note and settings were unchanged from their pre-upgrade backup. Reading-mode hover hints and modal-dialog titles were code-reviewed but were not exercised in the native application in this follow-up.
-- No 0.6.5 public release, hosted provenance verification or community-directory review result is recorded yet.
-- 0.6.5 本地类型检查、159 项自动测试、生产构建和打包通过；完整浏览器组件检查 **295 项通过**，包含新增的 15 项真实 CodeMirror 多宿主语言、切换和草稿保留检查。源码扫描为 0 错误、1 项已知数学变量大小写提示。经校验的本地 ZIP 已替换安装并保留设置；重启后，原生正文外框名称在 English → 中文 → English 间立即正确切换，最终使用 English。本次未插入或保存公式/空草稿，另行逐字节核对演示笔记和设置与升级前备份一致；阅读模式悬停和弹窗标题仅做源码复核，未进行原生交互实测。托管发行、来源证明和官方目录审核尚未记录结果；下文 0.6.4 的 159/280 历史结果独立保留。
+- 0.6.5 本地类型检查、159 项自动测试、生产构建和打包通过；完整浏览器组件检查 **295 项通过**，包含新增的 15 项真实 CodeMirror 多宿主语言、切换和草稿保留检查。源码扫描为 0 错误、1 项已知数学变量大小写提示。经校验的本地 ZIP 已替换安装并保留设置；重启后，原生正文外框名称在 English → 中文 → English 间立即正确切换，最终使用 English。本次未插入或保存公式/空草稿，另行逐字节核对演示笔记和设置与升级前备份一致；阅读模式悬停和弹窗标题仅做源码复核，未进行原生交互实测。托管发行验证见下一节；官方目录扫描已排队，尚无本版最终审核结果。下文 0.6.4 的 159/280 历史结果独立保留。
+
+## 0.6.5 hosted release and directory follow-up
+
+- [Version 0.6.5](https://github.com/oranipost/visual-math-editor/releases/tag/0.6.5) is publicly available as an ordinary GitHub Release designated latest. [Release workflow 39180466984](https://github.com/oranipost/visual-math-editor/actions/runs/39180466984) succeeded, as did main-branch and version-tag CI on **Node.js 22 and 24**.
+- All **six downloaded assets** passed `gh attestation verify`: the three runtime files, both ZIPs and `SHA256SUMS.txt`. Verification required source commit **`c1338e7c2afd327d24702c9a746f90d721928aad`**, source ref **`refs/tags/0.6.5`**, signer workflow **`oranipost/visual-math-editor/.github/workflows/draft-release.yml`**, and rejection of self-hosted runners.
+- Both ZIPs passed their published SHA-256 checks. The three independent runtime attachments matched the installation ZIP, local production build and installed Personal-vault plugin byte-for-byte. Source-archive private-file boundary checks passed. An anonymous download of the public `manifest.json` also matched. The installed version was separately confirmed as 0.6.5; the demonstration note and settings remained byte-identical to the pre-upgrade backup.
+- After **Check for new releases**, the Obsidian management page reported **“Your manifest points at version 0.6.5. A scan has been queued.”** No final **0.6.5** directory-review result was available at this check. The completed 0.6.4 review below remains specific to that earlier version; publication and queued review do not establish native community-catalog installation.
+- 0.6.5 已作为普通 latest 发行版公开；发布工作流与 main/tag 的 Node.js 22/24 检查通过。六个附件的来源证明均按准确提交、标签、签名流程及拒绝自托管运行器要求验证成功；两个 ZIP 的校验值、独立附件/ZIP/本地构建/已安装程序字节、源码包私密文件边界及匿名 manifest 下载均核对通过。Obsidian 已确认 0.6.5 扫描排队，尚无该版最终审核结果。
 
 ## 0.6.4 checks and native follow-up
 
