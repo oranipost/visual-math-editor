@@ -23,7 +23,7 @@ for (const file of ["main.js", "styles.css"]) {
 const output = path.resolve(process.argv[2] ?? "release");
 const stage = path.resolve(".packaging");
 if (output === stage || output.startsWith(stage + path.sep)) throw new Error("Package output must be outside the staging directory");
-const docs = ["README.md", "README.zh-CN.md", "README.en.md", "LANGUAGE-SUPPORT.md", "MVP.md", "TEST-REPORT.md", "LICENSE", "LICENSING.md", "KATEX-FONTS-LICENSE.txt", "MHCHEM-LICENSE.txt", "CONVERT-LICENSE.txt", "THIRD-PARTY-NOTICES.md", "CONTRIBUTING.md", "SECURITY.md", "CHANGELOG.md", "RELEASING.md", "docs"];
+const docs = ["README.md", "README.zh-CN.md", "README.en.md", "README.es.md", "LANGUAGE-SUPPORT.md", "MVP.md", "TEST-REPORT.md", "LICENSE", "LICENSING.md", "KATEX-FONTS-LICENSE.txt", "MHCHEM-LICENSE.txt", "CONVERT-LICENSE.txt", "THIRD-PARTY-NOTICES.md", "CONTRIBUTING.md", "SECURITY.md", "CHANGELOG.md", "RELEASING.md", "docs"];
 const sourceInputs = [...docs, "MATHLIVE-LICENSE.txt", "third-party-sources", ".github", "src", "scripts", "dev", "tests", "ELEMENT-DATA-SOURCES.json", "package.json", "package-lock.json", "tsconfig.json", "manifest.json", "versions.json", "styles.css", ".gitignore"];
 async function checkSourceInput(file) {
   const info = await lstat(file);

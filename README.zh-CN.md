@@ -1,6 +1,6 @@
 # Visual Math
 
-[English](README.md) · 简体中文
+[English](README.md) · 简体中文 · [Español](README.es.md)
 
 **Visual Math（原名 Visual Math Editor）** 帮助你直接在 Obsidian 正文中快速记录**数学、化学和物理**内容。Visual 像 Word 一样填写分数、根号、上下标、积分和求和；**零 LaTeX 基础即可从可视化模式开始**。熟悉源码后可切换 LaTeX 或双向同步的 Hybrid 模式，后台仍保存标准 LaTeX/Markdown。
 

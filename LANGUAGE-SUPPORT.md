@@ -1,5 +1,7 @@
 # Language support
 
+Documentation: [English](README.md) · [简体中文](README.zh-CN.md) · [Español](README.es.md). The Spanish README covers installation, editing, graphing, numerical limits and feedback; interface language selection remains separate.
+
 ## 0.8.0 graph additions
 
 The 0.8.0 graph expansion keeps the same three languages: English, Simplified Chinese and Spanish. It adds translated polar/XYZ mode selectors, calculus controls, θ/integration/camera range labels, numerical-limit errors and scoped generated graph captions. It adds no additional language and does not claim fluent-speaker or every-platform validation; actual checks belong in [TEST-REPORT.md](TEST-REPORT.md).
