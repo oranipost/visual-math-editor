@@ -2,13 +2,17 @@
 
 [English README](../README.md) · [中文说明](../README.zh-CN.md) · [发布维护](../RELEASING.md)
 
-## 0.7.0 更名与发行准备
+## 0.7.0 当前发行与审核状态
 
 0.7.0 为 **Visual Math 桌面公开测试版**，保留既有 ID、目录地址和仓库 `visual-math-editor`。官方 [Manifest 说明](https://docs.obsidian.md/Reference/Manifest)允许通过修改 `name` 更新插件名称，但要求名称唯一并符合命名规则。2026-10-18 核对官方安装索引时，已有 `visual-math-editor` 条目仍名为 **Visual Math Editor**，索引中未发现另一个名称恰为 **Visual Math** 的插件；最终仍须通过目录命名校验。索引观察不表示已完成原生商城安装或新版审核。
 
 产品定位为：无需 LaTeX 基础即可开始的可视化数学、化学和物理笔记工具，支持三种编辑模式、当前公式下方的函数图像、离线科学工具和自定义公式快捷词。提供英语、简体中文和西班牙语；西班牙语元素搜索支持省略重音。联动只在当前编辑器中生效；保存后的公式与图像区块独立，修改公式须重新绘图或明确编辑已有图像。
 
-**下载可用性见 [GitHub Releases](https://github.com/oranipost/visual-math-editor/releases)，实际本地、原生、托管与发行结果见 [TEST-REPORT.md](../TEST-REPORT.md)。本版准备资料不预先宣称托管 CI、公开发行或目录审核已通过。** tag 使用 `0.7.0`，发行入口为 [0.7.0 Release](https://github.com/oranipost/visual-math-editor/releases/tag/0.7.0)。
+**[0.7.0 已作为 GitHub latest 发行版公开](https://github.com/oranipost/visual-math-editor/releases/tag/0.7.0)。** main／tag 的 Node.js 22／24 CI、[发行工作流 39192793031](https://github.com/oranipost/visual-math-editor/actions/runs/39192793031)成功，六个公开附件均通过严格来源证明验证。官方管理页 `0.7.0 / c21a7ed` 审核 **Completed**；公开条目显示 **Health Excellent / Review Passed**、版本 **0.7.0**、许可证 **GPL-3.0**，没有 Error 或 Warning。仍保留用户主动剪贴板访问及额外手动下载附件两类 **Recommendation**。目录识别的 GPL 标签不替代项目 [LICENSING.md](../LICENSING.md) 中完整的 Obsidian 链接例外。
+
+现有 Personal vault 已从发行 ZIP 手动升级成功；设置和既有演示笔记字节一致，原生 About 显示 0.7.0，Hybrid `y=x/2` 联动预览已打开，该次升级检查未保存新图。这不是完成原生社区插件目录安装。详细发行、审核与运行证据见 [TEST-REPORT.md](../TEST-REPORT.md)。
+
+旧 **0.6.2–0.6.5** 发行版已转为可恢复草稿，匿名公开 Release API 当前只列出 0.7.0；历史标签、源码和旧 MIT 授权仍保留。下方历史测试／审核观察按发生时的结果保留，不表示这些旧发行版仍公开下载。
 ### 可自行定义哪些搜索资料
 
 - **社区目录**：可在 **Edit listing** 编辑简短／详细介绍、已有分类和截图，按页面实际提供的分类选择数学、科学或相关工具。官方 [条目管理说明](https://docs.obsidian.md/community-directory/manage-entry)没有承诺任意自定义搜索标签；不要添加未定义的 manifest `keywords` 或 `tags` 字段。
@@ -62,7 +66,7 @@ Obsidian 当前的[官方提交指南](https://docs.obsidian.md/Plugins/Releasin
 流程如下：
 
 1. 在 GitHub 公开源代码，仓库根目录放好 `README.md`、`LICENSE`、`manifest.json`。
-2. 发布与 manifest 版本号完全一致的 GitHub Release。0.7.0 应使用 tag **`0.7.0`**，不要加 `v`；在真正发布前，已公开的 0.6.5 及其附件保持原样。
+2. 发布与 manifest 版本号完全一致的 GitHub Release。0.7.0 应使用 tag **`0.7.0`**，不要加 `v`；不得改写旧标签或替换旧版程序附件；0.6.2–0.6.5 当前保留为可恢复草稿，旧 MIT 授权不变。
 3. Release 附件单独上传 **`main.js`、`manifest.json`、`styles.css`**；安装 ZIP 和源码 ZIP 是额外的便利下载，不能替代这三个单独附件。
 4. 在社区网站登录 Obsidian 账号，在个人资料的 **GitHub → Connect** 关联 `oranipost`。这是网站用来验证仓库所有权的步骤。
 5. 进入侧栏 **Plugins → New plugin**，填入仓库 URL，Owner 选择自己，阅读开发者政策与维护承诺后提交。
@@ -79,7 +83,7 @@ Obsidian 当前的[官方提交指南](https://docs.obsidian.md/Plugins/Releasin
 | ID | `visual-math-editor` |
 | Author | `Dongfang Wang` |
 | Author URL | `https://github.com/oranipost` |
-| Version / release tag | `0.7.0`（桌面公开测试版；下载可用性、验证与目录审核状态分别记录，不引用旧版结论代替） |
+| Version / release tag | `0.7.0`（已公开 latest；发行验证成功；目录审核 Completed / Review Passed，实际边界见 TEST-REPORT） |
 | Minimum Obsidian version | `1.14.4` |
 | Platforms | Desktop only；目前实际验证 macOS，Windows / Linux 尚未做原生应用测试 |
 | License | 0.7.0 新代码／本版整体：GPLv3 加 Obsidian 链接例外；0.6.5 及此前 MIT 授权保持有效，第三方 MIT／Apache 2.0 不变，见 [Third-party notices](../THIRD-PARTY-NOTICES.md) |

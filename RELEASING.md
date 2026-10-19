@@ -1,6 +1,10 @@
 # GitHub and release preparation
 
-Repository: [oranipost/visual-math-editor](https://github.com/oranipost/visual-math-editor). **0.7.0** is prepared as a **Desktop public beta**. Download availability belongs to [GitHub Releases](https://github.com/oranipost/visual-math-editor/releases); exact local, native, hosted and delivery verification belongs to [TEST-REPORT.md](TEST-REPORT.md). This preparation document does not claim that hosted CI, a release or community review has passed. Public betas use ordinary GitHub releases with the latest-release designation so standard download/update paths can find them. Untested platforms remain outside verified scope.
+Repository: [oranipost/visual-math-editor](https://github.com/oranipost/visual-math-editor). **0.7.0 Desktop public beta is public and marked latest**. The main/tag Node.js 22/24 CI and [release workflow 39192793031](https://github.com/oranipost/visual-math-editor/actions/runs/39192793031) succeeded. All six public release assets passed strict provenance verification. The official management review for **0.7.0 / c21a7ed** is **Completed**; the public directory shows **Health Excellent / Review Passed**, version **0.7.0** and license **GPL-3.0**, without Error or Warning entries. Recommendations for user-initiated clipboard access and extra manual-download archives remain.
+
+The existing Personal vault was upgraded from the release ZIP with settings and existing demo-note bytes preserved. Native About displayed 0.7.0; Hybrid `y=x/2` and its linked graph were opened without saving a new graph during that upgrade check. This records a manual upgrade, not a native community-directory installation. Exact evidence and remaining platform limits are in [TEST-REPORT.md](TEST-REPORT.md).
+
+Earlier **0.6.2–0.6.5** releases are retained as recoverable drafts; the anonymous public release API currently lists 0.7.0 only. Their tags, history and pre-existing MIT rights remain. Historical verification observations below describe their original release checks; draft status does not revoke the original grants. Public betas use ordinary GitHub releases with the latest designation, while untested platforms remain outside verified scope.
 
 ## License transition in 0.7.0
 
@@ -33,7 +37,7 @@ CI checks logic/types/build and verifies package inputs. It does not launch Obsi
 
 ## Obsidian distribution
 
-Obsidian's updater expects `main.js`, `manifest.json` and, when used, `styles.css` as individual release assets, with a tag identical to the manifest version. Complete required notices are already embedded in `main.js` and `styles.css`; the runtime-license test checks the built files. The full installation ZIP also includes separate third-party license files and is the documented manual installation path. Retain the notices in every redistributed archive.
+Obsidian's updater expects `main.js`, `manifest.json` and, when used, `styles.css` as individual release assets, with a tag identical to the manifest version. Complete required notices are already embedded in `main.js` and `styles.css`; the runtime-license test checks the built files. The full installation ZIP also includes `LICENSE`, `LICENSING.md` and separate third-party license files and is the documented manual installation path. Retain the notices in every redistributed archive.
 
 New releases attach only the three runtime files, the manual installation/source ZIPs and `SHA256SUMS.txt`. Separate license attachments duplicate the notices in the runtime files and archives, so the workflow does not add them. A directory notice about unsupported extra files can still appear for the deliberate manual-download assets: the community installer ignores them and downloads the runtime files. Keep the installation ZIP available for manual installation and make that purpose explicit in release notes. Do not remove license text or an existing release's assets merely to hide an informational notice.
 

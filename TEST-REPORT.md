@@ -1,6 +1,6 @@
 # Test report / 测试记录
 
-Version: **0.7.0**, desktop public beta. Local validation is recorded below; hosted publication and the new directory scan are separate steps. Updated: **2026-10-18** (America/Chicago).
+Version: **0.7.0**, published desktop public beta. Local, targeted native and hosted-release checks completed; its independent directory review is Completed / Review Passed. Updated: **2026-10-18** (America/Chicago).
 
 This report distinguishes automated checks, browser components and native Obsidian integration. Passing one does not establish that the others passed. Public release status is shown on [GitHub Releases](https://github.com/oranipost/visual-math-editor/releases); community-directory approval is separate.
 
@@ -21,6 +21,15 @@ This report distinguishes automated checks, browser components and native Obsidi
 **Boundaries:** the graph follows the formula inside the current editor; saved equation and graph blocks are independent. A later formula edit requires regenerating or separately editing the saved graph. Spanish has automated and targeted native checks, without a fluent-human translation review. This is not a new native retest of every chemistry, unit, complex-plane, Undo or platform behavior; earlier observations retain their stated scope. Windows, Linux, mobile, detached windows and arbitrary themes/plugins remain unverified.
 
 **中文：** 0.7.0 已完成 172 项自动测试和 345 项浏览器组件检查；macOS / Obsidian 1.14.4 独立测试库验证了正文公式下方绘图、Hybrid 修改后刷新、同时保存公式与图像、重开，以及西班牙语和自定义快捷词的重启保留、真实键盘展开。保存后的公式块和图像块彼此独立，不宣称永久自动关联。托管发行、来源证明和新版目录审核须分别核实；历史版本结论不替代本版结果。
+
+## 0.7.0 hosted release and directory follow-up
+
+- [0.7.0](https://github.com/oranipost/visual-math-editor/releases/tag/0.7.0) is publicly available as an ordinary latest GitHub Release. [Release workflow 39192793031](https://github.com/oranipost/visual-math-editor/actions/runs/39192793031), [main CI](https://github.com/oranipost/visual-math-editor/actions/runs/39192793208) and [tag CI](https://github.com/oranipost/visual-math-editor/actions/runs/39192793357) succeeded; the CI matrix covers Node.js 22 and 24.
+- All six downloaded assets passed `gh attestation verify` with required source commit **`c21a7ed332df08bb0ea6e75c10e4e65b3744e077`**, source ref **`refs/tags/0.7.0`**, signing workflow **`oranipost/visual-math-editor/.github/workflows/draft-release.yml`** and rejection of self-hosted runners. Both ZIP checksums passed. The three hosted runtime files matched the installation ZIP and final locally tested build byte-for-byte; GPL, exception and source-revision checks passed. An anonymous public `manifest.json` download also matched.
+- The repository description and 16 relevant GitHub topics were updated. These are relevance choices, not verified keyword search-volume or ranking claims. The existing directory entry saved the science-focused English descriptions and a fifth, real screenshot, and its management heading now shows **Visual Math**.
+- **Directory status at this check:** the 0.7.0 / c21a7ed scan is **Completed**. The public page shows **Health Excellent / Review Passed**, version **0.7.0** and license **GPL-3.0**. No Error or Warning entries appeared. Passes cover the `main.js`/`styles.css` attestations, Vault Read, no known vulnerable dependencies, no detected obfuscation and byte-for-byte reproduction of the release `main.js`. Recommendations remain for user-initiated clipboard access and the deliberately retained manual-download assets. This automated result is separate from native integration and is not an independent security audit.
+- After the user saved and closed the earlier draft, the Personal-vault plugin was backed up and replaced with the verified 0.7.0 installation ZIP. Its existing `data.json` and demonstration note remained byte-identical. Reloading the window showed **Visual Math 0.7.0** in **About and license**. The picker reopened the existing `y=\frac{x}{2}` formula; Hybrid and **Graph this equation** produced the matching `(x)/(2)` preview below it. This preview was left open for use, without inserting a new graph or saving a formula change. This was a manual ZIP update, not a new community-directory installation.
+- After the new release was publicly downloadable and the directory switched to 0.7.0, earlier **0.6.2–0.6.5** GitHub Releases were converted to recoverable drafts at the maintainer's request. An anonymous release-list fetch exposed only 0.7.0. Historical tags, commits, license notices and previously granted MIT rights were not deleted or rewritten. Links to those withdrawn release pages/downloads in older observations may no longer be publicly accessible.
 
 ## 0.6.5 localization hotfix — local checks
 

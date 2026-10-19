@@ -2,7 +2,7 @@
 
 **目标**：在 Obsidian 正文中插入和再次编辑数学与常用科学公式。提供不依赖 LaTeX 的操作入口，并允许熟悉源码的用户随时切换。后台保持 Markdown 数学格式，全部本地运行。
 
-**0.7.0 状态**：桌面公开测试版；显示名称为 Visual Math，插件 ID、文件夹与仓库继续使用 `visual-math-editor`。下载可用性以 [GitHub Releases](https://github.com/oranipost/visual-math-editor/releases) 为准，实际本地、原生、托管与发行结果见 [验证记录](TEST-REPORT.md)；本说明不预先宣称托管构建、发行或目录审核已通过。历史 0.6.x 观察独立保留。
+**0.7.0 状态**：[GitHub latest 已公开](https://github.com/oranipost/visual-math-editor/releases/tag/0.7.0)；main／tag 的 Node.js 22／24 检查、[发行工作流 39192793031](https://github.com/oranipost/visual-math-editor/actions/runs/39192793031)与六个附件的严格来源证明验证均通过。官方管理页 `0.7.0 / c21a7ed` 审核 **Completed**，公开条目显示 **Health Excellent / Review Passed**，无 Error／Warning，仍保留剪贴板用途与可选下载附件两类建议。Personal vault 已手动升级，设置和既有演示笔记保留；这不是原生社区目录安装。显示名称为 Visual Math，ID、文件夹与仓库继续使用 `visual-math-editor`。实际结果与边界见 [验证记录](TEST-REPORT.md)，旧版历史观察独立保留。
 ## 本版包含
 
 - **Visual / LaTeX / Hybrid** 三种模式，同一份草稿切换，Hybrid 双向同步。

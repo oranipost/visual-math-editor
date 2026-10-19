@@ -6,7 +6,9 @@
 
 内置化学式与可选配平建议、物理模板、离线单位换算、118 元素表、函数图像和 Re / Im 复平面。全部本地运行，无需账号或运行时网络。
 
-当前版本：**0.7.0，桌面公开测试版**。本次加入 Visual Math 新名称、英语／简体中文／西班牙语、当前公式下方的关联图像，以及自定义公式快捷词。下载可用性以 [GitHub Releases](https://github.com/oranipost/visual-math-editor/releases) 为准；本地、原生、托管与发行验证分别见 [TEST-REPORT.md](TEST-REPORT.md)。本版发布准备不表示托管构建、公开发行或目录审核已经完成。范围见 [MVP.md](MVP.md)，语言见 [LANGUAGE-SUPPORT.md](LANGUAGE-SUPPORT.md)，审核观察见[提交指南](docs/COMMUNITY-SUBMISSION.md)。
+当前版本：**0.7.0，桌面公开测试版，已作为 [GitHub latest 发行版公开](https://github.com/oranipost/visual-math-editor/releases/tag/0.7.0)**。本次加入 Visual Math 新名称、英语／简体中文／西班牙语、当前公式下方的关联图像，以及自定义公式快捷词。
+
+main／tag 的 Node.js 22／24 检查与[发行工作流](https://github.com/oranipost/visual-math-editor/actions/runs/39192793031)均成功，六个公开发行附件均通过严格来源证明验证。官方目录显示 **0.7.0 / Review Passed / Health Excellent**，没有 Error 或 Warning；用户主动剪贴板访问与可选下载附件的两类建议仍保留。实际验证、原生测试边界和审核观察见 [TEST-REPORT.md](TEST-REPORT.md) 与[提交指南](docs/COMMUNITY-SUBMISSION.md)。功能范围见 [MVP.md](MVP.md)，语言见 [LANGUAGE-SUPPORT.md](LANGUAGE-SUPPORT.md)。
 
 显示名称改变，但插件 ID、仓库地址和安装文件夹继续使用 `visual-math-editor`，保留已有设置与图像标识。
 
@@ -22,13 +24,13 @@
 
 **[打开 Obsidian 社区插件目录页面](https://community.obsidian.md/plugins/visual-math-editor)。** 插件进入应用安装索引后，点击 **Add to Obsidian**，允许链接打开 Obsidian，再在插件详情中选择 **Install（安装）→ Enable（启用）**。打开 Markdown 笔记，点击右上角或左侧工具栏的 **∑**。目录安装入口启用与完成原生安装实测是不同观察，实际测试以 [TEST-REPORT.md](TEST-REPORT.md) 为准。
 
-**安装索引，2026-10-18 核对：** 官方索引现已包含 `visual-math-editor`，其中显示名称仍为 **Visual Math Editor**。这证明索引中存在条目，不等于已完成应用内商城安装，也不代表目录已经提供 0.7.0。若应用仍显示旧名称或旧版本，请以实际条目版本为准，或使用对应 GitHub 发行包。原生编辑测试使用手动安装，详见测试记录。
+**目录与安装状态：** 公开目录条目已显示 0.7.0 并通过审核；官方安装索引包含 `visual-math-editor`，本次检查的索引名称仍为 **Visual Math Editor**。索引中存在条目与完成应用内商城安装是两类观察。现有 Personal vault 已从 0.7.0 ZIP 手动升级，设置与原有演示笔记字节一致，原生 About 显示 0.7.0；升级检查中打开了 Hybrid `y=x/2` 联动预览，但未保存新图。本次尚未完成原生社区目录安装，详见测试记录。
 
 ### 手动安装
 
 **[0.7.0 安装包](https://github.com/oranipost/visual-math-editor/releases/download/0.7.0/visual-math-editor-0.7.0.zip)** · [查看发布说明和校验值](https://github.com/oranipost/visual-math-editor/releases/tag/0.7.0) · [完整安装 / 更新 / 卸载说明](docs/INSTALLATION.md#简体中文)
 
-使用带版本的下载链接前，请先在 [Releases](https://github.com/oranipost/visual-math-editor/releases) 确认本版已提供附件。选择手动安装时，请下载 Release 的安装 ZIP；GitHub 的 **Code → Download ZIP** 和自动生成的 **Source code** 是源码，需要自行构建。
+选择手动安装时，请下载已公开 Release 的安装 ZIP；GitHub 的 **Code → Download ZIP** 和自动生成的 **Source code** 是源码，需要自行构建。
 
 安装包已经编译完成，使用插件不需要 Node.js 或编程知识。
 
@@ -36,6 +38,8 @@
 2. 目标目录中应直接包含 `main.js`、`manifest.json`、`styles.css` 及许可证文件，避免多嵌套一层文件夹。
 3. 重启 Obsidian，进入 **Settings → Community plugins**。首次使用社区插件时选择 **Turn on community plugins**，然后启用 **Visual Math**。
 4. 打开 Markdown 笔记，右上角和左侧工具栏出现 **∑** 后即可使用。
+
+旧 0.6.2–0.6.5 发行版保留为可恢复的草稿；当前匿名公开 Release API 只列出 0.7.0。历史标签、源码和原有 MIT 权利保留；新版 GPL 许可不会追溯撤销旧授权。
 
 目录更新可在 **设置 → 第三方插件 → 检查更新 → 更新** 中操作；社区插件不会自动更新。手动更新时，先保存或取消未提交的公式草稿，关闭插件，备份现有 `visual-math-editor` 文件夹，再把新版安装文件复制到该文件夹，保留已有的 `data.json` 设置。两种方式都应先保存草稿，完成后重启 Obsidian 以刷新 MathLive。无需自行补代码，也不必重新下载笔记库。详见[更新机制](docs/UPDATING.md#简体中文)。
 

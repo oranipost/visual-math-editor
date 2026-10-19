@@ -4,8 +4,9 @@
 
 ## English
 
-**Visual Math 0.7.0 desktop public beta** is the same plugin previously named Visual Math Editor. Keep the existing `visual-math-editor` folder and its `data.json`; do not create a second installation. Confirm download availability on [GitHub Releases](https://github.com/oranipost/visual-math-editor/releases). Release publication, hosted verification and directory review are separate from the local/native results in the test report.
+**Visual Math 0.7.0 desktop public beta** is [public as the latest release](https://github.com/oranipost/visual-math-editor/releases/tag/0.7.0), with successful main/tag Node.js 22/24 checks, the [release workflow](https://github.com/oranipost/visual-math-editor/actions/runs/39192793031) and strict provenance verification of all six release assets. The official directory review is **Completed / Review Passed**, with **Health Excellent** and no Error or Warning; clipboard-use and optional-archive recommendations remain. See the separate release, review and native observations in [TEST-REPORT.md](../TEST-REPORT.md).
 
+This is the same plugin previously named Visual Math Editor. Keep the existing `visual-math-editor` folder and its `data.json`; do not create a second installation.
 ### Requirements and download
 
 - Obsidian **1.14.4 or later**, desktop main window. Native integration was checked on macOS with 1.14.4; other desktop systems have not been verified.
@@ -20,7 +21,7 @@ Directory review and release verification apply to the specific version that was
 2. In Obsidian's plugin details, choose **Install**, then **Enable**. Enable community plugins in **Settings → Community plugins** first if required.
 3. Open a Markdown note and click **∑** in the note header or left ribbon.
 
-At the **2026-10-18** check, the official installation index included `visual-math-editor` under **Visual Math Editor**. This does not establish that a marketplace installation was completed, that the name has synchronized to Visual Math, or that 0.7.0 is offered by the directory. Native editing tests used manual installation. Check the actual version shown in Obsidian or use the matching GitHub ZIP.
+The public directory lists 0.7.0 with a passing review. The checked official installation-index entry includes `visual-math-editor` under the earlier name **Visual Math Editor**. The existing Personal vault was upgraded from the manual ZIP with settings/demo bytes preserved; native About displayed 0.7.0. A Hybrid `y=x/2` graph was previewed without saving a new graph during that upgrade check. A native marketplace installation was not completed in these checks; use the actual version shown in Obsidian or the matching GitHub ZIP.
 
 ### Manual installation
 
@@ -100,8 +101,9 @@ Developer: [Dongfang Wang / oranipost](https://github.com/oranipost). Public fee
 
 ## 简体中文
 
-**Visual Math 0.7.0 桌面公开测试版**就是原 Visual Math Editor。继续使用已有的 `visual-math-editor` 文件夹并保留 `data.json`，不要安装成两个插件。下载是否已提供以 [GitHub Releases](https://github.com/oranipost/visual-math-editor/releases) 为准；发行、托管验证与目录审核分别记录，不由本地或原生测试结果代替。
+**Visual Math 0.7.0 桌面公开测试版**已作为 [GitHub latest 发行版公开](https://github.com/oranipost/visual-math-editor/releases/tag/0.7.0)。main／tag 的 Node.js 22／24 检查、[发行工作流](https://github.com/oranipost/visual-math-editor/actions/runs/39192793031)与六个附件的严格来源证明验证均通过。官方目录审核为 **Completed / Review Passed**，显示 **Health Excellent**，没有 Error 或 Warning；剪贴板用途和可选下载附件两类建议仍保留。发行、审核与原生验证分别见 [TEST-REPORT.md](../TEST-REPORT.md)。
 
+这就是原 Visual Math Editor。继续使用已有的 `visual-math-editor` 文件夹并保留 `data.json`，不要安装成两个插件。
 ### 要求与下载
 
 - Obsidian **1.14.4 或更新版本**，目前支持桌面主窗口。原生测试使用 macOS 与 1.14.4，其他桌面系统尚未验证。
@@ -116,7 +118,7 @@ Developer: [Dongfang Wang / oranipost](https://github.com/oranipost). Public fee
 2. 在 Obsidian 插件详情中点击 **Install（安装）**，再点 **Enable（启用）**。需要时先在 **设置 → 第三方插件** 中开启社区插件。
 3. 打开 Markdown 笔记，点击笔记右上角或左侧工具栏的 **∑**。
 
-**2026-10-18** 核对的官方安装索引已包含 `visual-math-editor`，显示名称仍为 **Visual Math Editor**。这不等于已完成应用内商城安装、名称已同步为 Visual Math，或目录已提供 0.7.0。原生编辑测试通过手动安装完成。请核对 Obsidian 实际条目显示的版本，或使用对应的 GitHub ZIP。
+公开目录条目显示 0.7.0 并通过审核；本次检查的官方安装索引已包含 `visual-math-editor`，名称仍为 **Visual Math Editor**。现有 Personal vault 已从 ZIP 手动升级，设置和原演示笔记字节保留，原生 About 显示 0.7.0；升级检查中打开了 Hybrid `y=x/2` 图像预览，但未保存新图。本次未完成原生商城安装，请以 Obsidian 实际条目显示的版本或对应 GitHub ZIP 为准。
 
 ### 手动安装
 

@@ -2,11 +2,13 @@
 
 English · [简体中文](README.zh-CN.md)
 
-Write **math, chemistry and physics notes** directly inside Obsidian with **Visual Math** (formerly Visual Math Editor). Visual mode works like Word: choose fractions, roots, scripts, integrals and sums, then fill the placeholders. **Zero LaTeX knowledge is required in Visual mode.** LaTeX and synchronized Hybrid modes are available when you want source control; formulas remain ordinary LaTeX/Markdown.
+Write **math, chemistry and physics notes** directly inside Obsidian with **Visual Math** (formerly Visual Math Editor). Visual mode works like Word: choose fractions, roots, scripts, integrals and sums, then fill the placeholders. **Zero LaTeX knowledge is required in Visual mode.** LaTeX and synchronized Hybrid modes are available when you want source editing; formulas remain ordinary LaTeX/Markdown.
 
 Built for quick science notes: optional chemical balance suggestions, physics templates, a periodic table, offline unit conversion, function graphs and a Re/Im complex plane. Everything runs locally without an account or runtime network connection.
 
-**0.7.0 · Desktop public beta.** This update introduces the Visual Math name, Spanish alongside English and Simplified Chinese, a graph preview below the current equation, and custom formula shortcuts. Download availability is shown on [GitHub Releases](https://github.com/oranipost/visual-math-editor/releases); local, native, hosted and release checks are recorded separately in [TEST-REPORT.md](TEST-REPORT.md). Preparing this version does not establish that its hosted build, public release or community review has completed. See [scope](MVP.md), [language support](LANGUAGE-SUPPORT.md) and [review observations](docs/COMMUNITY-SUBMISSION.md).
+**0.7.0 · Desktop public beta — [published as the latest GitHub release](https://github.com/oranipost/visual-math-editor/releases/tag/0.7.0).** This update introduces the Visual Math name, Spanish alongside English and Simplified Chinese, a graph preview below the current equation, and custom formula shortcuts.
+
+The main/tag Node.js 22/24 checks and [release workflow](https://github.com/oranipost/visual-math-editor/actions/runs/39192793031) succeeded; all six public release assets passed strict provenance verification. The official directory shows **0.7.0 / Review Passed / Health Excellent**, with no Error or Warning entries; recommendations for user-initiated clipboard access and optional download archives remain. Exact checks, native limits and review observations are recorded in [TEST-REPORT.md](TEST-REPORT.md) and the [submission guide](docs/COMMUNITY-SUBMISSION.md). See [scope](MVP.md) and [language support](LANGUAGE-SUPPORT.md).
 
 The display name changes; the plugin ID, repository URL and installation folder remain `visual-math-editor`, so existing preferences and saved graphs keep their identifiers.
 
@@ -22,13 +24,13 @@ Real screenshots from Visual Math 0.7.0 running in Obsidian on macOS. The Spanis
 
 **[Open the Obsidian community-directory page](https://community.obsidian.md/plugins/visual-math-editor).** When the plugin is available in the app's index, click **Add to Obsidian**, allow the link to open Obsidian, then choose **Install → Enable** in the plugin details. Open a Markdown note and click **∑** in its header or left ribbon. The directory's enabled installation link and a completed native installation test are separate observations; consult [TEST-REPORT.md](TEST-REPORT.md) for what has actually been tested.
 
-**Installation index, checked 2026-10-18:** the official index now includes `visual-math-editor` under its earlier display name **Visual Math Editor**. This is an index observation, not a completed installation through the app's marketplace and not confirmation that 0.7.0 is available there. If the app still shows the earlier name or version, use the version shown by its actual listing or the matching GitHub release. Native editing tests used manual installation; see the test report.
+**Directory and installation status:** the public directory lists 0.7.0 with a passing review. The official installation index includes `visual-math-editor`; the checked index entry still used its earlier display name **Visual Math Editor**. An index entry and a completed app marketplace installation are separate observations. The existing Personal vault was upgraded manually from the 0.7.0 ZIP, preserving settings and existing demo-note bytes. Native About displayed 0.7.0; a Hybrid `y=x/2` graph preview was opened without saving a new graph during that upgrade check. A native community-directory installation has not been completed in these checks; see the test report.
 
 ### Manual installation
 
 **[0.7.0 installation ZIP](https://github.com/oranipost/visual-math-editor/releases/download/0.7.0/visual-math-editor-0.7.0.zip)** · [Release notes and checksums](https://github.com/oranipost/visual-math-editor/releases/tag/0.7.0) · [Detailed installation, updates and removal](docs/INSTALLATION.md#english)
 
-Check [Releases](https://github.com/oranipost/visual-math-editor/releases) for availability before using a versioned download link. For manual installation, download the installation ZIP, rather than **Code → Download ZIP** or GitHub's automatic **Source code** archives, which require building.
+For manual installation, download the published installation ZIP, rather than **Code → Download ZIP** or GitHub's automatic **Source code** archives, which require building.
 
 The installation ZIP is already compiled. You do not need Node.js to use it.
 
@@ -36,6 +38,8 @@ The installation ZIP is already compiled. You do not need Node.js to use it.
 2. Confirm that `main.js`, `manifest.json`, `styles.css` and the license files are directly inside that folder, without another nested plugin folder.
 3. Restart Obsidian. Open **Settings → Community plugins**, enable community plugins if necessary, then enable **Visual Math**.
 4. Open a Markdown note. Use **∑** in the note header or left ribbon to open the editor.
+
+Earlier 0.6.2–0.6.5 releases are retained as recoverable drafts; the anonymous public release API currently lists 0.7.0 only. Historical tags/source and the original MIT rights remain available; the current GPL license does not revoke those earlier grants.
 
 On macOS, **⌘⇧.** shows hidden folders in Finder. If your vault uses a custom configuration directory, use that instead of `.obsidian`.
 
