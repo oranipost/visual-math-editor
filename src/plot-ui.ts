@@ -3,6 +3,7 @@ import { createGraph } from './graph-render';
 import { DEFAULT_COMPLEX_SPEC, fitComplexPoints, formatComplex, parseComplexNumbers } from './complex-plane';
 import { mountPlotInteraction, validPlotBounds, zoomPlotBounds, type PlotBounds } from './plot-interaction';
 import { controlIcon } from './ui-icons';
+import { createHtml } from './dom';
 
 export interface PlotViewDraft {
   expression: string;
@@ -29,7 +30,7 @@ interface PlotOptions {
 }
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, className = ''): HTMLElementTagNameMap[K] {
-  const node = document.createElement(tag);
+  const node = createHtml(tag);
   if (className) node.className = className;
   return node;
 }
@@ -128,8 +129,8 @@ export function mountPlotTools(host: HTMLElement, options: PlotOptions = {}): {
   expression.autocomplete = 'off';
   expression.spellcheck = false;
   expression.setAttribute('autocapitalize', 'off');
-  expression.setAttribute('data-no-i18n', '');
-  expression.placeholder = 'x^2, sin(x), 1/x';
+  // Only this UI placeholder is localized; input values remain untouched.
+  expression.placeholder = '示例：x^2, sin(x), 1/x';
   expression.value = draft?.expression ?? options.initialExpression ?? DEFAULT_PLOT_SPEC.expression;
   label.htmlFor = expression.id;
   const complexLabel = el('label', 'vme-science-input-label');

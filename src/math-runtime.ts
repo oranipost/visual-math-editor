@@ -1,4 +1,5 @@
 import { MathfieldElement } from "mathlive";
+import { createHtml } from "./dom";
 
 /** Use the registered constructor so disabling/re-enabling the plugin is safe. */
 export function configureMathLive(): void {
@@ -15,7 +16,8 @@ export function configureMathLive(): void {
 }
 
 export function createPreview(latex: string, container: HTMLElement): MathfieldElement {
-  const field = document.createElement("math-field") as MathfieldElement;
+  const field = createHtml("math-field", container.ownerDocument);
+  field.className = "vme-picker-preview";
   field.setAttribute("read-only", "");
   field.setAttribute("math-virtual-keyboard-policy", "manual");
   field.tabIndex = -1;

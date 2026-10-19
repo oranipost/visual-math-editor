@@ -6,6 +6,7 @@ import { localizeEditor, type Language } from './i18n';
 import { mountPlotTools, type PlotDraft } from './plot-ui';
 import { expressionFromLatex } from './plot-latex';
 import type { PlotSpec } from './plot-engine';
+import { createHtml, createSvgElement } from './dom';
 
 export type EditorMode = 'visual' | 'latex' | 'hybrid';
 
@@ -62,7 +63,7 @@ const symbols = [
 ] as const;
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, text?: string): HTMLElementTagNameMap[K] {
-  const element = document.createElement(tag);
+  const element = createHtml(tag);
   if (className) element.className = className;
   if (text) element.textContent = text;
   return element;
@@ -86,11 +87,11 @@ function structureGlyph(id: string): HTMLElement {
   } else if (id === 'sqrt' || id === 'nth-root') {
     // Draw the radical and its overbar as one path. A font √ beside a CSS
     // border creates a broken or doubled bar in some Obsidian themes/fonts.
-    const radical = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    const radical = createSvgElement('svg');
     radical.setAttribute('viewBox', '0 0 38 29');
     radical.setAttribute('class', 'vme-glyph-radical');
     radical.setAttribute('focusable', 'false');
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    const path = createSvgElement('path');
     path.setAttribute('d', 'M 2 16 L 6 14 L 12 25 L 18 4 H 36');
     path.setAttribute('fill', 'none');
     path.setAttribute('stroke', 'currentColor');
@@ -143,7 +144,7 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
   localBadge.title = '公式在本机编辑，无需账号或网络';
   const language = el('select', 'vme-language-select');
   language.dataset.testid = 'interface-language';
-  language.setAttribute('aria-label', '界面语言 / Interface language');
+  language.setAttribute('aria-label', '界面语言');
   for (const [value, label] of [['system', '跟随 Obsidian'], ['zh', '中文'], ['en', 'English']] as const) {
     const option = el('option', '', label);
     option.value = value;
@@ -192,7 +193,7 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
   const structureGrid = el('div', 'vme-structure-grid');
 
   // Use the registered element so this plugin can coexist with another MathLive user.
-  const field = document.createElement('math-field') as MathfieldElement;
+  const field = createHtml('math-field', container.ownerDocument);
   field.className = 'vme-mathfield';
   field.id = `${instanceId}-field`;
   field.dataset.testid = 'equation-field';

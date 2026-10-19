@@ -158,20 +158,20 @@ export default class VisualMathEditor extends Plugin {
     this.registerEvent(this.app.workspace.on("layout-change", () => this.refreshHeaderActions()));
     this.registerEvent(this.app.workspace.on("active-leaf-change", () => this.refreshHeaderActions()));
     this.addCommand({
-      id: "insert-or-edit-equation", name: "插入或编辑公式 / Insert or edit equation",
+      id: "insert-or-edit-equation", name: this.text("插入或编辑公式 / Insert or edit equation"),
       editorCallback: (editor, context) => {
         if (context instanceof MarkdownView) this.openAtCursor(editor, context);
         else this.notify("请在普通 Markdown 笔记中使用公式编辑器。");
       },
     });
     this.addCommand({
-      id: "open-equation-dialog", name: "在弹窗中插入或编辑公式 / Open equation dialog",
+      id: "open-equation-dialog", name: this.text("在弹窗中插入或编辑公式 / Open equation dialog"),
       editorCallback: (editor, context) => {
         if (context instanceof MarkdownView) this.openAtCursor(editor, context, true);
       },
     });
     this.addCommand({
-      id: "recover-equation-draft", name: "恢复公式草稿 / Recover equation draft",
+      id: "recover-equation-draft", name: this.text("恢复公式草稿 / Recover equation draft"),
       editorCallback: (editor, context) => {
         if (!(context instanceof MarkdownView) || !this.recoveredDraft) { this.notify("没有暂存的公式草稿。"); return; }
         const snapshot = editor.getValue();
@@ -192,7 +192,7 @@ export default class VisualMathEditor extends Plugin {
       }
     }));
     this.addCommand({
-      id: "choose-equation", name: "编辑本笔记公式 / Choose equation to edit",
+      id: "choose-equation", name: this.text("编辑本笔记公式 / Choose equation to edit"),
       checkCallback: (checking) => {
         const view = this.app.workspace.getActiveViewOfType(MarkdownView);
         if (!view?.file) return false;

@@ -2,6 +2,35 @@
 
 [English README](../README.md) · [中文 README](../README.zh-CN.md) · [Test observations](../TEST-REPORT.md)
 
+## Current local precheck — 0.6.4
+
+Checked on **2026-10-18**, using the isolated official ESLint toolchain described below. These are local development results, separate from native Obsidian integration tests and the community directory's official release review.
+
+| Scope | Errors | Warnings |
+| --- | ---: | ---: |
+| Production `src/`, recommended configuration | **0** | **1** |
+| `manifest.json`, explicit validation | **0** | **0** |
+
+The **11 `prefer-create-el` findings are fixed**. A shared DOM adapter uses the target window's Obsidian `createEl` and `createSvg` helpers in the host, with standard DOM factories for the independent offline browser preview. Registered MathLive custom elements and SVG namespaces are preserved. Bilingual commands now use the existing localization entry point, and the interface-language label uses its existing translation key.
+
+Both CSS `!important` declarations were removed. Layout rules for controls and panes that can be hidden explicitly exclude `[hidden]`, without increasing selector specificity; a scoped hidden rule handles visibility. Reduced-motion styling targets every control with a plugin-defined transition. The picker preview uses a dedicated class instead of an unknown `math-field` type selector.
+
+The remaining **one `obsidianmd/ui/sentence-case` warning** concerns the case-sensitive mathematical examples in [plot-ui.ts](../src/plot-ui.ts). The rule treats `x` as the acronym `X`, including in `x^2`, `sin(x)` and `1/x`. The lowercase variable is retained because it is meaningful input to the function parser. **No rule exception, ignore configuration or capitalization workaround was added for this finding.**
+
+TypeScript checking and production building passed, along with **159 automated logic/packaging tests** and **280 checks in the real browser component suite**. The browser checks include computed CSS visibility when Hybrid switches to Graph, compact Graph-draft restoration, Visual/LaTeX pane visibility, and stable focus/details for all 118 periodic elements. Browser success does not establish native Obsidian behavior or official directory approval; see [TEST-REPORT.md](../TEST-REPORT.md) for those separately scoped observations.
+
+### 当前版本中文说明
+
+**0.6.4** 的本地官方规则扫描结果为：生产 `src/` **0 个错误、1 个提示**，显式校验 `manifest.json` **0 个错误、0 个提示**。11 项 DOM 创建提示已通过兼容封装修复；两处 CSS `!important` 和未知 `math-field` 标签选择器也已修复，同时保留独立离线预览、MathLive、SVG、隐藏面板和减少动效行为。
+
+唯一保留的提示是句式规则把数学变量 `x` 当成缩写 `X`。代码保留正确的小写变量，没有添加豁免配置或绕过该提示。类型检查、生产构建、**159 项自动测试**和真实浏览器中的 **280 项组件检查**已通过。上述结果与原生 Obsidian 操作、社区目录正式审核各有不同范围，不能互相替代。
+
+---
+
+## Historical snapshot — 0.6.2
+
+The original 0.6.2 report below is retained as historical evidence. Its warning counts and decisions describe that earlier snapshot, not the current 0.6.4 source.
+
 Version: **0.6.2**. Checked on **2026-10-18**. This records a local scan of production source and release metadata using Obsidian's official lint rules. It is separate from runtime tests, a security audit, and approval for the community directory.
 
 ## Tools and results

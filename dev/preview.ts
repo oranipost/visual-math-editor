@@ -358,11 +358,11 @@ async function checkIntegratedPlot(check: (condition: boolean, message: string) 
   let graphSpec: PlotSpec | undefined;
   let cancellations = 0;
   const original = '\\frac{ x }{ 2 }';
-  const create = (draft: EditorDraft, graphOnly = false) => {
+  const create = (draft: EditorDraft, graphOnly = false, compact = false) => {
     editor?.destroy();
     editor = mountEditor(fixture, {
       latex: draft.latex, display: draft.display, initialMode: draft.mode,
-      scienceDraft: draft.science, plotDraft: draft.plot, graphOnly, language: 'en',
+      scienceDraft: draft.science, plotDraft: draft.plot, graphOnly, compact, language: 'en',
       onSave: () => { mathWrites++; },
       onSaveGraph: async (spec, latex) => { graphWrites++; graphLatex = latex; graphSpec = spec; },
       onCancel: () => { cancellations++; },
@@ -376,12 +376,18 @@ async function checkIntegratedPlot(check: (condition: boolean, message: string) 
     button('subject-graph').click(); await settle();
     check(root().dataset.subject === 'graph' && fixture.querySelector<HTMLElement>('.vme-workspace')!.hidden && fixture.querySelector<HTMLElement>('.vme-mode-tabs')!.hidden, '图像学科隐藏数学工作区与模式开关，显示独立函数工具');
     check(button('save').hidden && !button('cancel').hidden && !fixture.querySelector<HTMLElement>('[data-testid="plot-tools"]')!.hidden, '图像工具保留取消入口，避免误用数学保存按钮');
+    const mathControlsHidden = () => ['.vme-workspace', '.vme-mode-tabs', '[data-action="save"]'].every(selector => {
+      const node = fixture.querySelector<HTMLElement>(selector)!;
+      return node.hidden && getComputedStyle(node).display === 'none';
+    });
+    check(mathControlsHidden(), 'Hybrid 切至图像后实际 CSS 隐藏数学区、模式页签及数学保存按钮');
     button('plot-use-current').click(); await settle();
     check(fixture.querySelector('[data-testid="plot-preview"] svg') !== null && editor!.getDraft().latex === original && graphWrites === 0 && mathWrites === 0, '当前分数可转换为曲线预览，数学源码与空格原样保留');
     button('plot-insert').click(); await settle();
     check(graphWrites === 1 && graphLatex === original && mathWrites === 0, '图像明确保存时携带原公式草稿，且只触发一次图像保存');
     const retained = editor!.getDraft();
-    create(retained); await settle();
+    create(retained, false, true); await settle();
+    check(mathControlsHidden(), '正文紧凑 Hybrid 恢复图像草稿后实际 CSS 仍隐藏数学区与数学保存按钮');
     check(root().dataset.subject === 'graph' && fixture.querySelector('[data-testid="plot-preview"] svg') !== null && editor!.getDraft().latex === original, '整套编辑器重挂载恢复图像学科、曲线和数学原文');
     button('subject-math').click(); button('mode-latex').click();
     const source = fixture.querySelector<HTMLTextAreaElement>('[data-testid="latex-source"]')!;
@@ -513,6 +519,10 @@ document.getElementById("selftest")!.onclick = async () => {
     check(host.querySelector<HTMLTextAreaElement>('[data-testid="latex-source"]')!.value.includes("+x"), "Hybrid 可视化改动同步回源码");
     click("mode-latex");
     check(host.querySelector<HTMLElement>(".vme-visual-pane")!.hidden && !host.querySelector<HTMLElement>(".vme-source-pane")!.hidden, "LaTeX 模式只显示源码编辑器");
+    check(getComputedStyle(host.querySelector<HTMLElement>('.vme-visual-pane')!).display === 'none', 'LaTeX 模式的可视化面板在实际 CSS 中隐藏');
+    click('mode-visual');
+    check(getComputedStyle(host.querySelector<HTMLElement>('.vme-source-pane')!).display === 'none', 'Visual 模式的源码面板在实际 CSS 中隐藏');
+    click('mode-latex');
     inputSource("\\frac{1}{");
     const invalid = mounted!.getDraft().latex;
     check(host.querySelector<HTMLButtonElement>('[data-action="save"]')!.disabled && !host.querySelector<HTMLElement>(".vme-error")!.hidden, "未完成源码保留并阻止保存");
@@ -718,6 +728,14 @@ document.getElementById("selftest")!.onclick = async () => {
       await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
       await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
     };
+    const focusVisibleElementControl = async (control: HTMLElement) => {
+      // Keyboard navigation reveals clipped cells before their focused tooltip
+      // is reconciled. preventScroll alone would test an invisible focused cell.
+      control.scrollIntoView({ behavior: 'instant', block: 'center', inline: 'nearest' });
+      await settleElementLayout();
+      control.focus({ preventScroll: true });
+      await settleElementLayout();
+    };
     await settleElementLayout();
     check(details.hidden && details.getAttribute('role') === 'tooltip', "元素详情初始隐藏，并声明辅助技术可识别的 tooltip");
     hoverCell(26);
@@ -741,12 +759,10 @@ document.getElementById("selftest")!.onclick = async () => {
     leaveCell(1);
     window.scrollTo(beforeViewportTest.x, beforeViewportTest.y);
     await settleElementLayout();
-    elementCell(6).focus({ preventScroll: true });
-    check(!details.hidden && detailValue('mass') === '[12.0096, 12.0116]' && detailValue('shells') === '2, 4', "键盘聚焦碳显示标准原子量区间和各层电子数");
+    await focusVisibleElementControl(elementCell(6));
+    check(document.activeElement === elementCell(6) && !details.hidden && detailValue('mass') === '[12.0096, 12.0116]' && detailValue('shells') === '2, 4', "键盘聚焦碳显示标准原子量区间和各层电子数");
     check(detailValue('mass-label') === '标准原子量' && detailValue('configuration-label') === '电子排布' && detailValue('shells-label') === '各电子层电子数', "中文元素详情使用中文字段标签");
-    // Fe remains inside the horizontal scroller at our 520px regression width.
-    // Real keyboard Tab scrolls clipped elements into view; preventScroll does not.
-    elementCell(26).focus({ preventScroll: true });
+    await focusVisibleElementControl(elementCell(26));
     document.dispatchEvent(new Event('scroll'));
     await settleElementLayout();
     check(!details.hidden && elementCell(26).getAttribute('aria-describedby') === details.id && detailValue('shells') === '2, 8, 14, 2', "键盘聚焦引发滚动后仍显示当前元素详情");
@@ -758,17 +774,19 @@ document.getElementById("selftest")!.onclick = async () => {
     await settleElementLayout();
     check(details.hidden && !elementCell(26).hasAttribute('aria-describedby'), "Escape 关闭后滚动与焦点恢复不会重新打开详情");
     const elementSearch = host.querySelector<HTMLInputElement>('[data-testid="element-search"]')!;
-    elementSearch.focus({ preventScroll: true });
-    elementCell(118).focus({ preventScroll: true });
-    check(!details.hidden && detailValue('mass') === '[294]' && details.dataset.massKind === 'isotope' && details.dataset.configurationStatus === 'predicted' && detailValue('shells') === '2, 8, 18, 32, 32, 18, 8', "Og 使用同位素质量数并标出预测排布，避免误称标准原子量");
+    await focusVisibleElementControl(elementSearch);
+    await focusVisibleElementControl(elementCell(118));
+    check(document.activeElement === elementCell(118) && !details.hidden && detailValue('mass') === '[294]' && details.dataset.massKind === 'isotope' && details.dataset.configurationStatus === 'predicted' && detailValue('shells') === '2, 8, 18, 32, 32, 18, 8', "Og 使用同位素质量数并标出预测排布，避免误称标准原子量");
     check(details.textContent!.includes('不是标准原子量') && details.textContent!.includes('理论预测'), "重元素详情明确解释质量数与预测状态");
-    elementSearch.focus({ preventScroll: true });
+    await focusVisibleElementControl(elementSearch);
     check(details.hidden, "焦点移离元素后隐藏详情");
-    const allDetailsPresent = [...host.querySelectorAll<HTMLButtonElement>('.vme-element-button')].every(button => {
-      button.focus({ preventScroll: true });
-      return !details.hidden && detailValue('mass').length > 0 && detailValue('configuration').length > 0 && detailValue('shells').length > 0 && button.getAttribute('aria-describedby') === details.id;
-    });
-    elementSearch.focus({ preventScroll: true });
+    let allDetailsPresent = true;
+    // One bounded pass exercises all 118 cells after both scroll and focus RAFs.
+    for (const button of host.querySelectorAll<HTMLButtonElement>('.vme-element-button')) {
+      await focusVisibleElementControl(button);
+      if (document.activeElement !== button || details.hidden || detailValue('mass').length === 0 || detailValue('configuration').length === 0 || detailValue('shells').length === 0 || button.getAttribute('aria-describedby') !== details.id) allDetailsPresent = false;
+    }
+    await focusVisibleElementControl(elementSearch);
     check(allDetailsPresent && host.querySelectorAll('.vme-element-button').length === 118, "118 个元素均可聚焦读取完整详情，表格按钮保持齐全");
     const elementLanguage = host.querySelector<HTMLSelectElement>('[data-testid="interface-language"]')!;
     elementLanguage.value = 'en'; elementLanguage.dispatchEvent(new Event('change', { bubbles: true }));
@@ -784,7 +802,7 @@ document.getElementById("selftest")!.onclick = async () => {
     elementLanguage.value = 'zh'; elementLanguage.dispatchEvent(new Event('change', { bubbles: true }));
     await new Promise(resolve => setTimeout(resolve, 0));
     check(details.hidden && mounted!.getDraft().latex === beforeElementHover.latex && chemInput().value === beforeElementHover.chemistry, "中英文详情切换不改变任何公式或化学输入");
-    elementCell(26).focus({ preventScroll: true });
+    await focusVisibleElementControl(elementCell(26));
     click('subject-math');
     check(details.hidden && !elementCell(26).hasAttribute('aria-describedby'), "聚焦元素后切换学科会收起详情并清理描述关联");
     click('subject-elements');

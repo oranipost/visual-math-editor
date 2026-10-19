@@ -3,6 +3,7 @@ import { Decoration, EditorView, WidgetType, type DecorationSet } from "@codemir
 import { mountEditor, type EditorDraft } from "./editor-ui";
 import type { Language } from "./i18n";
 import type { PlotSpec } from "./plot-engine";
+import { createHtml } from "./dom";
 
 export type InlineDraft = EditorDraft;
 export interface InlineSession {
@@ -27,7 +28,7 @@ class EquationWidget extends WidgetType {
   constructor(private session: InlineSession) { super(); }
   eq(other: EquationWidget): boolean { return other.session.id === this.session.id; }
   toDOM(view: EditorView): HTMLElement {
-    const panel = view.dom.ownerDocument.createElement("div");
+    const panel = createHtml("div", view.dom.ownerDocument);
     panel.className = "vme-inline-panel";
     panel.contentEditable = "false";
     panel.setAttribute("role", "region");

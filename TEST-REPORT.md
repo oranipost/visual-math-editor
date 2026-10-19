@@ -1,16 +1,25 @@
 # Test report / 测试记录
 
-Version: **0.6.3**, desktop public beta. Updated: **2026-10-18**.
+Version: **0.6.4**, desktop public beta. Updated: **2026-10-18**.
 
 This report distinguishes automated checks, browser components and native Obsidian integration. Passing one does not establish that the others passed. Public release status is shown on [GitHub Releases](https://github.com/oranipost/visual-math-editor/releases); community-directory approval is separate.
+
+## 0.6.4 checks and native follow-up
+
+- **159 automated tests**, TypeScript checking and the production build passed. The full local browser component suite passed **280 checks**, including both directions of Hybrid synchronization, save/reopen, actual CSS visibility in normal and compact modes, science helpers, graphs and interaction cleanup.
+- The first browser run stopped at an element keyboard-focus assertion. The test read before the component's scheduled focus/scroll reconciliation; it now scrolls each target into view and waits for the actual layout/focus frames. The assertions remain, including real focus, all 118 elements, complete details and ARIA associations. The second full run passed. No element data or runtime focus behavior was changed to make this test pass.
+- Before the upgrade, the native 0.6.3 Hybrid editor changed the fraction from 5/8 to 3/4 in its left source and added a plus and square root of x in the right visual field. The resulting source was `\frac34+1+2+\sqrt{x}`. Both directions synchronized; the saved formula had visibly separated operators, fraction and radical. The equation picker successfully reopened the same formula.
+- The locally built 0.6.4 installation archive was checksum-verified and installed with Obsidian closed, after backing up the prior plugin. After restart, native Settings showed **0.6.4 enabled**. Existing settings and the demonstration note remained byte-identical.
+- In 0.6.4, the English command palette showed a localized command name, and the equation picker reopened the saved formula with its fraction and radical. Hybrid to Graph hid the math workspace/mode/save controls, the x-squared preset produced an SVG preview, and returning to Math retained the formula. Saving without formula edits preserved the whole note byte-for-byte. The editor was reopened in Hybrid mode for continued use.
+- The installed program files will be compared with the hosted release's exact bytes after publication. The native check above used the local build and does not claim a completed installation through the desktop community index. Reduced-motion selectors were reviewed against the three actual transition-bearing controls; the operating-system preference was not toggled in this check. Untested platforms remain unverified.
 
 ## Environment and automated checks
 
 - Native application: **Obsidian 1.14.4 on macOS**, main window. The 0.6.2 baseline used a separate test vault; the 0.6.3 follow-up used a newly created demonstration note with invented formula inputs in an existing desktop vault.
 - Locked runtime dependencies: MathLive **0.111.1** and Convert **8.0.2**.
-- **156 automated tests pass**, with TypeScript checking and the production build passing.
+- **159 automated tests pass** for 0.6.4, with TypeScript checking and the production build passing.
 - Hosted CI checks clean dependency installation, types, tests and builds on **Node.js 22 and 24**. Node 24 also checks release packaging. Results are available under [Actions](https://github.com/oranipost/visual-math-editor/actions).
-- The official source-rule precheck recorded **0 errors and 17 reviewed warnings**; explicit manifest validation recorded **0 errors and 0 warnings**. See [code precheck](docs/CODE-REVIEW.md) for tool versions and the remaining warnings. This is not an independent security audit or a guarantee of no defects.
+- The 0.6.4 local official-rule source precheck recorded **0 errors and 1 mathematical-variable warning**; explicit manifest validation recorded **0 errors and 0 warnings**. The 0.6.2 historical precheck is retained separately in [code precheck](docs/CODE-REVIEW.md). Static checks are not an independent security audit or a guarantee of no defects.
 
 ## Native integration baseline (0.6.2)
 
@@ -84,4 +93,8 @@ For native integration, install the compiled plugin into a disposable Obsidian v
 
 ## 中文摘要
 
-当前版本的类型检查、156 项自动测试和生产构建通过。0.6.2 原生基线在 macOS / Obsidian 1.14.4 主窗口与独立测试库中验证；四张演示截图来自实际应用。0.6.3 新增原生复测使用通过 SHA-256 校验的 GitHub ZIP 手动替换旧插件，保留已有设置，重启后确认 0.6.3 已启用。新建演示笔记验证了 Visual 的 `3/4`、Hybrid 的双向同步、切到 LaTeX 后保留输入、保存为 `$$` 区块，以及通过 **∑** 再次编辑。此次双击未成功，未记为通过。官方目录审核已完成且网站安装按钮启用，但原生 Browse 搜索为 0、检查更新无更新，安装索引尚无本插件 ID；尚未完成从原生社区目录安装。化学、换算、绘图、撤销和浏览器全套测试没有在本次针对性复测中重跑。开发预览地址只用于开发者自己的电脑，普通用户无需启动或访问。
+0.6.4 的类型检查、159 项自动测试、生产构建和 280 项真实浏览器组件检查通过。首轮组件检查发现元素焦点测试没有等待滚动与焦点恢复帧，修正测试时序后完整通过，没有为迁就测试改动元素数据或运行时行为。
+
+本轮先在 0.6.3 原生 Hybrid 中把左侧 5/8 改为 3/4，再从右侧插入加号和根号 x，确认双向同步、间距、保存与选择器重开。随后使用经校验的本地 0.6.4 安装包更新并重启，确认版本已启用、设置与演示笔记保留；复查重开公式、Hybrid/图像面板隐藏、SVG 预览、切回数学，以及不修改时保存的整篇笔记字节一致性。当前界面保留在 Hybrid 供继续使用。
+
+本轮不声称已从桌面社区目录完成安装；正式发布后还需核对托管附件的程序字节与来源证明。0.6.2/0.6.3 的历史观察和限制保留在各自章节，Windows、Linux、移动端、弹出窗口和任意第三方主题仍未验证。减少动画媒体规则已核对，但本轮没有切换操作系统的减少动画偏好。开发预览仅供开发者本机使用，普通用户无需启动或访问。

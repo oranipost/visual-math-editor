@@ -4,7 +4,7 @@ English · [简体中文](README.zh-CN.md)
 
 Edit equations directly inside Obsidian notes using **Visual**, **LaTeX** or **Hybrid** mode. Visual mode provides Word-like structures for fractions, roots, scripts, integrals and sums. Hybrid mode keeps the formatted equation and LaTeX source synchronized. Equations are saved as ordinary LaTeX/Markdown.
 
-**0.6.3 · Desktop public beta (MVP).** Also includes chemistry notation and balance suggestions, physics templates, offline unit conversion, a periodic table, real-function graphs and a Re/Im complex plane. The interface currently supports **English and Simplified Chinese only**. More languages are planned for future updates. The official review for 0.6.3 is **Completed**, with **Review Satisfactory**, and **Add to Obsidian** is enabled on the [community-directory page](https://community.obsidian.md/plugins/visual-math-editor). See [review observations](docs/COMMUNITY-SUBMISSION.md), [scope](MVP.md), [test observations](TEST-REPORT.md) and [language support](LANGUAGE-SUPPORT.md).
+**0.6.4 · Desktop public beta (MVP).** Also includes chemistry notation and balance suggestions, physics templates, offline unit conversion, a periodic table, real-function graphs and a Re/Im complex plane. The interface currently supports **English and Simplified Chinese only**. More languages are planned for future updates. The historical official review for 0.6.3 is **Completed**, with **Review Satisfactory**, and the [community-directory page](https://community.obsidian.md/plugins/visual-math-editor) enabled **Add to Obsidian** for that version. **The 0.6.4 release scan has not yet run; the previous result does not approve this update.** See [review observations](docs/COMMUNITY-SUBMISSION.md), [scope](MVP.md), [test observations](TEST-REPORT.md) and [language support](LANGUAGE-SUPPORT.md).
 
 ## Download and install
 
@@ -14,7 +14,7 @@ Edit equations directly inside Obsidian notes using **Visual**, **LaTeX** or **H
 
 ### Manual installation
 
-**[Download 0.6.3 installation ZIP](https://github.com/oranipost/visual-math-editor/releases/download/0.6.3/visual-math-editor-0.6.3.zip)** · [Release notes and checksums](https://github.com/oranipost/visual-math-editor/releases/tag/0.6.3) · [Detailed installation, updates and removal](docs/INSTALLATION.md#english)
+**[Download 0.6.4 installation ZIP](https://github.com/oranipost/visual-math-editor/releases/download/0.6.4/visual-math-editor-0.6.4.zip)** · [Release notes and checksums](https://github.com/oranipost/visual-math-editor/releases/tag/0.6.4) · [Detailed installation, updates and removal](docs/INSTALLATION.md#english)
 
 For manual installation, download the release's installation ZIP, rather than **Code → Download ZIP** or GitHub's automatic **Source code** archives, which require building.
 
@@ -141,7 +141,7 @@ Report a problem through the [bug report form](https://github.com/oranipost/visu
 
 Code, wording fixes and translation contributions are welcome; read [CONTRIBUTING.md](CONTRIBUTING.md) first. English and Simplified Chinese are maintained today. A new locale should cover full workflows, errors and accessibility labels and receive fluent-speaker review.
 
-A GitHub release is separate from approval for Obsidian's community directory. The [community submission guide](docs/COMMUNITY-SUBMISSION.md) records the completed 0.6.3 review, remaining nonblocking warnings and maintenance process. Review results do not replace the runtime observations in [TEST-REPORT.md](TEST-REPORT.md).
+A GitHub release is separate from approval for Obsidian's community directory. The [community submission guide](docs/COMMUNITY-SUBMISSION.md) records the completed 0.6.3 review, its nonblocking warnings, the 0.6.4 changes awaiting a new scan, and the maintenance process. Review results do not replace the runtime observations in [TEST-REPORT.md](TEST-REPORT.md).
 
 ## License and dependencies
 

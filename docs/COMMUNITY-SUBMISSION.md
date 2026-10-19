@@ -2,13 +2,13 @@
 
 [English README](../README.md) · [中文说明](../README.zh-CN.md) · [发布维护](../RELEASING.md)
 
-资料核对日期：2026-10-18。[社区目录页面](https://community.obsidian.md/plugins/visual-math-editor)显示 **0.6.3 官方审核 Completed（已完成）**，结论为 **Review Satisfactory（审核满意）**，**Add to Obsidian** 按钮已启用。推荐从该目录入口打开 Obsidian 安装；GitHub Release 安装 ZIP 继续作为手动安装选项。目录入口启用与完成原生安装测试是不同观察，后者以 [TEST-REPORT.md](../TEST-REPORT.md) 中实际记录为准。
+资料核对日期：2026-10-18。上一次核对[社区目录页面](https://community.obsidian.md/plugins/visual-math-editor)时，**0.6.3 官方审核 Completed（已完成）**，结论为 **Review Satisfactory（审核满意）**，**Add to Obsidian** 按钮已启用。**当前源码准备版本为 0.6.4，尚未运行该版本的官方发行版检查；0.6.3 的结论不能直接延用。**推荐从目录入口安装获准版本；GitHub Release 安装 ZIP 继续作为手动安装选项。目录入口启用与完成原生安装测试是不同观察，后者以 [TEST-REPORT.md](../TEST-REPORT.md) 中实际记录为准。
 
 同日检查原生 **Browse**，本插件搜索结果为 0；**Check for updates** 未提供更新。只读检查官方 [`community-plugins.json`](https://github.com/obsidianmd/obsidian-releases/blob/master/community-plugins.json) 也尚未发现 `visual-math-editor`。因此目前不能声称已从原生社区目录安装成功；遇到这一情况应等待安装索引同步，或使用[手动 ZIP 安装](INSTALLATION.md)。本次 0.6.3 原生三模式与再次编辑验证使用了手动替换安装。
 
 ## 0.6.3 官方审核观察
 
-本次官方页面未显示 Error。源码与分发构建的逐字节一致性检查、依赖漏洞检查、代码混淆检查均显示 **Pass**。审核仍保留以下非阻断提醒，不能把 **Review Satisfactory** 解读为没有提醒、完整安全审计或所有平台实测通过。
+该次 0.6.3 官方页面未显示 Error。源码与分发构建的逐字节一致性检查、依赖漏洞检查、代码混淆检查均显示 **Pass**。审核保留以下非阻断提醒，不能把 **Review Satisfactory** 解读为没有提醒、完整安全审计或所有平台实测通过。
 
 | 提醒 | 用途与处理 |
 | --- | --- |
@@ -19,7 +19,19 @@
 | 缺少 attestations | 发布附件尚无构建来源证明。页面将其列为建议，当前不阻止安装；它与已通过的源码/构建逐字节一致性检查是不同项目。 |
 | 额外 Release 附件 | ZIP、校验值和许可证附件作为便利下载保留；目录所需的三个独立程序附件仍齐全。页面对此仅给出建议，并非缺失必需附件或审核错误。 |
 
-这些提醒已结合源码复核，目前没有需要立即修改运行时代码的阻断项；若官方后续给出具体修改要求，仍须处理。本记录属于 **0.6.3 官方目录审核**；[CODE-REVIEW.md](CODE-REVIEW.md) 独立保留 **0.6.2 使用官方 lint 工具进行的本地前置检查**，两者不能互相替代。
+这些提醒已结合源码复核，该次检查没有要求立即修改运行时代码的阻断项；若官方后续给出具体修改要求，仍须处理。本记录属于 **0.6.3 官方目录审核**；[CODE-REVIEW.md](CODE-REVIEW.md) 独立保留 **0.6.2 使用官方 lint 工具进行的本地前置检查**，两者不能互相替代。
+
+## 0.6.4 改进与待验证事项
+
+0.6.4 针对上述提醒调整界面与发行流程，当前尚无该版本的官方检查结果：
+
+- 标准 HTML/SVG 使用 Obsidian 提供的创建辅助方法；独立浏览器预览保留兼容回退，MathLive 仍使用已注册的自定义元素。预览样式改按插件类名限定，调整隐藏状态与减少动画规则的顺序和选择器，不依赖 `!important`。
+- 命令名称和界面语言无障碍标签按所选支持语言显示；仍仅支持英语和简体中文，未扩展科学工具或平台范围。
+- 用户主动剪切、复制、粘贴功能继续保留；没有新增后台剪贴板读取或 MathLive 补丁。该依赖所带的主动剪贴板 API 仍可能触发用途告知，不能在未经复审时宣称相关提示已消失。
+- 发布流程已准备固定 SHA 的官方 GitHub 来源证明 Action，并要求在同名版本标签上构建。只有托管流程实际完成、下载文件验证通过后，才能记录该版本已有来源证明；目前只是流程准备。
+- 新发行版不再重复上传独立许可证附件；完整条款保留在程序文件与 ZIP。手动安装/源码 ZIP 和校验文件保留，目录仍可能提示这些属于安装器不使用的额外附件。
+
+本地测试结果与原生验证只记入 [TEST-REPORT.md](../TEST-REPORT.md)。发布后须查看 0.6.4 的实际目录扫描反馈；不能把本地通过、GitHub 发布或历史 0.6.3 结论写成该版本已获官方通过。
 
 ## 当前应该在哪里提交
 
@@ -28,7 +40,7 @@ Obsidian 当前的[官方提交指南](https://docs.obsidian.md/Plugins/Releasin
 流程如下：
 
 1. 在 GitHub 公开源代码，仓库根目录放好 `README.md`、`LICENSE`、`manifest.json`。
-2. 发布与 manifest 版本号完全一致的 GitHub Release。本次版本为 **`0.6.3`**，tag 也必须是 **`0.6.3`**，不要加 `v`。
+2. 发布与 manifest 版本号完全一致的 GitHub Release。本次准备版本为 **`0.6.4`**，tag 也必须是 **`0.6.4`**，不要加 `v`。
 3. Release 附件单独上传 **`main.js`、`manifest.json`、`styles.css`**；安装 ZIP 和源码 ZIP 是额外的便利下载，不能替代这三个单独附件。
 4. 在社区网站登录 Obsidian 账号，在个人资料的 **GitHub → Connect** 关联 `oranipost`。这是网站用来验证仓库所有权的步骤。
 5. 进入侧栏 **Plugins → New plugin**，填入仓库 URL，Owner 选择自己，阅读开发者政策与维护承诺后提交。
@@ -45,7 +57,7 @@ Obsidian 当前的[官方提交指南](https://docs.obsidian.md/Plugins/Releasin
 | ID | `visual-math-editor` |
 | Author | `Dongfang Wang` |
 | Author URL | `https://github.com/oranipost` |
-| Version / release tag | `0.6.3` |
+| Version / release tag | `0.6.4`（当前准备版本；官方扫描尚未运行） |
 | Minimum Obsidian version | `1.14.4` |
 | Platforms | Desktop only；目前实际验证 macOS，Windows / Linux 尚未做原生应用测试 |
 | License | MIT；依赖与字体遵循各自许可证，见 [Third-party notices](../THIRD-PARTY-NOTICES.md) |

@@ -1,4 +1,4 @@
-# Visual Math Editor 0.6.3 · MVP 范围
+# Visual Math Editor 0.6.4 · MVP 范围
 
 **目标**：在 Obsidian 正文中插入和再次编辑数学与常用科学公式。提供不依赖 LaTeX 的操作入口，并允许熟悉源码的用户随时切换。后台保持 Markdown 数学格式，全部本地运行。
 

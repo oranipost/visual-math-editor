@@ -2,6 +2,17 @@
 
 This file records version changes. Builds before 0.6.2 were local MVP releases; 0.6.2 prepares the first public desktop beta. Publication status is shown on GitHub Releases. Neither a local package nor a public GitHub release implies Obsidian community-directory approval.
 
+## 0.6.4 — 2026-10-18
+
+- Use Obsidian's DOM creation helpers where available, with a fallback for the standalone browser preview and the registered MathLive custom element.
+- Scope MathLive preview styling through plugin classes and preserve hidden controls and reduced-motion behavior without CSS `!important` overrides.
+- Localize command names and the interface-language accessibility label to the selected supported language.
+- Prepare signed GitHub build provenance for the three runtime files and manual-download assets, with a pinned official action and an exact-tag workflow guard. The hosted workflow and downloaded-asset verification must succeed before provenance is reported as available.
+- Stop duplicating standalone license attachments in new releases; complete notices remain embedded in the runtime files and included in both ZIPs. Keep manual installation/source downloads and checksums available.
+- Preserve user-initiated equation cut/copy/paste and the documented absence of background clipboard monitoring; no clipboard feature is removed and no new MathLive compatibility patch is added.
+
+The 0.6.3 directory review is historical evidence for that version. Version 0.6.4 needs its own release scan; the changes above do not by themselves establish official approval. Actual tests and remaining limits are recorded separately in [TEST-REPORT.md](TEST-REPORT.md).
+
 ## 0.6.3 — 2026-10-18
 
 - Included complete project/dependency notices in the JavaScript runtime and the font license in the stylesheet, so community installation of the three plugin files retains required redistribution notices.

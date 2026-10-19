@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: Existing version tag, matching manifest.json exactly (for example 0.6.2)
+        description: Existing version tag; select the same tag under Use workflow from
         required: true
         type: string
 
@@ -22,10 +22,17 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: write
+      id-token: write
+      attestations: write
     steps:
+      - name: Require a workflow run from the exact release tag
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          node --input-type=module -e 'const tag = process.env.RELEASE_TAG; if (!/^\d+\.\d+\.\d+$/.test(tag ?? "") || process.env.GITHUB_REF !== `refs/tags/${tag}`) throw new Error("Run this workflow from the matching existing version tag, not a branch; the provenance must identify the commit being built");'
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: refs/tags/${{ inputs.tag }}
+          ref: ${{ github.sha }}
           persist-credentials: false
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
@@ -39,10 +46,20 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: npm run package
-      - name: Create draft with installer, source, runtime assets and licenses
+      - name: Attest the runtime files and manual-download assets
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4
+        with:
+          subject-path: |
+            dist/main.js
+            dist/manifest.json
+            dist/styles.css
+            release/*.zip
+            release/SHA256SUMS.txt
+          create-storage-record: false
+      - name: Create draft with runtime files, archives and checksums
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           RELEASE_TAG: ${{ inputs.tag }}
         run: |
-          gh release create "$RELEASE_TAG" --verify-tag --draft --title "Visual Math Editor $RELEASE_TAG — Public beta" --notes-file CHANGELOG.md dist/main.js dist/manifest.json dist/styles.css dist/LICENSE dist/MATHLIVE-LICENSE.txt dist/KATEX-FONTS-LICENSE.txt dist/MHCHEM-LICENSE.txt dist/CONVERT-LICENSE.txt dist/THIRD-PARTY-NOTICES.md release/*.zip release/SHA256SUMS.txt
+          gh release create "$RELEASE_TAG" --verify-tag --draft --title "Visual Math Editor $RELEASE_TAG — Public beta" --notes-file CHANGELOG.md dist/main.js dist/manifest.json dist/styles.css release/*.zip release/SHA256SUMS.txt

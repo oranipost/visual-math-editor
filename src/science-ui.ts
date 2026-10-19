@@ -6,6 +6,7 @@ import {
 import { UNIT_CATEGORIES, convertQuantity } from './unit-conversion';
 import { getElementDetails } from './element-details';
 import { checkReaction, type ReactionCheck } from './reaction-check';
+import { createHtml } from './dom';
 
 export type Subject = 'math' | 'chemistry' | 'physics' | 'units' | 'elements' | 'graph';
 export interface ScienceDraft {
@@ -29,7 +30,7 @@ interface ScienceOptions {
 }
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls = '', text = ''): HTMLElementTagNameMap[K] {
-  const node = document.createElement(tag);
+  const node = createHtml(tag);
   if (cls) node.className = cls;
   if (text) node.textContent = text;
   return node;
@@ -117,7 +118,7 @@ export function mountScienceTools(host: HTMLElement, options: ScienceOptions): {
   }
 
   function preview(container: HTMLElement, label: string): MathfieldElement {
-    const field = document.createElement('math-field') as MathfieldElement;
+    const field = createHtml('math-field', container.ownerDocument);
     field.className = 'vme-science-preview';
     field.setAttribute('read-only', '');
     field.setAttribute('math-virtual-keyboard-policy', 'manual');

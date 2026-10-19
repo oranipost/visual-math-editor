@@ -1,3 +1,5 @@
+import { createSvgElement } from './dom';
+
 /** Small original SVG controls, with visible text labels supplied by the caller. */
 export type ControlIcon = 'preview' | 'insert' | 'save' | 'zoom-in' | 'zoom-out' | 'reset' | 'fit' | 'edit';
 const paths: Record<ControlIcon, string> = {
@@ -11,12 +13,12 @@ const paths: Record<ControlIcon, string> = {
   edit: 'M14 5L19 10 M4 16L3 21L8 20L21 7L17 3L4 16Z',
 };
 export function controlIcon(name: ControlIcon, documentRef: Document = document): SVGSVGElement {
-  const svg = documentRef.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  const svg = createSvgElement('svg', documentRef);
   svg.setAttribute('viewBox', '0 0 24 24');
   svg.setAttribute('class', 'vme-control-icon');
   svg.setAttribute('aria-hidden', 'true');
   svg.setAttribute('focusable', 'false');
-  const path = documentRef.createElementNS('http://www.w3.org/2000/svg', 'path');
+  const path = createSvgElement('path', documentRef);
   path.setAttribute('d', paths[name]);
   path.setAttribute('fill', 'none');
   path.setAttribute('stroke', 'currentColor');

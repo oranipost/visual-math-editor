@@ -12,6 +12,7 @@ export function resolveLanguage(language: Language, systemLanguage = 'en'): Reso
 /** UI messages only. Formula source, note content and input values are never translated. */
 export const UI_TRANSLATIONS: Readonly<Record<string, string>> = {
   '界面语言 / Interface language': 'Interface language',
+  '示例：x^2, sin(x), 1/x': 'Examples: x^2, sin(x), 1/x',
   '跟随 Obsidian': 'Follow Obsidian', '跟随 Obsidian / Follow Obsidian': 'Follow Obsidian',
   '系统 / System': 'System',
   '无法保存语言偏好 / Unable to save language preference': 'Unable to save language preference',
