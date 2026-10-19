@@ -1,5 +1,23 @@
 # Test report / 测试记录
 
+## 0.8.0 — pre-publication graph checks (2026-10-18)
+
+This section records checks before GitHub publication and community submission. Hosted results are recorded separately in the follow-up section; earlier 0.7.0 review/native results do not establish 0.8.0 outcomes. The user's Personal vault remains on 0.7.0.
+
+Implemented: polar r=f(theta), first/second numerical derivative curves, signed definite-integral shading with an approximate value, explicit XYZ z=f(x,y) wireframes, graph-input symbol buttons, and direct equation-linked inference for r=… and z=…. All new numeric options are serialized in the existing vme-plot block and restored when editing. Independent graph-type drafts retain their own settings. New settings cannot be understood by older plugin builds; install 0.8.0 to view/edit these examples.
+
+Validation for this build:
+
+- **194 automated logic tests passed**, together with type checks and the production build. Coverage includes explicit formulas, polar negative radii and domain gaps, derivatives/cusps, finite continuous integrals, pole rejection, bounded XYZ sampling, extreme numeric clipping, view helpers, strict parameter round trips and edits to only the selected graph.
+- **368 browser component checks passed.** They include the existing equation/science/localization regressions, all new graph modes, all parameter drafts, current-equation polar/XYZ inference, same-value y=2 → r=2 → z=2 changes, queued gesture cancellation on Reset, synchronous validation on Insert, and continuous drag/pinch updates across multiple rendered frames. The new graph save/reopen checks use serialized test memory and component remounts, rather than a real vault.
+- Real browser interaction: generated r=2*sin(3*theta), dragged an XYZ saddle surface, zoomed it, and displayed the signed integral of x^2 from 0 to 2 (approximately 2.666666667). Screenshots are real developer-preview UI captures, not native Obsidian screenshots.
+- English, Simplified Chinese and Spanish fixed UI/accessibility strings were checked; formulas, coordinates and numeric estimates stay unchanged.
+- **Native 0.8.0 integration: not completed.** Files were copied to the separate test-vault plugin folder with a recoverable pre-0.8 backup. Window control became unavailable during the vault-switching step, so loading that build, inserting into a real vault, reopening it and using the saved-note Save view controls have not been verified for 0.8.0. Browser results do not establish those outcomes. No 0.8.0 files were copied into Personal.
+- Hosted CI, public assets/provenance, official directory review and marketplace installation: **not run at the time of these pre-publication checks**.
+
+Numerical scope: approximate finite differences and adaptive quadrature, not symbolic calculus or a proof of convergence. Definite integrals require increasing finite limits on a supported continuous real domain. Detected poles, invalid domains and unresolved work limits yield errors rather than a finite answer. Polar sampling is bounded to 100π radians per plot; XYZ is a bounded wireframe of an explicit z=f(x,y), with individually scaled axes, not a general implicit/parametric surface solver. Fine features can be missed by finite sampling. See [NIST numerical differentiation](https://dlmf.nist.gov/3.4) and [quadrature](https://dlmf.nist.gov/3.5) for mathematical background.
+
+
 Version: **0.7.0**, published desktop public beta. Local, targeted native and hosted-release checks completed; its independent directory review is Completed / Review Passed. Updated: **2026-10-18** (America/Chicago).
 
 This report distinguishes automated checks, browser components and native Obsidian integration. Passing one does not establish that the others passed. Public release status is shown on [GitHub Releases](https://github.com/oranipost/visual-math-editor/releases); community-directory approval is separate.

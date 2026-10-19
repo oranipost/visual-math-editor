@@ -2,6 +2,20 @@
 
 This file records version changes. Builds before 0.6.2 were local MVP releases; 0.6.2 prepares the first public desktop beta. Publication status is shown on GitHub Releases. Neither a local package nor a public GitHub release implies Obsidian community-directory approval.
 
+## 0.8.0 — 2026-10-18 · Desktop public beta
+
+Adds polar plots, numerical calculus, XYZ wireframes and faster graph input. Local checks passed: **194 automated tests and 368 browser component checks**. Native 0.8.0 insertion/save/reopen remains unverified; GitHub publication and community review are separate. Actual checks are recorded in [TEST-REPORT.md](TEST-REPORT.md).
+
+- Add polar `r=f(theta)` graphs with a polar grid, equal X/Y units, signed radii and a bounded θ range. Example: `r=2*sin(3*theta)` over 0–2π; the maximum parameter span is 100π radians.
+- Add first/second numerical derivative curves and signed definite-integral estimates with interval shading to the function graph's calculus selector. Example: `y=x^2`, integral bounds 0–1. Finite continuous intervals with increasing bounds only; improper integrals and reversed bounds are unsupported. This is numerical differentiation/quadrature, not symbolic algebra.
+- Add explicit XYZ wireframes `z=f(x,y)`, such as `z=(x^2-y^2)/10`, with drag rotation, zoom, editable X/Y/Z ranges and persisted camera angles. Use at most a 28 × 28 base mesh with bounded refinement; costly formulas can use a coarser mesh. Each axis is scaled independently to the viewing box.
+- Add caret/selection-aware common-symbol insertion, separate full-expression examples, and inverse/hyperbolic/reciprocal trigonometric functions. Keep radians and safe bounded parsing without JavaScript evaluation.
+- Recognize supported `y=`, `r=` and `z=` formulas directly beneath the equation editor. Persist mode-specific graph settings for reopening; saved equations and graphs remain independent blocks after insertion.
+- Preserve continuous 3D drag/pinch gestures across preview refreshes and cancel queued gestures on explicit reset.
+- Extend English, Simplified Chinese and Spanish controls, errors and scoped graph captions for these additions; supported language selection and offline behavior are unchanged.
+
+General implicit/parametric plotting, a general solver, multiple function overlays and symbolic calculus remain outside scope. Numerical sampling may miss fine features, and a numerical error estimate is not a convergence proof. Background: NIST DLMF [§3.4 Differentiation](https://dlmf.nist.gov/3.4) and [§3.5 Quadrature](https://dlmf.nist.gov/3.5).
+
 ## 0.7.0 — 2026-10-18
 
 - Rename the display name to **Visual Math**, retaining `visual-math-editor` as the plugin ID, installation folder and repository so existing settings and saved content remain compatible.

@@ -1,6 +1,6 @@
 {
   "name": "visual-math-editor",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "private": true,
   "description": "Visual Math: beginner-friendly math, chemistry and physics notes, equation graphs and unit conversion for Obsidian, entirely offline",
   "keywords": [
@@ -19,7 +19,11 @@
     "complex-plane",
     "unit-conversion",
     "periodic-table",
-    "offline"
+    "offline",
+    "polar-plot",
+    "3d-graph",
+    "calculus",
+    "trigonometry"
   ],
   "type": "module",
   "scripts": {

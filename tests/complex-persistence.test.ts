@@ -67,7 +67,7 @@ test('untouched complex graphs preserve source whitespace, unusual fences, and a
 });
 
 test('unsupported modes and invalid complex input reject the whole saved graph without partial insertion', () => {
-  for (const mode of ['complex-plane', 'polar', '', null, true, 2]) {
+  for (const mode of ['complex-plane', 'parametric', '', null, true, 2]) {
     const data = { version: 1, ...functionSpec, mode };
     assert.throws(() => parsePlotSpec(JSON.stringify(data)), JSON.stringify(mode));
   }
@@ -118,7 +118,7 @@ test('editing one duplicate complex graph preserves every other graph and unrela
 
 test('save validation rejects an unsupported mode before semantic no-op can bypass it', () => {
   const current = serializePlot(functionSpec), target = { snapshot: current, from: 0, to: current.length };
-  for (const mode of [null, 'polar', false]) {
+  for (const mode of [null, 'parametric', false]) {
     assert.throws(() => planGraphUpdate(current, target, { ...functionSpec, mode } as unknown as PlotSpec));
   }
 });

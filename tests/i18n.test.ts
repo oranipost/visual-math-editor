@@ -4,6 +4,8 @@ import { getElementSearchNames, resolveLanguage, translatePlotUiText, translateU
 import { SPANISH_ELEMENT_NAMES, SPANISH_TRANSLATIONS } from '../src/i18n-es';
 import { CHEMISTRY_TEMPLATES, PHYSICS_TEMPLATES, UNIT_PRESETS, PERIODIC_ELEMENTS } from '../src/science-data';
 import { UNIT_CATEGORIES } from '../src/unit-conversion';
+import { createGraph } from '../src/graph-render';
+import { DEFAULT_PLOT_SPEC, type PlotSpec } from '../src/plot-engine';
 
 test('the host app language follows Chinese and Spanish locales with an English fallback', () => {
   for (const locale of ['zh', 'zh-CN', 'zh-TW', 'zh-Hans', 'ZH_hant_HK', ' zh ']) assert.equal(resolveLanguage('system', locale), 'zh', locale);
@@ -130,6 +132,83 @@ test('graph picker rows translate graph identity while preserving the complete f
     assert.equal(translateUiText(`图像 1 · ${suffix}`, 'en'), `Graph 1 · ${suffix}`);
     assert.equal(translateUiText(`复平面 12 · ${suffix}`, 'en'), `Complex plane 12 · ${suffix}`);
     assert.equal(translateUiText(`图像 1 · ${suffix}`, 'zh'), `图像 1 · ${suffix}`);
+  }
+});
+
+test('surface accessibility and new graph identities translate without changing formulas or coordinates', () => {
+  const expression = 'sin(sqrt(x^2+y^2)) / 1.25e-4';
+  const title = `3D surface: z = ${expression}; X, Y and Z axes`;
+  assert.equal(translatePlotUiText(title, 'es'), `Superficie 3D: z = ${expression}; ejes X, Y y Z`);
+  assert.equal(translatePlotUiText(title, 'zh'), `三维曲面：z = ${expression}；X、Y 和 Z 轴`);
+  assert.equal(translatePlotUiText(title, 'en'), title);
+  const description = 'Approximate numerical wireframe of z = f(x,y). Each axis is scaled independently to its displayed range. Trigonometric arguments use radians. Missing real values and unresolved discontinuities are omitted.';
+  for (const language of ['es', 'zh'] as const) {
+    const translated = translatePlotUiText(description, language);
+    assert.notEqual(translated, description);
+    assert.ok(translated.includes('z = f(x,y)'));
+  }
+  for (const [label, en, es] of [
+    ['极坐标', 'Polar graph', 'Gráfica polar'],
+    ['三维曲面', '3D surface', 'Superficie 3D'],
+    ['微积分图像', 'Calculus graph', 'Gráfica de cálculo'],
+  ]) {
+    assert.equal(translateUiText(`${label} 2 · ${expression}`, 'en'), `${en} 2 · ${expression}`);
+    assert.equal(translateUiText(`${label} 2 · ${expression}`, 'es'), `${es} 2 · ${expression}`);
+  }
+  assert.equal(translateUiText('Z 最小值', 'es'), 'Z mín.');
+  assert.equal(translateUiText('θ 最大值', 'es'), 'θ máx.');
+  for (const language of ['en', 'zh', 'es'] as const) {
+    for (const payload of ['X', 'Y', 'Z', 'θ', expression, '≈ · rad · 45° / 30°']) {
+      assert.equal(translatePlotUiText(payload, language), payload);
+    }
+  }
+});
+
+test('polar and calculus plot prose translates while expressions and numerical estimates remain exact', () => {
+  const expression = 'sin(theta) / 1.25e-4';
+  assert.equal(translatePlotUiText(`Polar graph: r = ${expression}`, 'es'), `Gráfica polar: r = ${expression}`);
+  assert.equal(translatePlotUiText(`Polar graph: r = ${expression}`, 'zh'), `极坐标图：r = ${expression}`);
+  for (const [prefix, zh, es] of [
+    ['Derivative', '导数', 'Derivada'], ['Second derivative', '二阶导数', 'Segunda derivada'], ['Definite integral', '定积分', 'Integral definida'],
+  ]) {
+    const source = `${prefix}: sin(x) / 1.25e-4`;
+    assert.equal(translatePlotUiText(source, 'es'), `${es}: sin(x) / 1.25e-4`);
+    assert.equal(translatePlotUiText(source, 'zh'), `${zh}：sin(x) / 1.25e-4`);
+    assert.equal(translatePlotUiText(`${source}; horizontal axis X, vertical axis Y`, 'es'), `${es}: sin(x) / 1.25e-4; eje horizontal X, eje vertical Y`);
+    assert.equal(translatePlotUiText(`${source}; horizontal axis X, vertical axis Y`, 'zh'), `${zh}：sin(x) / 1.25e-4；横轴 X，纵轴 Y`);
+  }
+  assert.equal(translatePlotUiText('≈ · θ -1.25e-4 to 6.28319 rad · equal scale', 'es'), '≈ · θ -1.25e-4 a 6.28319 rad · misma escala');
+  assert.equal(translatePlotUiText('≈ · θ -1.25e-4 to 6.28319 rad · equal scale', 'zh'), '≈ · θ -1.25e-4 至 6.28319 rad · 等比例坐标');
+  assert.equal(translatePlotUiText('∫ [-1.25e-4, 2] ≈ -3.00000001e-7 · numerical estimate · rad', 'es'), '∫ [-1.25e-4, 2] ≈ -3.00000001e-7 · estimación numérica · rad');
+  assert.equal(translatePlotUiText('∫ [-1.25e-4, 2] ≈ -3.00000001e-7 · numerical estimate · rad', 'zh'), '∫ [-1.25e-4, 2] ≈ -3.00000001e-7 · 数值估计 · rad');
+  assert.equal(translatePlotUiText('≈ · finite differences · rad', 'es'), '≈ · diferencias finitas · rad');
+  for (const payload of ['sin(theta)', 'sin(x)', '∫ [a, b] ≈ user text', 'Derivative of arbitrary user text', 'Polar graph source in a note']) {
+    for (const language of ['en', 'es', 'zh'] as const) assert.equal(translatePlotUiText(payload, language), payload);
+  }
+});
+
+test('all supported renderer accessibility descriptions have Chinese and Spanish translations', () => {
+  const specs: PlotSpec[] = [
+    { ...DEFAULT_PLOT_SPEC },
+    { ...DEFAULT_PLOT_SPEC, mode: 'complex', expression: '3+2i' },
+    { ...DEFAULT_PLOT_SPEC, mode: 'polar', expression: '2*sin(3*theta)', thetaMin: 0, thetaMax: 2 * Math.PI },
+    { ...DEFAULT_PLOT_SPEC, mode: 'surface', expression: '(x^2+y^2)/10', zMin: -2, zMax: 2, azimuth: 45, elevation: 30 },
+    { ...DEFAULT_PLOT_SPEC, expression: 'x^2', calculus: 'derivative' },
+    { ...DEFAULT_PLOT_SPEC, expression: 'x^2', calculus: 'second-derivative' },
+    { ...DEFAULT_PLOT_SPEC, expression: 'x', calculus: 'integral', integralMin: 0, integralMax: 1 },
+  ];
+  for (const spec of specs) {
+    const result = createGraph(spec);
+    assert.ok(result.ok, result.ok ? '' : result.error);
+    const metadata = /^<svg\b[^>]*><title>([^<]*)<\/title><desc>([^<]*)<\/desc>/.exec(result.svg);
+    assert.ok(metadata);
+    const descriptions = [metadata[1], metadata[2]];
+    const aria = /aria-label="([^"]*)"/.exec(result.svg)?.[1];
+    assert.ok(aria);
+    descriptions.push(aria);
+    for (const description of descriptions) {
+      for (const language of ['es', 'zh'] as const) assert.notEqual(translatePlotUiText(description, language), description, `${spec.mode ?? spec.calculus ?? 'function'} ${language}: ${description}`);
+    }
   }
 });
 

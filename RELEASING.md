@@ -1,10 +1,16 @@
 # GitHub and release preparation
 
-Repository: [oranipost/visual-math-editor](https://github.com/oranipost/visual-math-editor). **0.7.0 Desktop public beta is public and marked latest**. The main/tag Node.js 22/24 CI and [release workflow 39192793031](https://github.com/oranipost/visual-math-editor/actions/runs/39192793031) succeeded. All six public release assets passed strict provenance verification. The official management review for **0.7.0 / c21a7ed** is **Completed**; the public directory shows **Health Excellent / Review Passed**, version **0.7.0** and license **GPL-3.0**, without Error or Warning entries. Recommendations for user-initiated clipboard access and extra manual-download archives remain.
+## 0.8.0 release target
+
+Version 0.8.0 adds polar plots, numerical calculus, XYZ wireframes and symbol input. Pre-publication checks passed: 194 automated tests, type checking/build, packaging and 368 browser component checks. Native 0.8.0 insertion/save/reopen has not been verified. Hosted build/provenance and directory review must be checked independently; see [TEST-REPORT.md](TEST-REPORT.md) and the [0.8.0 release page](https://github.com/oranipost/visual-math-editor/releases/tag/0.8.0). Do not apply historical 0.7.0 results to 0.8.0.
+
+## 0.7.0 historical release evidence
+
+Repository: [oranipost/visual-math-editor](https://github.com/oranipost/visual-math-editor). **0.7.0 Desktop public beta was publicly released**. The main/tag Node.js 22/24 CI and [release workflow 39192793031](https://github.com/oranipost/visual-math-editor/actions/runs/39192793031) succeeded. All six public release assets passed strict provenance verification. The official management review for **0.7.0 / c21a7ed** is **Completed**; the public directory shows **Health Excellent / Review Passed**, version **0.7.0** and license **GPL-3.0**, without Error or Warning entries. Recommendations for user-initiated clipboard access and extra manual-download archives remain.
 
 The existing Personal vault was upgraded from the release ZIP with settings and existing demo-note bytes preserved. Native About displayed 0.7.0; Hybrid `y=x/2` and its linked graph were opened without saving a new graph during that upgrade check. This records a manual upgrade, not a native community-directory installation. Exact evidence and remaining platform limits are in [TEST-REPORT.md](TEST-REPORT.md).
 
-Earlier **0.6.2–0.6.5** releases are retained as recoverable drafts; the anonymous public release API currently lists 0.7.0 only. Their tags, history and pre-existing MIT rights remain. Historical verification observations below describe their original release checks; draft status does not revoke the original grants. Public betas use ordinary GitHub releases with the latest designation, while untested platforms remain outside verified scope.
+Earlier **0.6.2–0.6.5** releases are retained as recoverable drafts; the earlier check exposed 0.7.0 as the only public release. Their tags, history and pre-existing MIT rights remain. Historical verification observations below describe their original release checks; draft status does not revoke the original grants. Public betas use ordinary GitHub releases with the latest designation, while untested platforms remain outside verified scope.
 
 ## License transition in 0.7.0
 

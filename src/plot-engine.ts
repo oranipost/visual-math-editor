@@ -1,6 +1,15 @@
 /** Bounded, dependency-free numerical graphs. This parser never evaluates JavaScript. */
 export interface PlotSpec {
-  mode?: 'function' | 'complex';
+  mode?: 'function' | 'complex' | 'polar' | 'surface';
+  thetaMin?: number;
+  thetaMax?: number;
+  calculus?: 'none' | 'derivative' | 'second-derivative' | 'integral';
+  integralMin?: number;
+  integralMax?: number;
+  zMin?: number;
+  zMax?: number;
+  azimuth?: number;
+  elevation?: number;
   expression: string;
   xMin: number;
   xMax: number;
@@ -14,9 +23,9 @@ export type CompiledExpression = {
   ok: true;
   expression: string;
   /** Returns NaN outside the real, finite domain. Trigonometric arguments are radians. */
-  evaluate: (x: number) => number;
+  evaluate: (x: number, y?: number) => number;
   /** Conservative guards for sampled denominator zeroes and tangent poles. */
-  crossesDomainBoundary: (from: number, to: number) => boolean;
+  crossesDomainBoundary: (from: number, to: number, fromY?: number, toY?: number) => boolean;
   /** Conservative arithmetic work estimate used to bound synchronous sampling. */
   evaluationCost: number;
 };
@@ -38,12 +47,13 @@ export const PLOT_LIMITS = Object.freeze({
   arithmeticWork: 3000000,
 });
 
-const FUNCTION_NAMES = ['sin', 'cos', 'tan', 'sqrt', 'abs', 'ln', 'log', 'exp'] as const;
+const FUNCTION_NAMES = ['sin', 'cos', 'tan', 'sec', 'csc', 'cot', 'asin', 'acos', 'atan', 'sinh', 'cosh', 'tanh', 'asinh', 'acosh', 'atanh', 'sqrt', 'abs', 'ln', 'log', 'exp'] as const;
+export type PlotVariable = 'x' | 'y' | 'theta';
 type FunctionName = typeof FUNCTION_NAMES[number];
 interface RationalExponent { numerator: number; denominator: number }
 type Node =
   | { type: 'number'; value: number }
-  | { type: 'variable' }
+  | { type: 'variable'; name: PlotVariable }
   | { type: 'unary'; negative: boolean; child: Node }
   | { type: 'binary'; op: string; left: Node; right: Node; rationalExponent?: RationalExponent }
   | { type: 'function'; name: FunctionName; child: Node };
@@ -85,7 +95,7 @@ class Parser {
   private index = 0;
   private nodeCount = 0;
   private depth = 0;
-  constructor(private readonly tokens: Token[]) {}
+  constructor(private readonly tokens: Token[], private readonly variables: readonly PlotVariable[]) {}
 
   parse(): Node {
     if (!this.tokens.length) fail('Enter an expression such as x^2 or sin(x).');
@@ -158,11 +168,11 @@ class Parser {
       return child;
     }
     if (token.kind === 'name') {
-      if (token.value === 'x') return this.node({ type: 'variable' });
+      if (this.variables.includes(token.value as PlotVariable)) return this.node({ type: 'variable', name: token.value as PlotVariable });
       if (token.value === 'pi' || token.value === 'e') {
         return this.node({ type: 'number', value: token.value === 'pi' ? Math.PI : Math.E });
       }
-      if (!FUNCTION_NAMES.includes(token.value as FunctionName)) fail('Unknown name. Use x, pi, e, sin, cos, tan, sqrt, abs, ln, log, or exp.');
+      if (!FUNCTION_NAMES.includes(token.value as FunctionName)) fail(`Unknown name. Use ${this.variables.join(', ')}, pi, e, or a supported function.`);
       if (!this.take('(')) fail('Function arguments need parentheses, for example sin(x).');
       const child = this.nested(() => this.sum());
       if (!this.take(')')) fail('A closing parenthesis is missing.');
@@ -198,14 +208,14 @@ function constantRationalExponent(node: Node): RationalExponent | undefined {
   return { numerator: (denominator < 0 ? -numerator : numerator) / divisor, denominator: Math.abs(denominator) / divisor };
 }
 
-function evaluate(node: Node, x: number): number {
+function evaluate(node: Node, x: number, y = 0): number {
   switch (node.type) {
     case 'number': return node.value;
-    case 'variable': return x;
-    case 'unary': return (node.negative ? -1 : 1) * evaluate(node.child, x);
+    case 'variable': return node.name === 'y' ? y : x;
+    case 'unary': return (node.negative ? -1 : 1) * evaluate(node.child, x, y);
     case 'binary': {
-      const left = evaluate(node.left, x);
-      const right = evaluate(node.right, x);
+      const left = evaluate(node.left, x, y);
+      const right = evaluate(node.right, x, y);
       switch (node.op) {
         case '+': return left + right;
         case '-': return left - right;
@@ -223,11 +233,23 @@ function evaluate(node: Node, x: number): number {
       }
     }
     case 'function': {
-      const value = evaluate(node.child, x);
+      const value = evaluate(node.child, x, y);
       switch (node.name) {
         case 'sin': return Math.sin(value);
         case 'cos': return Math.cos(value);
         case 'tan': return Math.abs(Math.cos(value)) < 1e-12 ? NaN : Math.tan(value);
+        case 'sec': return Math.abs(Math.cos(value)) < 1e-12 ? NaN : 1 / Math.cos(value);
+        case 'csc': return Math.abs(Math.sin(value)) < 1e-12 ? NaN : 1 / Math.sin(value);
+        case 'cot': return Math.abs(Math.sin(value)) < 1e-12 ? NaN : Math.cos(value) / Math.sin(value);
+        case 'asin': return Math.asin(value);
+        case 'acos': return Math.acos(value);
+        case 'atan': return Math.atan(value);
+        case 'sinh': return Math.sinh(value);
+        case 'cosh': return Math.cosh(value);
+        case 'tanh': return Math.tanh(value);
+        case 'asinh': return Math.asinh(value);
+        case 'acosh': return Math.acosh(value);
+        case 'atanh': return Math.atanh(value);
         case 'sqrt': return Math.sqrt(value);
         case 'abs': return Math.abs(value);
         case 'ln': return Math.log(value);
@@ -253,13 +275,13 @@ function nodeCost(node: Node): number {
   return 1 + nodeCost(node.child);
 }
 
-function domainGuards(root: Node): Array<{ at: (x: number) => number; cost: number }> {
-  const guards: Array<{ at: (x: number) => number; cost: number }> = [];
+function domainGuards(root: Node): Array<{ at: (x: number, y?: number) => number; cost: number }> {
+  const guards: Array<{ at: (x: number, y?: number) => number; cost: number }> = [];
   const guarded = new Set<Node>();
   const zeroFactors = (node: Node): void => {
     if (guarded.has(node)) return;
     guarded.add(node);
-    guards.push({ at: (x) => evaluate(node, x), cost: nodeCost(node) });
+    guards.push({ at: (x, y) => evaluate(node, x, y), cost: nodeCost(node) });
     // A squared denominator can touch zero without changing sign; guard its factors too.
     if (node.type === 'unary') zeroFactors(node.child);
     if (node.type === 'function' && (node.name === 'sqrt' || node.name === 'abs')) zeroFactors(node.child);
@@ -276,7 +298,8 @@ function domainGuards(root: Node): Array<{ at: (x: number) => number; cost: numb
       visit(node.left);
       visit(node.right);
     } else if (node.type === 'function') {
-      if (node.name === 'tan') guards.push({ at: (x) => Math.cos(evaluate(node.child, x)), cost: 1 + nodeCost(node.child) });
+      if (node.name === 'tan' || node.name === 'sec') guards.push({ at: (x, y) => Math.cos(evaluate(node.child, x, y)), cost: 1 + nodeCost(node.child) });
+      if (node.name === 'csc' || node.name === 'cot') guards.push({ at: (x, y) => Math.sin(evaluate(node.child, x, y)), cost: 1 + nodeCost(node.child) });
       visit(node.child);
     } else if (node.type === 'unary') visit(node.child);
   };
@@ -301,21 +324,29 @@ function mayCrossZero(at: (x: number) => number, from: number, to: number): bool
   return vertex > 0 && vertex < 1 && minimum < Math.min(aa, bb) * 0.05;
 }
 
-export function compileExpression(input: string): CompiledExpression | PlotFailure {
+export function compileExpression(input: string, variables: readonly PlotVariable[] = ['x']): CompiledExpression | PlotFailure {
   if (typeof input !== 'string') return { ok: false, error: 'Enter an expression such as x^2 or sin(x).' };
   if (input.length > PLOT_LIMITS.expressionLength) return { ok: false, error: 'The expression is too long (maximum 500 characters).' };
-  const expression = input.trim().replace(/^y\s*=\s*/, '').replace(/π/g, 'pi').replace(/[−–]/g, '-').replace(/×/g, '*').replace(/÷/g, '/');
+  if (!variables.length || variables.some(variable => !['x', 'y', 'theta'].includes(variable))
+    || new Set(variables).size !== variables.length || (variables.includes('theta') && variables.length !== 1)) {
+    return { ok: false, error: 'Unsupported graph variables.' };
+  }
+  const prefix = variables.includes('theta') ? /^r\s*=\s*/ : variables.includes('y') ? /^z\s*=\s*/ : /^y\s*=\s*/;
+  const expression = input.trim().replace(prefix, '').replace(/π/g, 'pi').replace(/θ/g, 'theta')
+    .replace(/arcsin\b/g, 'asin').replace(/arccos\b/g, 'acos').replace(/arctan\b/g, 'atan')
+    .replace(/[−–]/g, '-').replace(/×/g, '*').replace(/÷/g, '/');
   try {
-    const root = new Parser(tokenize(expression)).parse();
+    const root = new Parser(tokenize(expression), variables).parse();
     const guards = domainGuards(root);
     return {
       ok: true, expression,
-      evaluate: (x) => {
-        if (!Number.isFinite(x)) return NaN;
-        const result = evaluate(root, x);
+      evaluate: (x, y = 0) => {
+        if (!Number.isFinite(x) || !Number.isFinite(y)) return NaN;
+        const result = evaluate(root, x, y);
         return Number.isFinite(result) ? result : NaN;
       },
-      crossesDomainBoundary: (from, to) => guards.some((guard) => mayCrossZero(guard.at, from, to)),
+      crossesDomainBoundary: (from, to, fromY = 0, toY = fromY) => guards.some((guard) => mayCrossZero(
+        t => guard.at(from + (to - from) * t, fromY + (toY - fromY) * t), 0, 1)),
       evaluationCost: nodeCost(root) + 8 * guards.reduce((sum, guard) => sum + guard.cost, 0),
     };
   } catch (error) {
@@ -361,7 +392,7 @@ function clipPair(a: PlotPoint, b: PlotPoint, spec: PlotSpec): [PlotPoint, PlotP
   return samePoint(start, end) ? undefined : [start, end];
 }
 
-function sample(compiled: CompiledExpression, spec: PlotSpec): { segments: PlotPoint[][]; sampleCount: number } {
+export function sampleCurve(compiled: CompiledExpression, spec: PlotSpec): { segments: PlotPoint[][]; sampleCount: number } {
   const cache = new Map<number, PlotPoint>();
   const segments: PlotPoint[][] = [];
   let current: PlotPoint[] | undefined;
@@ -434,7 +465,15 @@ function ticks(minimum: number, maximum: number): number[] {
   return values;
 }
 
-function renderSvg(spec: PlotSpec, segments: PlotPoint[][]): string {
+export interface SvgRenderOptions {
+  title?: string;
+  description?: string;
+  annotation?: string;
+  mode?: string;
+  filledSegments?: PlotPoint[][];
+}
+
+export function renderSvg(spec: PlotSpec, segments: PlotPoint[][], options: SvgRenderOptions = {}): string {
   const xTicks = ticks(spec.xMin, spec.xMax).map(value => ({ value, label: formatTick(value, spec.xMax - spec.xMin) }));
   const yTicks = ticks(spec.yMin, spec.yMax).map(value => ({ value, label: formatTick(value, spec.yMax - spec.yMin) }));
   // Keep long decimal/negative tick labels inside the image and give the axis
@@ -471,7 +510,12 @@ function renderSvg(spec: PlotSpec, segments: PlotPoint[][]): string {
   if (spec.yMin <= 0 && spec.yMax >= 0) axes.push(`<line x1="${left}" y1="${decimal(sy(0))}" x2="${left + width}" y2="${decimal(sy(0))}"/>`);
   if (spec.xMin <= 0 && spec.xMax >= 0) axes.push(`<line x1="${decimal(sx(0))}" y1="${top}" x2="${decimal(sx(0))}" y2="${top + height}"/>`);
   const paths = segments.map((segment) => `<path d="${segment.map((point, index) => `${index ? 'L' : 'M'}${decimal(sx(point.x))},${decimal(sy(point.y))}`).join(' ')}"/>`).join('');
-  return `<svg data-vme-plot="function" xmlns="http://www.w3.org/2000/svg" width="800" height="480" viewBox="0 0 800 480" style="max-width:100%;height:auto" role="img" aria-label="${escapeXml(`Equation graph: y = ${expression}; horizontal axis X, vertical axis Y`)}"><title>${escapeXml(`Equation graph: y = ${expression}`)}</title><desc>Approximate numerical graph. The horizontal axis is X and the vertical axis is Y. Trigonometric arguments use radians. Domain gaps and unresolved discontinuities are omitted.</desc><rect width="800" height="480" rx="12" fill="#fff"/><g font-family="system-ui, sans-serif" fill="#1f2937"><text x="${left}" y="31" font-size="17">${escapeXml(`y = ${shortExpression}`)}</text><g stroke="#e5e7eb" stroke-width="1">${grid.join('')}</g><rect data-plot-frame="true" x="${left}" y="${top}" width="${width}" height="${height}" fill="none" stroke="#cbd5e1"/><g stroke="#64748b" stroke-width="1.3">${axes.join('')}</g><g font-size="16">${labels.join('')}</g><g font-size="22" font-weight="700"><text data-axis-label="X" x="774" y="418" text-anchor="middle">X</text><text data-axis-label="Y" x="38" y="35" text-anchor="middle">Y</text></g><g fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${paths}</g><text x="${left}" y="455" font-size="12" fill="#64748b">≈ · rad</text></g></svg>`;
+  const baseline = decimal(sy(Math.max(spec.yMin, Math.min(spec.yMax, 0))));
+  const fills = (options.filledSegments ?? []).filter(segment => segment.length > 1).map(segment => `<path d="M${decimal(sx(segment[0].x))},${baseline} ${segment.map(point => `L${decimal(sx(point.x))},${decimal(sy(point.y))}`).join(' ')} L${decimal(sx(segment[segment.length - 1].x))},${baseline} Z"/>`).join('');
+  const title = options.title ?? `Equation graph: y = ${expression}`;
+  const description = options.description ?? 'Approximate numerical graph. The horizontal axis is X and the vertical axis is Y. Trigonometric arguments use radians. Domain gaps and unresolved discontinuities are omitted.';
+  const display = options.title ?? `y = ${shortExpression}`;
+  return `<svg data-vme-plot="${escapeXml(options.mode ?? 'function')}" xmlns="http://www.w3.org/2000/svg" width="800" height="480" viewBox="0 0 800 480" style="max-width:100%;height:auto" role="img" aria-label="${escapeXml(`${title}; horizontal axis X, vertical axis Y`)}"><title>${escapeXml(title)}</title><desc>${escapeXml(description)}</desc><rect width="800" height="480" rx="12" fill="#fff"/><g font-family="system-ui, sans-serif" fill="#1f2937"><text data-vme-plot-caption="title" x="${left}" y="31" font-size="17">${escapeXml(display.length > titleLength ? `${display.slice(0, titleLength - 3)}…` : display)}</text><g stroke="#e5e7eb" stroke-width="1">${grid.join('')}</g><rect data-plot-frame="true" x="${left}" y="${top}" width="${width}" height="${height}" fill="none" stroke="#cbd5e1"/><g stroke="#64748b" stroke-width="1.3">${axes.join('')}</g><g font-size="16">${labels.join('')}</g><g font-size="22" font-weight="700"><text data-axis-label="X" x="774" y="418" text-anchor="middle">X</text><text data-axis-label="Y" x="38" y="35" text-anchor="middle">Y</text></g><g data-integral-shading="true" fill="#93c5fd" fill-opacity="0.5">${fills}</g><g fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${paths}</g><text data-vme-plot-caption="footer" x="${left}" y="455" font-size="12" fill="#64748b">${escapeXml(options.annotation ?? '≈ · rad')}</text></g></svg>`;
 }
 
 export function createPlot(input: PlotSpec): PlotResult {
@@ -480,7 +524,7 @@ export function createPlot(input: PlotSpec): PlotResult {
   const compiled = compileExpression(validated.spec.expression);
   if (!compiled.ok) return compiled;
   try {
-    const sampled = sample(compiled, validated.spec);
+    const sampled = sampleCurve(compiled, validated.spec);
     if (!sampled.segments.length) return { ok: false, error: 'No finite curve is visible in this range. Check the formula or adjust the axes.' };
     return { ok: true, ...sampled, spec: validated.spec, svg: renderSvg(validated.spec, sampled.segments) };
   } catch (error) {

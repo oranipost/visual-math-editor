@@ -11,6 +11,7 @@ import { focusInlineEditor, hideInlineEditor, inlineEditorField, showInlineEdito
 import { localizeEditor, resolveLanguage, translateUiText, type Language } from "./i18n";
 import type { PlotSpec } from "./plot-engine";
 import { createGraph } from "./graph-render";
+import { mountSurfaceInteraction, zoomSurfaceBounds } from "./surface-plot";
 import { controlIcon, type ControlIcon } from "./ui-icons";
 import { formatComplex, parseComplexNumbers } from "./complex-plane";
 import { mountPlotInteraction, zoomPlotBounds, type PlotBounds } from "./plot-interaction";
@@ -19,7 +20,7 @@ import type { PlotDraft } from "./plot-ui";
 import { mergeShortcutChanges, normalizeShortcuts, type FormulaShortcuts } from "./shortcuts";
 
 function graphDraft(spec: PlotSpec): PlotDraft {
-  return { mode: spec.mode ?? 'function', expression: spec.expression, xMin: String(spec.xMin), xMax: String(spec.xMax), yMin: String(spec.yMin), yMax: String(spec.yMax), previewed: true };
+  return { mode: spec.mode ?? 'function', expression: spec.expression, xMin: String(spec.xMin), xMax: String(spec.xMax), yMin: String(spec.yMin), yMax: String(spec.yMax), ...Object.fromEntries(['thetaMin', 'thetaMax', 'integralMin', 'integralMax', 'zMin', 'zMax', 'azimuth', 'elevation'].filter(key => spec[key as keyof PlotSpec] !== undefined).map(key => [key, String(spec[key as keyof PlotSpec])])), calculus: spec.calculus, previewed: true };
 }
 
 class AboutVisualMath extends Modal {
@@ -134,7 +135,7 @@ class EquationPicker extends Modal {
     });
     if (this.page === 0) graphs.forEach((graph, index) => {
       const row = list.createEl('button', { cls: 'vme-picker-row' });
-      const summary = graph.spec.mode === 'complex' ? graph.spec.expression.replace(/\n/g, '; ') : `y = ${graph.spec.expression}`;
+      const summary = graph.spec.mode === 'complex' ? graph.spec.expression.replace(/\n/g, '; ') : `${graph.spec.mode === 'surface' ? 'z' : graph.spec.mode === 'polar' ? 'r' : 'y'} = ${graph.spec.expression}`;
       row.textContent = `${graph.spec.mode === 'complex' ? '复平面' : '图像'} ${index + 1} · ${summary}`;
       row.dataset.i18nEn = `${graph.spec.mode === 'complex' ? 'Complex plane' : 'Graph'} ${index + 1} · ${summary}`;
       row.addEventListener('click', () => { this.close(); void this.plugin.editPlot(this.view, this.snapshot, graph); });
@@ -500,7 +501,7 @@ export default class VisualMathEditor extends Plugin {
     let disposed = false;
     let busy = false;
     let committed = false;
-    let interaction: ReturnType<typeof mountPlotInteraction> | undefined;
+    let interaction: { destroy(): void; setDisabled(value: boolean): void } | undefined;
     let localization: ReturnType<typeof localizeEditor> | undefined;
     child.register(() => { disposed = true; interaction?.destroy(); localization?.destroy(); });
     try {
@@ -515,7 +516,7 @@ export default class VisualMathEditor extends Plugin {
       status.dataset.testid = 'saved-plot-status';
       status.setAttribute('role', 'status');
       status.setAttribute('aria-live', 'polite');
-      const boundsChanged = (): boolean => ['xMin', 'xMax', 'yMin', 'yMax'].some(key => viewSpec[key as keyof PlotSpec] !== original[key as keyof PlotSpec]);
+      const boundsChanged = (): boolean => ['xMin', 'xMax', 'yMin', 'yMax', 'zMin', 'zMax', 'azimuth', 'elevation'].some(key => viewSpec[key as keyof PlotSpec] !== original[key as keyof PlotSpec]);
       const controls: HTMLButtonElement[] = [];
       const makeButton = (label: string, testid: string, action: () => void): HTMLButtonElement => {
         const node = toolbar.createEl('button', { text: label, cls: 'vme-science-button' });
@@ -555,11 +556,11 @@ export default class VisualMathEditor extends Plugin {
         viewSpec = { ...result.spec };
         status.textContent = boundsChanged()
           ? '视图已调整，尚未保存。点击“保存视图”更新笔记。'
-          : '拖动移动，滚动或双指缩放。调整后点击“保存视图”。';
+          : viewSpec.mode === 'surface' ? '拖动旋转，滚轮缩放。调整后点击“保存视图”。' : '拖动移动，滚动或双指缩放。调整后点击“保存视图”。';
         refresh();
         return true;
       };
-      const changeView = (bounds: PlotBounds | undefined): void => {
+      const changeView = (bounds: (PlotBounds & Partial<PlotSpec>) | undefined): void => {
         if (!bounds || disposed || busy || committed) return;
         let rendered = false;
         try { rendered = render({ ...viewSpec, ...bounds }); }
@@ -571,8 +572,8 @@ export default class VisualMathEditor extends Plugin {
           refresh();
         }
       };
-      makeButton('放大', 'saved-plot-zoom-in', () => { interaction?.setDisabled(true); changeView(zoomPlotBounds(viewSpec, 0.8)); refresh(); });
-      makeButton('缩小', 'saved-plot-zoom-out', () => { interaction?.setDisabled(true); changeView(zoomPlotBounds(viewSpec, 1.25)); refresh(); });
+      makeButton('放大', 'saved-plot-zoom-in', () => { interaction?.setDisabled(true); changeView(viewSpec.mode === 'surface' ? zoomSurfaceBounds(viewSpec, 0.8) : zoomPlotBounds(viewSpec, 0.8)); refresh(); });
+      makeButton('缩小', 'saved-plot-zoom-out', () => { interaction?.setDisabled(true); changeView(viewSpec.mode === 'surface' ? zoomSurfaceBounds(viewSpec, 1.25) : zoomPlotBounds(viewSpec, 1.25)); refresh(); });
       const reset = makeButton('重置视图', 'saved-plot-reset', () => {
         // Reset deliberately discards a queued gesture so it cannot undo the explicit button action.
         interaction?.setDisabled(true);
@@ -592,7 +593,9 @@ export default class VisualMathEditor extends Plugin {
           for (const point of parsed.points) legend.createEl('li', { text: `${point.label} = ${formatComplex(point)} · Re = ${point.re} · Im = ${point.im}` });
         }
       }
-      interaction = mountPlotInteraction(viewport, { getBounds: () => viewSpec, onChange: changeView });
+      interaction = original.mode === 'surface'
+        ? mountSurfaceInteraction(viewport, { getSpec: () => viewSpec, onChange: changeView })
+        : mountPlotInteraction(viewport, { getBounds: () => viewSpec, onChange: changeView });
       refresh();
 
       const locate = async (): Promise<{ view: MarkdownView; snapshot: string; block: PlotBlock }> => {

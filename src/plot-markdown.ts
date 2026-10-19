@@ -5,17 +5,31 @@ import { DocumentChangedError, planWrite, type WriteTarget } from './write-plan'
 
 export interface PlotBlock { from: number; to: number; source: string; spec: PlotSpec }
 const FIELDS = ['expression', 'xMin', 'xMax', 'yMin', 'yMax'] as const;
+const EXTRA_FIELDS = ['thetaMin', 'thetaMax', 'calculus', 'integralMin', 'integralMax', 'zMin', 'zMax', 'azimuth', 'elevation'] as const;
 
 export function parsePlotSpec(source: string): PlotSpec {
   if (source.length > 4096) throw new Error('Graph settings are too long.');
   const data: unknown = JSON.parse(source);
   if (!data || typeof data !== 'object' || Array.isArray(data)) throw new Error('Invalid graph settings.');
   const record = data as Record<string, unknown>;
-  if (record.version !== 1 || Object.keys(record).some(key => key !== 'version' && key !== 'mode' && !FIELDS.includes(key as typeof FIELDS[number]))) throw new Error('Unsupported graph settings version.');
-  if (record.mode !== undefined && record.mode !== 'function' && record.mode !== 'complex') throw new Error('Unsupported graph mode.');
+  if (record.version !== 1 || Object.keys(record).some(key => key !== 'version' && key !== 'mode' && ![...FIELDS, ...EXTRA_FIELDS].includes(key as typeof FIELDS[number]))) throw new Error('Unsupported graph settings version.');
+  if (record.mode !== undefined && !['function', 'complex', 'polar', 'surface'].includes(String(record.mode))) throw new Error('Unsupported graph mode.');
   if (typeof record.expression !== 'string' || !FIELDS.slice(1).every(key => typeof record[key] === 'number' && Number.isFinite(record[key]))) throw new Error('Invalid graph settings.');
   const spec = Object.fromEntries(FIELDS.map(key => [key, record[key]])) as unknown as PlotSpec;
-  if (record.mode !== undefined) spec.mode = record.mode;
+  if (record.mode !== undefined) spec.mode = record.mode as PlotSpec['mode'];
+  for (const key of EXTRA_FIELDS) {
+    if (record[key] === undefined) continue;
+    if (key === 'calculus') {
+      if (!['none', 'derivative', 'second-derivative', 'integral'].includes(String(record[key]))) throw new Error('Invalid calculus settings.');
+      spec.calculus = record[key] as PlotSpec['calculus'];
+    } else {
+      if (typeof record[key] !== 'number' || !Number.isFinite(record[key])) throw new Error('Invalid graph settings.');
+      spec[key] = record[key] as number;
+    }
+  }
+  const allowed = spec.mode === 'surface' ? ['zMin', 'zMax', 'azimuth', 'elevation']
+    : spec.mode === 'polar' ? ['thetaMin', 'thetaMax'] : spec.mode === 'complex' ? [] : ['calculus', 'integralMin', 'integralMax'];
+  if (EXTRA_FIELDS.some(key => record[key] !== undefined && !allowed.includes(key))) throw new Error('Graph settings do not match this graph type.');
   const validated = validateGraphSpec(spec);
   if (!validated.ok) throw new Error(validated.error);
   return validated.spec;
@@ -81,6 +95,6 @@ export function planGraphUpdate(current: string, target: WriteTarget, spec: Plot
   const next = parsePlotSpec(serialized.split('\n')[1]);
   const block = findPlotBlocks(current).find(value => value.from === target.from && value.to === target.to);
   if (!block) throw new Error('The original graph is no longer at this position. Reopen it.');
-  if ((block.spec.mode ?? 'function') === (next.mode ?? 'function') && FIELDS.every(key => block.spec[key] === next[key])) return current.slice(target.from, target.to);
+  if (JSON.stringify(block.spec) === JSON.stringify(next)) return current.slice(target.from, target.to);
   return serialized;
 }

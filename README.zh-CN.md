@@ -6,9 +6,22 @@
 
 内置化学式与可选配平建议、物理模板、离线单位换算、118 元素表、函数图像和 Re / Im 复平面。全部本地运行，无需账号或运行时网络。
 
-当前版本：**0.7.0，桌面公开测试版，已作为 [GitHub latest 发行版公开](https://github.com/oranipost/visual-math-editor/releases/tag/0.7.0)**。本次加入 Visual Math 新名称、英语／简体中文／西班牙语、当前公式下方的关联图像，以及自定义公式快捷词。
+## 0.8.0 — 桌面公开测试版
 
-main／tag 的 Node.js 22／24 检查与[发行工作流](https://github.com/oranipost/visual-math-editor/actions/runs/39192793031)均成功，六个公开发行附件均通过严格来源证明验证。官方目录显示 **0.7.0 / Review Passed / Health Excellent**，没有 Error 或 Warning；用户主动剪贴板访问与可选下载附件的两类建议仍保留。实际验证、原生测试边界和审核观察见 [TEST-REPORT.md](TEST-REPORT.md) 与[提交指南](docs/COMMUNITY-SUBMISSION.md)。功能范围见 [MVP.md](MVP.md)，语言见 [LANGUAGE-SUPPORT.md](LANGUAGE-SUPPORT.md)。
+**[Visual Math 0.8.0 — 桌面公开测试版](https://github.com/oranipost/visual-math-editor/releases/tag/0.8.0)** 新增极坐标、数值微积分和 XYZ 曲面。已通过 **194 项自动测试与 368 项浏览器组件检查**；**0.8.0 原生 Obsidian 插入、保存重开尚未验证**，请优先在独立测试库试用。GitHub 公开、目录审核和成功的原生安装是不同状态；下载可用性以发行页为准，实际验证见 [TEST-REPORT.md](TEST-REPORT.md)。
+
+- **极坐标**：选择 **极坐标 / Polar graph**，输入 `r=2*sin(3*theta)` 绘制三叶玫瑰线；θ 默认从 `0` 到 `6.283185307179586`（2π）。X/Y 每单位长度相同，负极径反向绘制。
+- **微积分**：输入 `y=x^2`，在函数图像的微积分选项中选择一阶导数、二阶导数或定积分。定积分上下限设为 `0`、`1`，带符号的数值近似约为 `0.333333333`，选定区间在图中显示阴影。
+- **XYZ 三维曲面**：选择 **三维曲面 / 3D surface**，输入 `z=(x^2-y^2)/10`。拖动旋转、滚轮缩放，三个坐标范围与相机角度随图保存。默认 X/Y 为 −5 至 5、Z 为 −2 至 2、方位角 45°、仰角 30°。基础网格最多 28 × 28 个网格单元，并有计算量受限的局部细分；复杂公式可能使用更粗网格。三个轴分别缩放到显示框，屏幕上相同长度不代表 X/Y/Z 数值单位相同。
+- **快捷输入**：常用符号按钮在光标处插入，或包裹已选内容；示例按钮会替换整个绘图表达式。三角函数采用弧度。
+
+这些功能使用数值方法绘图，不是计算机代数系统；不提供通用隐式方程、参数曲线／曲面或符号积分求解。定积分仅接受被积函数连续、数值有限且下限小于上限的区间，不计算反常积分或倒置上下限。极坐标 θ 跨度最多 100π 弧度。详见[方程绘图](#方程绘图)。
+
+## 0.7.0 — 上一版本历史验证
+
+历史公开版本：**0.7.0，桌面公开测试版，已作为 [GitHub 发行版公开](https://github.com/oranipost/visual-math-editor/releases/tag/0.7.0)**。本次加入 Visual Math 新名称、英语／简体中文／西班牙语、当前公式下方的关联图像，以及自定义公式快捷词。
+
+**0.7.0 对应源码／标签**的 Node.js 22／24 检查与[发行工作流](https://github.com/oranipost/visual-math-editor/actions/runs/39192793031)均成功，六个公开发行附件均通过严格来源证明验证。已记录的官方目录审核显示 **0.7.0 / Review Passed / Health Excellent**，没有 Error 或 Warning；用户主动剪贴板访问与可选下载附件的两类建议仍保留。实际验证、原生测试边界和审核观察见 [TEST-REPORT.md](TEST-REPORT.md) 与[提交指南](docs/COMMUNITY-SUBMISSION.md)。功能范围见 [MVP.md](MVP.md)，语言见 [LANGUAGE-SUPPORT.md](LANGUAGE-SUPPORT.md)。
 
 显示名称改变，但插件 ID、仓库地址和安装文件夹继续使用 `visual-math-editor`，保留已有设置与图像标识。
 
@@ -24,11 +37,11 @@ main／tag 的 Node.js 22／24 检查与[发行工作流](https://github.com/ora
 
 **[打开 Obsidian 社区插件目录页面](https://community.obsidian.md/plugins/visual-math-editor)。** 插件进入应用安装索引后，点击 **Add to Obsidian**，允许链接打开 Obsidian，再在插件详情中选择 **Install（安装）→ Enable（启用）**。打开 Markdown 笔记，点击右上角或左侧工具栏的 **∑**。目录安装入口启用与完成原生安装实测是不同观察，实际测试以 [TEST-REPORT.md](TEST-REPORT.md) 为准。
 
-**目录与安装状态：** 公开目录条目已显示 0.7.0 并通过审核；官方安装索引包含 `visual-math-editor`，本次检查的索引名称仍为 **Visual Math Editor**。索引中存在条目与完成应用内商城安装是两类观察。现有 Personal vault 已从 0.7.0 ZIP 手动升级，设置与原有演示笔记字节一致，原生 About 显示 0.7.0；升级检查中打开了 Hybrid `y=x/2` 联动预览，但未保存新图。本次尚未完成原生社区目录安装，详见测试记录。
+**0.8.0 发布前核对的目录与安装状态：** 最近已验证的目录审核对应 0.7.0，不表示 0.8.0 已获通过；官方安装索引包含 `visual-math-editor`，本次检查的索引名称仍为 **Visual Math Editor**。索引中存在条目与完成应用内商城安装是两类观察。现有 Personal vault 已从 0.7.0 ZIP 手动升级，设置与原有演示笔记字节一致，原生 About 显示 0.7.0；升级检查中打开了 Hybrid `y=x/2` 联动预览，但未保存新图。本次尚未完成原生社区目录安装，详见测试记录。
 
 ### 手动安装
 
-**[0.7.0 安装包](https://github.com/oranipost/visual-math-editor/releases/download/0.7.0/visual-math-editor-0.7.0.zip)** · [查看发布说明和校验值](https://github.com/oranipost/visual-math-editor/releases/tag/0.7.0) · [完整安装 / 更新 / 卸载说明](docs/INSTALLATION.md#简体中文)
+**[0.8.0 安装包](https://github.com/oranipost/visual-math-editor/releases/download/0.8.0/visual-math-editor-0.8.0.zip)** · [查看发布说明和校验值](https://github.com/oranipost/visual-math-editor/releases/tag/0.8.0) · [完整安装 / 更新 / 卸载说明](docs/INSTALLATION.md#简体中文)
 
 选择手动安装时，请下载已公开 Release 的安装 ZIP；GitHub 的 **Code → Download ZIP** 和自动生成的 **Source code** 是源码，需要自行构建。
 
@@ -39,13 +52,13 @@ main／tag 的 Node.js 22／24 检查与[发行工作流](https://github.com/ora
 3. 重启 Obsidian，进入 **Settings → Community plugins**。首次使用社区插件时选择 **Turn on community plugins**，然后启用 **Visual Math**。
 4. 打开 Markdown 笔记，右上角和左侧工具栏出现 **∑** 后即可使用。
 
-旧 0.6.2–0.6.5 发行版保留为可恢复的草稿；当前匿名公开 Release API 只列出 0.7.0。历史标签、源码和原有 MIT 权利保留；新版 GPL 许可不会追溯撤销旧授权。
+旧 0.6.2–0.6.5 发行版保留为可恢复的草稿；历史标签仍保留。历史标签、源码和原有 MIT 权利保留；新版 GPL 许可不会追溯撤销旧授权。
 
 目录更新可在 **设置 → 第三方插件 → 检查更新 → 更新** 中操作；社区插件不会自动更新。手动更新时，先保存或取消未提交的公式草稿，关闭插件，备份现有 `visual-math-editor` 文件夹，再把新版安装文件复制到该文件夹，保留已有的 `data.json` 设置。两种方式都应先保存草稿，完成后重启 Obsidian 以刷新 MathLive。无需自行补代码，也不必重新下载笔记库。详见[更新机制](docs/UPDATING.md#简体中文)。
 
 运行必需文件为 `main.js`、`manifest.json`、`styles.css`。字体已经嵌入样式文件；分发安装包时请同时保留 `LICENSE`、`LICENSING.md`、`MATHLIVE-LICENSE.txt`、`KATEX-FONTS-LICENSE.txt`、`MHCHEM-LICENSE.txt`、`CONVERT-LICENSE.txt` 和 `THIRD-PARTY-NOTICES.md`。
 
-macOS 的 Finder 可用 **⌘⇧.** 显示隐藏文件夹。如果 vault 使用了自定义配置目录，请以该目录代替 `.obsidian`。本版要求 Obsidian **1.14.4 或更新版本**，目前支持桌面主窗口。实际原生测试使用 macOS 与 Obsidian 1.14.4；Windows、Linux、移动端、分离窗口及所有第三方主题组合尚未验证。
+macOS 的 Finder 可用 **⌘⇧.** 显示隐藏文件夹。如果 vault 使用了自定义配置目录，请以该目录代替 `.obsidian`。本版要求 Obsidian **1.14.4 或更新版本**，目前支持桌面主窗口。旧版原生测试使用 macOS 与 Obsidian 1.14.4，不替代本版的原生插入与重开验证；Windows、Linux、移动端、分离窗口及所有第三方主题组合尚未验证。
 
 ## 演示
 
@@ -87,7 +100,7 @@ macOS 的 Finder 可用 **⌘⇧.** 显示隐藏文件夹。如果 vault 使用�
 
 ## 化学、物理、单位与元素表
 
-学科标签按需显示工具，默认显示数学工具。0.7.0 界面提供 **English / 中文 / Español / 跟随 Obsidian（Follow Obsidian）**（“中文”对应简体中文），选择会保存到当前 vault 的插件设置。西班牙语中的跟随选项显示为 **Usar el idioma de Obsidian**。跟随 Obsidian 时，`es`、`es-ES`、`es-MX` 等西班牙语使用西班牙语，中文地区与字形变体共用简体中文，尚未支持的语言使用英语。切换界面语言不会翻译公式源码、改写笔记或保存图像范围。翻译范围与实际验证分别见 [LANGUAGE-SUPPORT.md](LANGUAGE-SUPPORT.md) 和 [TEST-REPORT.md](TEST-REPORT.md)。
+学科标签按需显示工具，默认显示数学工具。0.8.0 界面继续提供 **English / 中文 / Español / 跟随 Obsidian（Follow Obsidian）**（“中文”对应简体中文），选择会保存到当前 vault 的插件设置。西班牙语中的跟随选项显示为 **Usar el idioma de Obsidian**。跟随 Obsidian 时，`es`、`es-ES`、`es-MX` 等西班牙语使用西班牙语，中文地区与字形变体共用简体中文，尚未支持的语言使用英语。切换界面语言不会翻译公式源码、改写笔记或保存图像范围。翻译范围与实际验证分别见 [LANGUAGE-SUPPORT.md](LANGUAGE-SUPPORT.md) 和 [TEST-REPORT.md](TEST-REPORT.md)。
 
 - **化学**：在普通输入框中填写 `H2O`、`SO4^2-`、`CH3-CH2-OH` 或 `2H2 + O2 -> 2H2O`，预览会排好下标、电荷、键和箭头。按钮提供单键、双键、三键、反应箭头、可逆箭头、物态和气体/沉淀符号。点击 **插入化学式** 才加入当前公式草稿。
 - **物理**：点击速度向量、梯度、散度、旋度、偏导数、ℏ、希腊字母或牛顿第二定律等模板，随后在可视化公式中修改变量。
@@ -109,15 +122,17 @@ macOS 的 Finder 可用 **⌘⇧.** 显示隐藏文件夹。如果 vault 使用�
 
 ## 方程绘图
 
+以下极坐标、微积分与 XYZ 控件属于 **0.8.0**。上面的原生 Obsidian 截图与已记录审核结果仍属于相应旧版本，不能作为 0.8.0 原生验证证据。
+
 在公式下方点击 **绘制此公式 / Graph this equation**，即可直接在同一编辑器中显示受支持公式的图像，**无需到另一个输入框重填公式**。继续修改公式时，关联预览同步更新；平移或缩放后的范围会保留，直到明确重置或保存。点击 **插入公式与图像 / Insert equation and graph** 才将完整公式与图像一起保存；**隐藏图像 / Hide graph** 可收起关联预览。预览不会自动修改笔记。
 
 **联动只持续于当前编辑器内。** 保存后，LaTeX 公式与 `vme-plot` 图像是两个独立的笔记区块；以后只修改公式，不会自动改动已保存图像。应从修改后的公式重新绘图，或点击已有图像的 **编辑图像 / Edit graph** 明确更新它。
 
-当前公式转换只支持有限的单变量实函数，例如 `y=x^2`、分数、根号和常见三角函数。遇到化学式、积分、求和、多变量或未知宏，会说明限制并保留公式，不会猜测或删掉未知部分后绘图。
+当前公式转换支持有限的显式表达式：`y=x^2` 绘制函数，公式编辑器中的 `r=2\sin(3\theta)` 绘制极坐标，`z=(x^2-y^2)/10` 绘制曲面。支持的分数、根号和三角函数可直接转换，无需重复输入。通用隐式方程、化学式、积分符号、求和或未知宏会说明限制并保留公式，不会猜测或删掉未知部分后绘图。导数与定积分通过图像的微积分选项计算；写下积分符号不表示执行符号求解。
 
-需要手动输入函数或标记复数点时，可展开高级 **图像 / Graph** 工具。在函数框填写 `x^2` 或 `y = sin(x)`，输入停止片刻后自动预览；可用范围框或图中操作改变视野。输入有效时直接点击 **插入图像 / Insert graph** 或 **保存图像 / Save graph**，提交时会重新验证当前输入，不必先手动点击预览；**预览图像 / Preview graph** 可随时刷新。三角函数采用弧度。
+需要手动输入函数、极径、曲面或标记复数点时，可展开高级 **图像 / Graph** 工具。在函数框填写 `x^2` 或 `y = sin(x)`，输入停止片刻后自动预览；可用范围框或图中操作改变视野。输入有效时直接点击 **插入图像 / Insert graph** 或 **保存图像 / Save graph**，提交时会重新验证当前输入，不必先手动点击预览；**预览图像 / Preview graph** 可随时刷新。三角函数采用弧度。
 
-图像采用实数直角坐标系，横轴标为 **X**、纵轴标为 **Y**；轴名加大、加粗并与数字刻度留出间距。函数表达式仍使用 `x`。切换到 **复平面 / Complex plane** 后，横轴为 **Re**（实部）、纵轴为 **Im**（虚部），用于标记复数点。切换时，本次面板分别保留函数与复数的输入、范围和预览状态；保存到笔记的是当前选中的图像类型。
+图像采用实数直角坐标系，横轴标为 **X**、纵轴标为 **Y**；轴名加大、加粗并与数字刻度留出间距。函数表达式仍使用 `x`。切换到 **复平面 / Complex plane** 后，横轴为 **Re**（实部）、纵轴为 **Im**（虚部），用于标记复数点。切换时，本次面板分别保留函数、极坐标、曲面与复数的输入、范围和预览状态；保存到笔记的是当前选中的图像类型。
 
 **复数试用**：在 Graph 中选择 **Complex plane**，输入 `3+2i`，自动预览后可在实部 3、虚部 2 的位置看到点。可在多行中分别输入复数；例如 `3+2i`、`-2-i`、`4`、`-3i`。先检查预览，再点击 **Insert graph** 保存到笔记；点击图形的 **Edit graph** 可修改复数或视野后再次保存。复数输入每行一个，最多 20 个、合计 1000 字符；支持 `i`、`-i`、小数和科学记数。实部、虚部均须在 ±1,000,000 内。复数输入仅支持明确的直角形式，不计算 `sqrt(-1)`、乘法、极坐标或自定义标签。
 
@@ -125,13 +140,17 @@ macOS 的 Finder 可用 **⌘⇧.** 显示隐藏文件夹。如果 vault 使用�
 
 点击 **插入图像 / Insert graph** 才会写入笔记。若当前公式草稿中已有完整公式，会在同一次保存中保留该公式并插入图形；未填写完的公式需要先完成或清空。只改函数或范围不会改动公式草稿；取消不写入笔记。保存后的图形提供 **编辑图像 / Edit graph**，重开后点击 **保存图像 / Save graph** 提交修改；保存仍可用 Obsidian 的 Undo 撤销。
 
-**使用当前公式 / Use current equation** 可将受支持的分数、平方根、幂、括号或三角函数转成绘图预览。不能可靠转换的公式会保留原文，并提示在函数框直接输入；不会静默删除未知符号后画出另一个函数。化学式、多变量、求和、积分、自定义宏等不在转换范围内。
+**使用当前公式 / Use current equation** 可将受支持的分数、平方根、幂、括号或三角函数转成绘图预览。不能可靠转换的公式会保留原文，并提示在函数框直接输入；不会静默删除未知符号后画出另一个函数。化学式、通用隐式多变量关系、求和、积分符号、自定义宏等不在转换范围内；显式 `z=f(x,y)` 曲面通过三维模式支持。
 
-本版支持一个显式函数 `y = f(x)`，可用 `x`、`pi`、`e`、十进制或科学记数数字，`+ - * / ^`、括号，以及 `sin`、`cos`、`tan`、`sqrt`、`abs`、`ln`、`log`、`exp`。函数参数需要括号；例如 `sin(x)`、`sqrt(x+1)`。可省略常见乘号，如 `2x`、`2(x+1)`。`ln` 为自然对数，`log` 为十进对数。绘图使用有限数值采样；未定义处和检测到的间断处会断开曲线，显示结果是近似图像，不用于证明连续性或代替精确求解。
+0.8.0 支持一个显式函数 `y = f(x)`、极径 `r=f(theta)` 或显式曲面 `z=f(x,y)`；函数解析可用 `x`、`pi`、`e`、十进制或科学记数数字，`+ - * / ^`、括号，以及 `sin`、`cos`、`tan`、`sec`、`csc`、`cot`、`asin`、`acos`、`atan`、`sinh`、`cosh`、`tanh`、`asinh`、`acosh`、`atanh`、`sqrt`、`abs`、`ln`、`log`、`exp`。`arcsin`、`arccos`、`arctan` 与相应模式中的 π／θ 也是可用别名。函数参数需要括号；例如 `sin(x)`、`sqrt(x+1)`。可省略常见乘号，如 `2x`、`2(x+1)`。`ln` 为自然对数，`log` 为十进对数。绘图使用有限数值采样；未定义处和检测到的间断处会断开曲线，显示结果是近似图像，不用于证明连续性或代替精确求解。
 
 负数底数的奇次根请写成明确的常数分数指数，例如 `x^(1/3)`，可显示负 x 的实数分支；`x^(2/3)` 也支持。不会把 `0.333333` 这样的近似小数猜成三分之一，负数底数的偶次根或其他未支持的幂分支会留空。
 
-图形与可再次编辑的函数或复数、范围一同保存在笔记中，由本插件离线渲染为 SVG。它们与普通 LaTeX 公式采用不同的保存格式；停用插件后，图形定义仍留在笔记中，但不会继续显示为曲线。本版不提供隐式方程、参数曲线、极坐标、三维图、多函数叠加、滑块或符号求解。函数最长 500 字符、嵌套最多 32 层；坐标边界须在 ±1,000,000 内，每个坐标跨度至少 10⁻⁹，并且不能相对其量级过窄。采样点数与计算量也有上限，超出时显示提示。高频震荡或很窄的特征可能无法由有限采样完整显示，可缩小 x 范围观察。
+图形与可再次编辑的模式、表达式或复数、坐标范围，以及适用的 θ、微积分、积分区间和相机参数一同保存在笔记中；保存并重新打开时恢复这些已存参数，由本插件离线渲染为 SVG。它们与普通 LaTeX 公式采用不同的保存格式；停用插件后，图形定义仍留在笔记中，但不会继续显示为曲线。0.8.0 新增极坐标与显式 XYZ 曲面；仍不提供通用隐式方程、参数曲线／曲面、多函数叠加、滑块或符号求解。极坐标 θ 须递增、跨度不超过 100π 弧度。数值导数在检测到尖点或无法解析的间断附近省略曲线。定积分仅支持连续、数值有限且上下限递增的区间，不支持反常积分、倒置上下限或求精确原函数；数值误差估计不是收敛证明。函数最长 500 字符、嵌套最多 32 层；坐标边界须在 ±1,000,000 内，每个坐标跨度至少 10⁻⁹，并且不能相对其量级过窄。采样点数与计算量也有上限，超出时显示提示。高频震荡或很窄的特征可能无法由有限采样完整显示，可缩小参数范围观察。XYZ 曲面使用最多 28 × 28 基础网格和受限细分，三个轴独立缩放；比较不同轴时应以数字刻度为准。
+
+三维模式内拖动用于旋转视角，滚轮或按钮缩放三个数值范围；点击插入／保存图像，或已保存图像的 **保存视野 / Save view**，才将范围和角度写入笔记。重新打开可继续编辑。保存后，图像与另一个公式区块仍相互独立。
+
+数值方法背景可参阅 NIST DLMF 的 [§3.4 数值微分](https://dlmf.nist.gov/3.4) 与 [§3.5 数值积分](https://dlmf.nist.gov/3.5)。
 
 ## 自定义公式关键词
 
@@ -155,7 +174,7 @@ macOS 的 Finder 可用 **⌘⇧.** 显示隐藏文件夹。如果 vault 使用�
 
 公式保存为 `$…$` 或 `$$…$$`。插件停用后，标准数学内容仍由 Obsidian 原生渲染；化学和单位内容需要宿主的 mhchem 支持。实际 Obsidian 验证范围以 [TEST-REPORT.md](TEST-REPORT.md) 为准。导出到其他软件时，需确认其支持 `\ce` / `\pu`；部分 LaTeX 环境的单位语法与 JavaScript mhchem 不同。
 
-图像保存为带版本的 `vme-plot` Markdown 区块，包含绘图模式、函数或复数输入，以及四个坐标边界。旧版未标明模式的区块继续按函数图像读取。本插件在阅读模式和 Live Preview 中将区块渲染为曲线，并提供编辑入口。选择源码模式或把光标移入区块时，Obsidian 可能显示其原始定义；无需手工编辑这些内容。图像仅插入普通正文的独立区块，不插入表格、列表或引用容器。
+图像保存为带版本的 `vme-plot` Markdown 区块，包含绘图模式、函数或复数输入、坐标边界，以及相应的 θ、微积分、积分上下限和三维相机参数。旧版未标明模式的区块继续按函数图像读取。本插件在阅读模式和 Live Preview 中将区块渲染为曲线，并提供编辑入口。选择源码模式或把光标移入区块时，Obsidian 可能显示其原始定义；无需手工编辑这些内容。图像仅插入普通正文的独立区块，不插入表格、列表或引用容器。
 
 新图像后会保留可继续输入的空白段落。在阅读模式的 **∑** 列表中，也可在已有图像之后选择末尾新增公式；旧版图像恰好位于笔记最后一行时同样支持，普通代码区块仍不会被当成可插入位置。
 
@@ -211,6 +230,6 @@ GitHub 发布与 Obsidian 社区目录上架是两件事。0.6.3 已完成官方
 
 从 **0.7.0** 起，新增项目代码及本版整体采用 [GNU GPL 第 3 版，仅该版本，加 Obsidian 链接例外](LICENSING.md)。版权所有 (c) 2026 Dongfang Wang。**0.6.5 及此前已经发布的代码继续保留原 MIT 授权**，此次变更不撤销已有许可；第三方组件仍保留各自许可证。迁移日期与历史 MIT 原文见 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)。该窄范围例外允许与 Obsidian 宿主配合，不豁免本插件修改版的 GPL 要求。对外分发 GPL 覆盖代码的修改版时，须遵守 GPL 的源码与许可证要求；GPL 仍允许商业分发。用户自己的笔记和公式不会仅因使用本插件创作而自动受 GPL 约束。
 
-插件入口为 `src/main.ts`，界面为 `src/editor-ui.ts`，学科工具与数据为 `src/science-ui.ts` / `src/science-data.ts`，元素详情为 `src/element-details.ts`，离线换算入口为 `src/unit-conversion.ts`，离线守恒检查为 `src/reaction-check.ts`。公式定位与安全写入分别位于 `src/math-ranges.ts` 和 `src/write-plan.ts`。函数解析、采样与 SVG 生成在 `src/plot-engine.ts`，模式分发在 `src/graph-render.ts`，复数解析和点图在 `src/complex-plane.ts`，图中平移缩放在 `src/plot-interaction.ts`，绘图工具在 `src/plot-ui.ts`，LaTeX 转换限制与图像区块写入分别在 `src/plot-latex.ts` / `src/plot-markdown.ts`。自定义图像区块使用 [Obsidian 官方 Markdown 扩展接口](https://github.com/obsidianmd/obsidian-developer-docs/blob/main/en/Plugins/Editor/Markdown%20post%20processing.md)。
+插件入口为 `src/main.ts`，界面为 `src/editor-ui.ts`，学科工具与数据为 `src/science-ui.ts` / `src/science-data.ts`，元素详情为 `src/element-details.ts`，离线换算入口为 `src/unit-conversion.ts`，离线守恒检查为 `src/reaction-check.ts`。公式定位与安全写入分别位于 `src/math-ranges.ts` 和 `src/write-plan.ts`。函数解析、采样与 SVG 生成在 `src/plot-engine.ts`，极坐标与数值微积分在 `src/advanced-plots.ts`，XYZ 曲面在 `src/surface-plot.ts`，模式分发在 `src/graph-render.ts`，复数解析和点图在 `src/complex-plane.ts`，图中平移缩放在 `src/plot-interaction.ts`，绘图工具在 `src/plot-ui.ts`，LaTeX 转换限制与图像区块写入分别在 `src/plot-latex.ts` / `src/plot-markdown.ts`。自定义图像区块使用 [Obsidian 官方 Markdown 扩展接口](https://github.com/obsidianmd/obsidian-developer-docs/blob/main/en/Plugins/Editor/Markdown%20post%20processing.md)。
 
 MathLive、Convert 与 KaTeX 字体采用 MIT；MathLive 内含 mhchem 解析器采用 Apache 2.0。完整声明和元素数据来源见 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)。元素身份与原子量参照 [CIAAW](https://ciaaw.org/atomic-weights.htm)，化学/单位写法参照 [mhchem 官方手册](https://mhchem.github.io/MathJax-mhchem/)，换算库见 [Convert](https://github.com/jonahsnider/convert)，温度换算参考 [NIST](https://www.nist.gov/pml/owm/si-units-temperature)。Obsidian 和 CodeMirror 运行时由宿主提供。

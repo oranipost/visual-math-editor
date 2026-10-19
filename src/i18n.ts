@@ -21,6 +21,7 @@ export const UI_TRANSLATIONS: Readonly<Record<string, string>> = {
   '系统 / System': 'System',
   '无法保存语言偏好 / Unable to save language preference': 'Unable to save language preference',
   '图像': 'Graph', '复平面': 'Complex plane', '函数图像': 'Function graph', '图像类型': 'Graph type',
+  '极坐标': 'Polar graph', '三维曲面': '3D surface', '微积分图像': 'Calculus graph',
   '公式位置无效，请重新打开编辑器。': 'The equation position is invalid. Reopen the editor.',
   '此位置位于表格、列表或引用块。第一版请使用行内公式，或到普通空白段落插入独立公式。': 'This position is inside a table, list or quote. Use an inline equation here, or insert a display equation in an ordinary blank paragraph.',
   '表格内暂不支持含竖线的复杂环境，请在表格外编辑这个公式。': 'Complex environments containing vertical bars are not supported in tables yet. Edit this equation outside the table.',
@@ -211,6 +212,41 @@ export const UI_TRANSLATIONS: Readonly<Record<string, string>> = {
   '本插件采用 GNU GPLv3 许可，不提供任何担保。你可按许可使用、修改与再分发。笔记内容不受此许可约束。': 'This plugin is licensed under GNU GPLv3, without any warranty. You may use, modify and redistribute it under that license. Your note content is not covered by this license.',
   '查看许可与第三方声明': 'View license and third-party notices',
   '下载此版本源码': 'Download source for this version',
+  '微积分视图': 'Calculus view', '原始函数': 'Original function',
+  '一阶导数 d/dx': 'First derivative d/dx', '二阶导数 d²/dx²': 'Second derivative d²/dx²',
+  '定积分与面积 ∫': 'Definite integral and area ∫',
+  'θ 起点（弧度）': 'θ start (radians)', 'θ 终点（弧度）': 'θ end (radians)',
+  '积分下限 a': 'Lower limit a', '积分上限 b': 'Upper limit b',
+  '水平旋转（度）': 'Azimuth (degrees)', '俯仰角（度）': 'Elevation (degrees)',
+  '向左旋转': 'Rotate left', '向右旋转': 'Rotate right',
+  '极径 r = f(θ)': 'Radius r = f(θ)', '曲面 z = f(x,y)': 'Surface z = f(x,y)',
+  '输入极径，例如 2*sin(3*theta)。θ 使用弧度。': 'Enter a radius, for example 2*sin(3*theta). θ uses radians.',
+  '极坐标采用等比例 X/Y 轴；负极径会反向绘制。图线为数值近似。': 'Polar graphs use equal X/Y units. Negative radii reverse direction. Curves are numerical approximations.',
+  '输入 z=f(x,y)，例如 sin(sqrt(x^2+y^2))。': 'Enter z=f(x,y), for example sin(sqrt(x^2+y^2)).',
+  '在曲面内拖动旋转，滚轮缩放；插入或保存才写入笔记。': 'Drag the surface to rotate; scroll to zoom. Insert or save to update the note.',
+  '三维曲面为有界网格数值近似；不支持隐式曲面或符号求解。': '3D surfaces use a bounded numerical mesh. Implicit surfaces and symbolic solving are not supported.',
+  '导数和定积分采用数值近似，不是符号计算；间断点附近可能省略曲线。': 'Derivatives and definite integrals are numerical approximations, not symbolic calculations. Curves may be omitted near discontinuities.',
+  '此公式暂不能绘图。支持 y=f(x)、r=f(theta) 或 z=f(x,y)；不支持隐式方程。请在上方修改公式。': 'This equation cannot be graphed yet. Use y=f(x), r=f(theta), or z=f(x,y). Implicit equations are not supported. Edit the equation above.',
+  '拖动旋转，滚轮缩放。调整后点击“保存视图”。': 'Drag to rotate; scroll to zoom. Choose Save view to keep changes.',
+  '示例（替换输入）': 'Examples (replace input)', '在光标处插入符号': 'Insert a symbol at the cursor',
+  '未知名称。请使用当前图像的变量（x、theta，或 x 和 y）、pi、e 及支持的函数。': 'Unknown name. Use the variables for this graph (x, theta, or x and y), pi, e, and supported functions.',
+  '极坐标设置无效，请重新打开编辑器。': 'Unsupported polar graph settings. Reopen the editor.',
+  '微积分视图仅适用于单变量函数图像。': 'Calculus views are available for function graphs only.',
+  'θ 起点须小于终点，均为有效数值，且范围不超过 100π 弧度。': 'Theta bounds must increase, be finite, and span no more than 100π radians.',
+  '极坐标图线过于复杂，请简化公式或缩小 θ 范围。': 'The polar graph is too complex. Simplify the formula or narrow the theta range.',
+  '此范围内没有可显示的极坐标图线，请检查公式或调整坐标范围。': 'No finite polar curve is visible in this range. Check the formula or adjust the axes.',
+  '暂时无法生成极坐标图，请检查公式后重试。': 'The polar graph could not be generated. Check the formula and try again.',
+  '微积分视图设置无效，请重新选择。': 'Unsupported calculus view. Choose another option.',
+  '积分上下限须为支持范围内的有效数值，且下限小于上限。': 'Integral bounds must be finite increasing numbers within the supported range.',
+  '积分在计算限制内未能收敛，请缩小区间或简化公式。': 'The integral did not converge within the work limit. Narrow the interval or simplify the formula.',
+  '积分区间包含无定义或反常区域，请使用有限且连续的区间。': 'The integral crosses an undefined or improper domain. Use a finite continuous interval.',
+  '积分结果超出有限数值范围。': 'The integral is outside the finite numerical range.',
+  '暂时无法生成微积分图像，请检查公式后重试。': 'The calculus graph could not be generated. Check the formula and try again.',
+  '请填写有效的 X、Y、Z 范围；三维俯仰角须为 10 至 80 度。': 'Use valid X, Y and Z ranges; the 3D elevation must be between 10 and 80 degrees.',
+  '曲面过于复杂，请简化公式或缩小坐标范围。': 'The surface is too complex. Simplify the equation or narrow its ranges.',
+  '曲面过于复杂，请简化公式后再绘图。': 'The surface is too complex. Simplify the equation before plotting it.',
+  '此范围内没有可显示的曲面，请检查公式或调整 X、Y、Z 范围。': 'No finite surface is visible. Check the equation or adjust the X, Y and Z ranges.',
+  '暂时无法生成曲面，请检查公式后重试。': 'The surface could not be generated. Check the formula and try again.',
 };
 
 /** Both names are searchable in every interface language; chemical symbols are unchanged. */
@@ -225,8 +261,10 @@ function translateCore(text: string, language: Exclude<ResolvedLanguage, 'zh'>):
   const spanish = language === 'es';
   if (spanish && Object.hasOwn(SPANISH_ELEMENT_NAMES, text)) return SPANISH_ELEMENT_NAMES[text];
   let match: RegExpExecArray | null;
-  match = /^(图像|复平面) (\d+) ·(?: ([\s\S]*))?$/.exec(text);
+  match = /^(图像|复平面|极坐标|三维曲面|微积分图像) (\d+) ·(?: ([\s\S]*))?$/.exec(text);
   if (match) return `${dictionary[match[1]]} ${match[2]} ·${match[3] === undefined ? '' : ` ${match[3]}`}`;
+  match = /^(X|Y|Z|Re|Im|θ) (最小值|最大值)$/.exec(text);
+  if (match) return `${match[1]} ${spanish ? match[2] === '最小值' ? 'mín.' : 'máx.' : match[2] === '最小值' ? 'min' : 'max'}`;
   if (spanish) {
     // Converter options combine a localized name and an invariant unit symbol.
     match = /^(.+?) (\([^()]+\))$/.exec(text);
@@ -239,8 +277,6 @@ function translateCore(text: string, language: Exclude<ResolvedLanguage, 'zh'>):
     if (match) return `Izquierda / derecha: ${match[1].replace(/电荷/g, 'carga')}`;
     match = /^视图内 (\d+) \/ (\d+) 个点。点击保存才写入笔记。$/.exec(text);
     if (match) return `${match[1]} / ${match[2]} puntos visibles. Guarda para actualizar la nota.`;
-    match = /^(X|Y|Re|Im) (最小值|最大值)$/.exec(text);
-    if (match) return `${match[1]} ${match[2] === '最小值' ? 'mín.' : 'máx.'}`;
     match = /^第 (\d+) 行：请输入 3\+2i、−i 或 4 这样的数值；暂不支持表达式或名称。$/.exec(text);
     if (match) return `Línea ${match[1]}: introduce un número como 3+2i, −i o 4; aún no se admiten expresiones ni nombres.`;
     match = /^第 (\d+) 行：实部和虚部须为 −1000000 至 1000000 之间的有效数值。$/.exec(text);
@@ -283,6 +319,45 @@ export function translatePlotUiText(text: string, language: ResolvedLanguage): s
     ? 'Gráfica numérica aproximada. El eje horizontal es X y el vertical es Y. Los argumentos trigonométricos usan radianes. Se omiten los huecos del dominio y las discontinuidades no resueltas.'
     : '数值近似图像。横轴为 X，纵轴为 Y。三角函数参数采用弧度。省略定义域空缺和未能解析的间断。';
   if (text === 'Complex plane') return spanish ? 'Plano complejo' : '复平面';
+  const surfaceDescription = 'Approximate numerical wireframe of z = f(x,y). Each axis is scaled independently to its displayed range. Trigonometric arguments use radians. Missing real values and unresolved discontinuities are omitted.';
+  if (text === surfaceDescription) return spanish
+    ? 'Malla numérica aproximada de z = f(x,y). Cada eje se escala de forma independiente según su intervalo visible. Los argumentos trigonométricos usan radianes. Se omiten los valores no reales y las discontinuidades no resueltas.'
+    : 'z = f(x,y) 的数值近似线框。各轴根据显示范围独立缩放。三角函数参数采用弧度。省略无实数值的区域和未能解析的间断。';
+  const surfaceMatch = /^3D surface: z = ([\s\S]*); X, Y and Z axes$/.exec(text);
+  if (surfaceMatch) return spanish
+    ? `Superficie 3D: z = ${surfaceMatch[1]}; ejes X, Y y Z`
+    : `三维曲面：z = ${surfaceMatch[1]}；X、Y 和 Z 轴`;
+  const polarDescription = 'Approximate polar graph in radians. Equal distance has equal scale on X and Y. Domain gaps and unresolved discontinuities are omitted.';
+  if (text === polarDescription) return spanish
+    ? 'Gráfica polar aproximada en radianes. Las distancias tienen la misma escala en X e Y. Se omiten los huecos del dominio y las discontinuidades no resueltas.'
+    : '采用弧度的数值近似极坐标图。X 与 Y 轴每单位长度相同。省略定义域空缺和未能解析的间断。';
+  const derivativeDescription = 'Approximate numerical derivative from finite differences. Undefined points, detected cusps and unresolved discontinuities are omitted. This is not symbolic differentiation.';
+  if (text === derivativeDescription) return spanish
+    ? 'Derivada numérica aproximada mediante diferencias finitas. Se omiten los puntos no definidos, las cúspides detectadas y las discontinuidades no resueltas. No es una derivación simbólica.'
+    : '采用有限差分的数值近似导数。省略无定义点、检测到的尖点和未能解析的间断。这不是符号求导。';
+  const integralDescription = 'Approximate signed definite integral of a real continuous function. Shading marks the selected interval within the viewport. Numerical estimates are not symbolic results or convergence proofs.';
+  if (text === integralDescription) return spanish
+    ? 'Integral definida con signo aproximada de una función real continua. El sombreado indica el intervalo seleccionado dentro de la vista. Las estimaciones numéricas no son resultados simbólicos ni pruebas de convergencia.'
+    : '实数连续函数的带符号定积分数值近似。阴影表示当前视图内的选定区间。数值估计不是符号结果或收敛证明。';
+  const polarTitle = /^Polar graph: r = ([\s\S]*)$/.exec(text);
+  if (polarTitle) return spanish ? `Gráfica polar: r = ${polarTitle[1]}` : `极坐标图：r = ${polarTitle[1]}`;
+  const polarFooter = /^≈ · θ ([+\-\d.eE]+) to ([+\-\d.eE]+) rad · equal scale$/.exec(text);
+  if (polarFooter) return spanish
+    ? `≈ · θ ${polarFooter[1]} a ${polarFooter[2]} rad · misma escala`
+    : `≈ · θ ${polarFooter[1]} 至 ${polarFooter[2]} rad · 等比例坐标`;
+  const axisSuffix = '; horizontal axis X, vertical axis Y';
+  const hasAxisSuffix = text.endsWith(axisSuffix);
+  const calculusTitle = /^(Derivative|Second derivative|Definite integral): ([\s\S]*)$/.exec(hasAxisSuffix ? text.slice(0, -axisSuffix.length) : text);
+  if (calculusTitle) {
+    const labels: Readonly<Record<string, [string, string]>> = {
+      Derivative: ['导数', 'Derivada'], 'Second derivative': ['二阶导数', 'Segunda derivada'], 'Definite integral': ['定积分', 'Integral definida'],
+    };
+    const title = `${labels[calculusTitle[1]][spanish ? 1 : 0]}${spanish ? ': ' : '：'}${calculusTitle[2]}`;
+    return title + (hasAxisSuffix ? spanish ? '; eje horizontal X, eje vertical Y' : '；横轴 X，纵轴 Y' : '');
+  }
+  if (text === '≈ · finite differences · rad') return spanish ? '≈ · diferencias finitas · rad' : '≈ · 有限差分 · rad';
+  const integralFooter = /^∫ (\[[+\-\d.eE]+, [+\-\d.eE]+\] ≈ [+\-\d.eE]+) · numerical estimate · rad$/.exec(text);
+  if (integralFooter) return spanish ? `∫ ${integralFooter[1]} · estimación numérica · rad` : `∫ ${integralFooter[1]} · 数值估计 · rad`;
   let match = /^Equation graph: y = ([\s\S]*); horizontal axis X, vertical axis Y$/.exec(text);
   if (match) return spanish ? `Gráfica de ecuación: y = ${match[1]}; eje horizontal X, eje vertical Y` : `函数图像：y = ${match[1]}；横轴 X，纵轴 Y`;
   match = /^Equation graph: y = ([\s\S]*)$/.exec(text);
@@ -308,7 +383,8 @@ export function localizeEditor(root: HTMLElement, language: Language, systemLang
   const attributeMemory = new WeakMap<Element, Map<string, Remembered>>();
   const plotTextMemory = new WeakMap<Element, Remembered>();
   const attributeNames = ['title', 'aria-label', 'placeholder'] as const;
-  const plotSelector = 'svg[data-vme-plot="function"],svg[data-vme-plot="complex"]';
+  const plotSelector = ['function', 'complex', 'polar', 'surface', 'calculus', 'derivative', 'second-derivative', 'integral']
+    .map(mode => `svg[data-vme-plot="${mode}"]`).join(',');
   let active = language;
   let destroyed = false;
   const blocked = 'script,style,code,pre,samp,kbd,svg,math,mjx-container,.ML__latex,[data-no-i18n],[data-i18n-ignore]';

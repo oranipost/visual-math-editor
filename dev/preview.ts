@@ -1,3 +1,4 @@
+import { checkAdvancedGraphs } from './advanced-graph-check';
 import { checkSpanishLocalization } from './spanish-check';
 import { checkFormulaShortcuts } from './shortcuts-check';
 import { checkInlineEquationGraph } from './inline-graph-check';
@@ -796,6 +797,9 @@ document.getElementById("selftest")!.onclick = async () => {
       await settleElementLayout();
       control.focus({ preventScroll: true });
       await settleElementLayout();
+      // A queued scroll can schedule the focus reconciliation after this RAF.
+      // Observe the settled tooltip rather than that transient hidden frame.
+      await settleElementLayout();
     };
     await settleElementLayout();
     check(details.hidden && details.getAttribute('role') === 'tooltip', "元素详情初始隐藏，并声明辅助技术可识别的 tooltip");
@@ -971,6 +975,7 @@ document.getElementById("selftest")!.onclick = async () => {
     await checkPlotTools(check);
     await checkIntegratedPlot(check);
     await checkInlineEquationGraph(check);
+    await checkAdvancedGraphs(check);
     await checkFormulaShortcuts(check);
     await checkSpanishLocalization(check);
     await checkComplexTools(check);

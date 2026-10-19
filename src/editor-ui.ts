@@ -4,7 +4,7 @@ import { validateLatexSource } from './source-validation';
 import { mountScienceTools, type ScienceDraft } from './science-ui';
 import { localizeEditor, type Language } from './i18n';
 import { mountPlotTools, type PlotDraft } from './plot-ui';
-import { expressionFromLatex } from './plot-latex';
+import { expressionFromLatex, graphFromLatex } from './plot-latex';
 import type { PlotSpec } from './plot-engine';
 import { createHtml, createSvgElement } from './dom';
 import { mountShortcutTools } from './shortcuts-ui';
@@ -444,14 +444,15 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
   const plotTools = mountPlotTools(plotHost, {
     initialDraft: options.plotDraft,
     editing: options.graphOnly,
-    getCurrentExpression: options.graphOnly ? undefined : () => expressionFromLatex(rawSource),
+    getCurrentGraph: options.graphOnly ? undefined : () => graphFromLatex(rawSource),
     onInsertGraph: options.onSaveGraph ? async spec => {
       if (saving || destroyed) return;
       if (!options.graphOnly && mode !== 'latex' && !visualBlocked) syncFromVisual();
       if (!options.graphOnly && rawSource.trim() && (sourceIssue || incomplete || unsupported)) {
         throw new Error('Finish or clear the current equation before inserting a graph.');
       }
-      if (equationGraphOpen && expressionFromLatex(rawSource) !== spec.expression) {
+      const linkedGraph = equationGraphOpen ? graphFromLatex(rawSource) : undefined;
+      if (linkedGraph && (linkedGraph.expression !== spec.expression || (linkedGraph.mode ?? 'function') !== (spec.mode ?? 'function'))) {
         throw new Error('The equation changed. Preview the graph again.');
       }
       saving = true;

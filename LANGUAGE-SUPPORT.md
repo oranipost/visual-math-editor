@@ -1,14 +1,26 @@
 # Language support
 
+## 0.8.0 graph additions
+
+The 0.8.0 graph expansion keeps the same three languages: English, Simplified Chinese and Spanish. It adds translated polar/XYZ mode selectors, calculus controls, θ/integration/camera range labels, numerical-limit errors and scoped generated graph captions. It adds no additional language and does not claim fluent-speaker or every-platform validation; actual checks belong in [TEST-REPORT.md](TEST-REPORT.md).
+
+**中文：** 0.8.0 新增绘图功能继续提供英语、简体中文、西班牙语。极坐标、微积分和 XYZ 控件、错误与图形说明使用同一语言设置。GitHub 发行、目录审核与原生验证分别见测试报告；0.7.0 的历史验证见下文。
+
+**Español:** La versión 0.8.0 conserva el español, el inglés y el chino simplificado e incorpora controles y mensajes para gráficas polares, cálculo numérico y superficies XYZ. La publicación en GitHub, la revisión del directorio y las pruebas nativas se registran por separado.
+
+Technical input remains unchanged: `r=2*sin(3*theta)`, `y=x^2` and `z=(x^2-y^2)/10` use the same syntax in all languages. Symbols insert at the caret or wrap the selection; example buttons replace the graph expression. Changing language does not modify formulas, graph modes, integration bounds, θ bounds or camera state and is not a save. Reopening restores the saved graph parameters independently of a separate saved equation.
+
+## Published 0.7.0 language support
+
 Visual Math 0.7.0 includes **English, Simplified Chinese and Spanish**. The language menu offers **Follow Obsidian**, **中文**, **English** and **Español**. The **中文** option selects the Simplified Chinese translation. The saved `system`, `zh` and `en` preferences remain compatible; `es` selects the new Spanish interface. The `system` setting follows Obsidian's configured interface language first. Unsupported app languages use English. Chinese regional/script tags use the same Simplified Chinese translation; a dedicated Traditional Chinese translation is not provided.
 
-This documents the 0.7.0 implementation. Earlier 0.6.x releases provide English and Simplified Chinese only. Actual automation, browser and native checks are recorded in [TEST-REPORT.md](TEST-REPORT.md), separately from translation coverage. A Spanish dictionary is not a claim of native-speaker review or complete operating-system validation.
+This historical section documents the published 0.7.0 implementation. Earlier 0.6.x releases provide English and Simplified Chinese only. Actual automation, browser and native checks are recorded in [TEST-REPORT.md](TEST-REPORT.md), separately from translation coverage. A Spanish dictionary is not a claim of native-speaker review or complete operating-system validation.
 
 ## Follow Obsidian: current behavior
 
 Follow Obsidian selects one of the plugin's **three available translations**; it does not supply every language supported by the host.
 
-| Obsidian interface language | This plugin's 0.7.0 interface |
+| Obsidian interface language | 0.7.0 / 0.8.0 interface |
 | --- | --- |
 | English (`en`, `en-US`, etc.) | English |
 | Chinese (`zh`, `zh-CN`, `zh-TW`, etc.) | Simplified Chinese |
@@ -43,7 +55,7 @@ These examples support maintaining a small, tested language set first. They do n
 - Host code supplies Obsidian's public [`getLanguage()`](https://docs.obsidian.md/Reference/TypeScript%2BAPI/getLanguage) result. The installed API declaration marks it available since Obsidian 1.8.7; older supported hosts fall back to their browser locale. Obsidian's official [lint guidance](https://github.com/obsidianmd/eslint-plugin#rules) also prefers this API for language detection.
 - Locale fallback and message fallback are distinct. Unsupported locales resolve to English. An unrecognized message is preserved rather than guessed or passed to a translation service. UI coverage checks should catch missing known messages before release.
 - Localize plugin-owned DOM only. Do not walk note content, editable values, `math-field` source, generic SVGs, or elements marked `data-no-i18n` / `data-i18n-ignore`. Do not translate a `<select>` option without an explicit `value`. The controlled graph pass described below is the only exception for ignored SVG previews.
-- Plugin-generated SVGs marked `data-vme-plot="function"` or `data-vme-plot="complex"` localize only their fixed accessible prose in the root `aria-label`, direct `<title>` and `<desc>`, plus the complex-plane heading/footer explicitly marked `data-vme-plot-caption`. Their formula text, point labels, axis names, tick values, shapes and coordinates remain unchanged. Surrounding controls and status text are localized too. This narrow pass also handles newly rendered graphs inside an ignored preview; it does not walk arbitrary SVG content or rewrite an existing `vme-plot` block.
+- Plugin-generated SVGs marked `data-vme-plot="function"` or `data-vme-plot="complex"`, plus 0.8.0 `polar`, `surface`, `derivative`, `second-derivative` and `integral` graphs, localize only their fixed accessible prose in the root `aria-label`, direct `<title>` and `<desc>`, plus headings/footers explicitly marked `data-vme-plot-caption`. Their formula text, point labels, axis names, tick values, shapes and coordinates remain unchanged. Surrounding controls and status text are localized too. This narrow pass also handles newly rendered graphs inside an ignored preview; it does not walk arbitrary SVG content or rewrite an existing `vme-plot` block.
 - MathLive's locale setter is static and affects all math fields on the page, as its [official guide](https://mathlive.io/mathfield/guides/customizing/#localization) explains. This plugin does not change that shared locale merely to change its own toolbar language.
 
 ## Contributing or extending translations
