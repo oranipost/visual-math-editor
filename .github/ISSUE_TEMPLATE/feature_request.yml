@@ -1,11 +1,11 @@
 name: Feature request / 功能建议
-description: Describe a task that is difficult with the current editor.
+description: Describe a math, chemistry, physics or note-taking task that Visual Math could make easier.
 body:
   - type: textarea
     id: task
     attributes:
       label: What are you trying to do? / 希望完成什么操作？
-      description: A short concrete example is more useful than a long feature list. 中文和 English 均可。
+      description: A short concrete example is more useful than a long feature list. English, 简体中文 and Español are welcome.
     validations:
       required: true
   - type: textarea

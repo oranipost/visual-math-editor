@@ -1,8 +1,26 @@
 {
   "name": "visual-math-editor",
-  "version": "0.6.5",
+  "version": "0.7.0",
   "private": true,
-  "description": "Offline math, science, function graphs and complex planes for Obsidian",
+  "description": "Visual Math: beginner-friendly math, chemistry and physics notes, equation graphs and unit conversion for Obsidian, entirely offline",
+  "keywords": [
+    "obsidian-plugin",
+    "visual-math",
+    "equation-editor",
+    "wysiwyg",
+    "latex",
+    "markdown",
+    "mathlive",
+    "math-notes",
+    "science-notes",
+    "chemistry",
+    "physics",
+    "function-plotter",
+    "complex-plane",
+    "unit-conversion",
+    "periodic-table",
+    "offline"
+  ],
   "type": "module",
   "scripts": {
     "build": "node scripts/build.mjs",
@@ -24,5 +42,6 @@
     "obsidian": "1.14.4",
     "tsx": "4.23.15",
     "typescript": "7.0.2"
-  }
+  },
+  "license": "SEE LICENSE IN LICENSING.md"
 }

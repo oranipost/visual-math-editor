@@ -1,4 +1,4 @@
-# Visual Math Editor — English documentation
+# Visual Math — English documentation
 
 The complete English README is now the [repository home page](README.md).
 

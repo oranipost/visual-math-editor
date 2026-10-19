@@ -15,5 +15,7 @@ export function expressionFromLatex(latex: string): string {
   const expression = convertLatexToAsciiMath(latex).trim();
   const compiled = compileExpression(expression);
   if (!compiled.ok) throw new Error(compiled.error);
-  return expression;
+  // Use the same normalized expression as the renderer (including removal of
+  // an optional y= prefix), so equation/graph commit checks compare like values.
+  return compiled.expression;
 }

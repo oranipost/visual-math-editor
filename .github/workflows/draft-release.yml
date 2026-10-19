@@ -62,4 +62,4 @@ jobs:
           GH_REPO: ${{ github.repository }}
           RELEASE_TAG: ${{ inputs.tag }}
         run: |
-          gh release create "$RELEASE_TAG" --verify-tag --draft --title "Visual Math Editor $RELEASE_TAG — Public beta" --notes-file CHANGELOG.md dist/main.js dist/manifest.json dist/styles.css release/*.zip release/SHA256SUMS.txt
+          gh release create "$RELEASE_TAG" --verify-tag --draft --title "Visual Math $RELEASE_TAG — Public beta" --notes-file CHANGELOG.md dist/main.js dist/manifest.json dist/styles.css release/*.zip release/SHA256SUMS.txt

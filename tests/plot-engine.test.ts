@@ -218,7 +218,10 @@ test('partial real domains split cleanly without adding points in the missing do
 
 test('generated SVG is standalone, accessible, finite and contains no executable user content', () => {
   const result = graph('y=sin(x)+x/2');
-  assert.match(result.svg, /^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg"/);
+  const openingTag = /^<svg\b[^>]*>/.exec(result.svg)?.[0];
+  assert.ok(openingTag, 'The document starts with an SVG root element.');
+  assert.match(openingTag, /\sxmlns="http:\/\/www\.w3\.org\/2000\/svg"/);
+  assert.match(openingTag, /\sdata-vme-plot="function"/);
   assert.match(result.svg, /viewBox="0 0 800 480"/);
   assert.match(result.svg, /max-width:100%/);
   assert.match(result.svg, /<title>Equation graph: y = sin\(x\)\+x\/2<\/title>/);

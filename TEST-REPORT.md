@@ -1,8 +1,26 @@
 # Test report / 测试记录
 
-Version: **0.6.5**, published desktop public beta; local, focused native and hosted-release checks completed. Community-directory scan queued. Updated: **2026-10-18**.
+Version: **0.7.0**, desktop public beta. Local validation is recorded below; hosted publication and the new directory scan are separate steps. Updated: **2026-10-18** (America/Chicago).
 
 This report distinguishes automated checks, browser components and native Obsidian integration. Passing one does not establish that the others passed. Public release status is shown on [GitHub Releases](https://github.com/oranipost/visual-math-editor/releases); community-directory approval is separate.
+
+## 0.7.0 local and native checks
+
+- Scope: Visual Math display name, graph preview below the current formula, Spanish, custom formula keywords, GPLv3 with the Obsidian linking exception and complete release/source packaging. Plugin ID, repository and saved block formats remain compatible.
+- `npm run check` passed **172 automated tests**, TypeScript checking and the production build. The packaging tests include the permitted file boundaries, full licensing documents, fixed dependency sources, integrity metadata and rejection of altered or private source files. The actual installation and source archives packaged successfully. The installer includes `LICENSING.md`; exact upstream source archives appear only in the source ZIP. Required notices are also embedded in the three-file runtime distribution.
+- The complete localhost browser suite passed **345 component checks**. Its new coverage includes linked graph invalidation/update, both source and visual changes, consistent combined saves, invalid/unsupported formulas, restored drafts, shortcut persistence/failure paths, Spanish science helpers, unit conversion, element search and scoped SVG translations. The preview uses in-memory writes; these checks are not vault integration tests.
+- The local official-rule source precheck recorded **0 errors and 3 reviewed sentence-case warnings**: the Visual Math brand, the copyright holder's proper name, and mathematical variable notation. These are style recommendations; the original names and formula notation are retained.
+- A real-keyboard browser check saved `\frac{3}{4}` as `myfrac`, cleared the field and typed its letters individually. The shortcut expanded to the same fraction; Hybrid showed the equivalent compact serialization `\frac34`. This manual observation is separate from the 345 checks.
+- In **Obsidian 1.14.4 on macOS**, an isolated test vault loaded the local 0.7.0 runtime. Starting from `y=x^2`, **Graph this equation** opened a preview directly below the math editor with no duplicate function input. Changing the Hybrid source to `y=x^2+1` refreshed the curve; **Ctrl+Enter** saved that formula and one matching `vme-plot` block. The equation picker reopened the saved formula correctly.
+- The native editor switched to **Español**, including math tools, graph actions and accessibility descriptions. Saving `y=x^2+1` under `mysquare`, canceling the draft and reloading the application retained both the Spanish preference and shortcut. The picker reopened the formula; after clearing only the draft and typing `mysquare` with actual key events, Hybrid again showed `y=x^2+1`. Cancel left the saved note unchanged.
+- A final-runtime reload confirmed the picker row **Gráfica 1 · y = x^2+1** and the Spanish **About and license** dialog showing version 0.7.0, copyright, GPL/no-warranty information, tagged notice and matching release-source links. Opening and dismissing these views did not save the note.
+- Real screenshots in [docs/images](docs/images) show this 0.7.0 Spanish Hybrid editor and its linked graph. They use invented examples in the isolated test vault, not generated artwork or private note contents. Some older screenshots remain explicitly marked as historical.
+- A fresh official installation-index fetch contained `visual-math-editor` under its earlier display name, **Visual Math Editor**; no exact **Visual Math** name conflict appeared in that fetch. This supersedes the earlier index-absence observations below. It does not establish that a community-directory installation or a 0.7.0 review has completed.
+- New original project material and the release as a whole use GPLv3-only with the narrow Obsidian linking exception. The canonical GPL text and full exception remain in the package; historical MIT and third-party notices remain intact. Exact MathLive/Convert preferred-source and npm archives are included in the source ZIP. Hashes and locked registry integrity are checked; the upstream projects were not independently rebuilt or audited.
+
+**Boundaries:** the graph follows the formula inside the current editor; saved equation and graph blocks are independent. A later formula edit requires regenerating or separately editing the saved graph. Spanish has automated and targeted native checks, without a fluent-human translation review. This is not a new native retest of every chemistry, unit, complex-plane, Undo or platform behavior; earlier observations retain their stated scope. Windows, Linux, mobile, detached windows and arbitrary themes/plugins remain unverified.
+
+**中文：** 0.7.0 已完成 172 项自动测试和 345 项浏览器组件检查；macOS / Obsidian 1.14.4 独立测试库验证了正文公式下方绘图、Hybrid 修改后刷新、同时保存公式与图像、重开，以及西班牙语和自定义快捷词的重启保留、真实键盘展开。保存后的公式块和图像块彼此独立，不宣称永久自动关联。托管发行、来源证明和新版目录审核须分别核实；历史版本结论不替代本版结果。
 
 ## 0.6.5 localization hotfix — local checks
 

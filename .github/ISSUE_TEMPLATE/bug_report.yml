@@ -1,14 +1,14 @@
 name: Bug report / 问题反馈
-description: Report a reproducible editor, graph or saving problem.
+description: Report a reproducible Visual Math editor, science tool, graph or saving problem.
 body:
   - type: markdown
     attributes:
-      value: Use a small invented example. Do not upload your real vault, private notes, tokens or plugin settings. 中文和 English 均可。
+      value: Use a small invented example. Do not upload your real vault, private notes, tokens or plugin settings. English, 简体中文 and Español are welcome.
   - type: input
     id: version
     attributes:
       label: Plugin version / 插件版本
-      placeholder: 0.6.1
+      placeholder: 0.7.0
     validations:
       required: true
   - type: input
@@ -24,7 +24,7 @@ body:
       options:
         - Visual / LaTeX / Hybrid editor
         - Insert, reopen, save or Undo
-        - Function graph or complex plane
+        - Graph below the equation or complex plane
         - Chemistry, elements or units
         - Language, appearance or keyboard navigation
         - Other

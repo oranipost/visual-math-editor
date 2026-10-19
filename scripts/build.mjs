@@ -10,7 +10,7 @@ async function licenseBanner(files) {
     if (contents.includes("*/")) throw new Error(`License notice contains a comment terminator: ${file}`);
     return `--- ${path.basename(file)} ---\n${contents}`;
   }));
-  return `/*! Visual Math Editor licensing notices\n\n${sections.join("\n\n")}\n*/`;
+  return `/*! Visual Math licensing notices\n\n${sections.join("\n\n")}\n*/`;
 }
 
 // Community installation downloads only the three runtime files, so those
@@ -65,6 +65,7 @@ await writeFile("dist/styles.css", `${fontLicense}\n${fonts}\n${await readFile("
 await copyFile("manifest.json", "dist/manifest.json");
 await copyFile("node_modules/mathlive/LICENSE.txt", "dist/MATHLIVE-LICENSE.txt");
 await copyFile("LICENSE", "dist/LICENSE");
+await copyFile("LICENSING.md", "dist/LICENSING.md");
 await copyFile("THIRD-PARTY-NOTICES.md", "dist/THIRD-PARTY-NOTICES.md");
 await copyFile("KATEX-FONTS-LICENSE.txt", "dist/KATEX-FONTS-LICENSE.txt");
 await copyFile("MHCHEM-LICENSE.txt", "dist/MHCHEM-LICENSE.txt");

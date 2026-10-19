@@ -1,12 +1,16 @@
-export type Language = 'system' | 'zh' | 'en';
-export type ResolvedLanguage = 'zh' | 'en';
+import { SPANISH_ELEMENT_NAMES, SPANISH_TRANSLATIONS } from './i18n-es';
+
+export type Language = 'system' | 'zh' | 'en' | 'es';
+export type ResolvedLanguage = 'zh' | 'en' | 'es';
 
 export function resolveLanguage(language: Language, systemLanguage = 'en'): ResolvedLanguage {
-  if (language === 'zh' || language === 'en') return language;
+  if (language === 'zh' || language === 'en' || language === 'es') return language;
   // The host passes Obsidian's configured language. Unknown saved preferences
   // and unsupported app locales use the same predictable English fallback.
   if (language !== 'system') return 'en';
-  return /^zh(?:[-_]|$)/i.test(systemLanguage.trim()) ? 'zh' : 'en';
+  const locale = systemLanguage.trim();
+  if (/^zh(?:[-_]|$)/i.test(locale)) return 'zh';
+  return /^es(?:[-_]|$)/i.test(locale) ? 'es' : 'en';
 }
 
 /** UI messages only. Formula source, note content and input values are never translated. */
@@ -156,7 +160,8 @@ export const UI_TRANSLATIONS: Readonly<Record<string, string>> = {
   '点击公式重新编辑。公式按笔记中的位置排列。': 'Click an equation to edit it. Equations follow their order in the note.',
   '这篇笔记中没有可编辑的公式。请先切到编辑模式，再点击左侧 ∑ 插入。': 'No editable equations found. Switch to editing mode and click ∑ on the left to insert one.',
   '暂不支持的公式（原文保留）': 'Unsupported equation (source preserved)', '上一页': 'Previous page', '下一页': 'Next page',
-  'Visual Math Editor：插入或编辑公式': 'Visual Math Editor: Insert or edit equation',
+  'Visual Math Editor：插入或编辑公式': 'Visual Math: Insert or edit equation',
+  'Visual Math：插入或编辑公式': 'Visual Math: Insert or edit equation',
   '请先打开一篇 Markdown 笔记。': 'Open a Markdown note first.',
   '插入或编辑公式 / Insert or edit equation': 'Insert or edit equation',
   '请在普通 Markdown 笔记中使用公式编辑器。': 'Use the equation editor in a regular Markdown note.',
@@ -183,28 +188,82 @@ export const UI_TRANSLATIONS: Readonly<Record<string, string>> = {
   '请输入有效数值。': 'Enter a valid number.', '界面语言': 'Interface language', '语言': 'Language', '语言 / Language': 'Language',
   '请选择相同类别的单位。': 'Choose units from the same category.', '请选择有效的单位。': 'Choose valid units.', '数值超出支持范围。': 'Value is outside the supported range.',
   '跟随系统': 'System', '跟随系统 / System': 'System', '跟随系统/System': 'System',
+  '绘制此公式': 'Graph this equation',
+  '隐藏图像': 'Hide graph',
+  '图像与上方公式同步；直接修改公式即可更新。': 'The graph follows the equation above. Edit the equation to update it.',
+  '插入公式与图像': 'Insert equation and graph',
+  '图像已就绪。点击插入公式与图像加入笔记。': 'The graph is ready. Choose Insert equation and graph to add both to the note.',
+  '此公式暂不能绘图。支持 y=f(x)、仅含 x 的表达式和常数；不支持隐式方程或多变量。请在上方修改公式。': 'This equation cannot be graphed yet. Use y=f(x), an expression in x, or a constant. Implicit equations and multiple variables are not supported. Edit the equation above.',
+  '图像尚未显示，请点击绘制此公式。': 'Choose Graph this equation to display a graph.',
+  '公式已修改，请重新预览后插入。': 'The equation changed. Preview the graph again.',
+  '我的公式快捷词': 'My formula shortcuts',
+  '先可视化写好公式，再取一个 3–24 位英文字母或数字的快捷词（以字母开头）。可直接键入展开，或从列表插入；仅保存在当前库。': 'Compose an equation visually, then choose a shortcut of 3–24 English letters or digits starting with a letter. Type it to expand, or insert from the list. It is saved only in this vault.',
+  '例如 myfrac': 'For example, myfrac', '公式快捷词': 'Formula shortcut',
+  '保存当前公式为快捷词': 'Save current equation as shortcut', '删除快捷词': 'Delete shortcut', '快捷词已删除。': 'Shortcut deleted.',
+  '未能保存快捷词，请重试。原快捷词已保留。': 'Unable to save shortcuts. Try again. Your previous shortcuts are preserved.',
+  '快捷词需为 3–24 位英文字母或数字，并以字母开头。': 'Use 3–24 English letters or digits, starting with a letter.',
+  '快捷词与内置或已保存的快捷词冲突，请换一个名称。': 'This shortcut conflicts with a built-in or saved shortcut. Choose another name.',
+  '此快捷词已存在；请先删除，或使用新名称。': 'This shortcut already exists. Delete it first or choose another name.',
+  '最多保存 50 个公式快捷词。': 'You can save at most 50 formula shortcuts.',
+  '请先完成一个有效公式，再保存快捷词。': 'Complete a valid equation before saving a shortcut.',
+  '快捷词已保存。可在可视化区域键入，或点击列表插入。': 'Shortcut saved. Type it in the visual editor or click its entry to insert it.',
+  '关于与许可': 'About and license',
+  '本插件采用 GNU GPLv3 许可，不提供任何担保。你可按许可使用、修改与再分发。笔记内容不受此许可约束。': 'This plugin is licensed under GNU GPLv3, without any warranty. You may use, modify and redistribute it under that license. Your note content is not covered by this license.',
+  '查看许可与第三方声明': 'View license and third-party notices',
+  '下载此版本源码': 'Download source for this version',
 };
 
-function translateCore(text: string): string {
-  if (Object.hasOwn(UI_TRANSLATIONS, text)) return UI_TRANSLATIONS[text];
-  let match = /^(\d+) 个匹配元素；点击元素可插入$/.exec(text);
-  if (match) return `${match[1]} matching elements; click an element to insert`;
+/** Both names are searchable in every interface language; chemical symbols are unchanged. */
+export function getElementSearchNames(englishName: string): string {
+  const spanish = Object.hasOwn(SPANISH_ELEMENT_NAMES, englishName) ? SPANISH_ELEMENT_NAMES[englishName] : '';
+  return `${englishName} ${spanish} ${spanish.normalize('NFD').replace(/\p{M}/gu, '')}`.trim();
+}
+
+function translateCore(text: string, language: Exclude<ResolvedLanguage, 'zh'>): string {
+  const dictionary = language === 'es' ? SPANISH_TRANSLATIONS : UI_TRANSLATIONS;
+  if (Object.hasOwn(dictionary, text)) return dictionary[text];
+  const spanish = language === 'es';
+  if (spanish && Object.hasOwn(SPANISH_ELEMENT_NAMES, text)) return SPANISH_ELEMENT_NAMES[text];
+  let match: RegExpExecArray | null;
+  match = /^(图像|复平面) (\d+) ·(?: ([\s\S]*))?$/.exec(text);
+  if (match) return `${dictionary[match[1]]} ${match[2]} ·${match[3] === undefined ? '' : ` ${match[3]}`}`;
+  if (spanish) {
+    // Converter options combine a localized name and an invariant unit symbol.
+    match = /^(.+?) (\([^()]+\))$/.exec(text);
+    if (match && Object.hasOwn(dictionary, match[1])) return `${dictionary[match[1]]} ${match[2]}`;
+    match = /^(\d+) ([a-z]+) ([A-Z][a-z]?)$/.exec(text);
+    if (match && Object.hasOwn(SPANISH_ELEMENT_NAMES, match[2])) return `${match[1]} ${SPANISH_ELEMENT_NAMES[match[2]]} ${match[3]}`;
+    match = /^(\d+) · ([A-Z][a-z]?) · ([a-z]+)$/.exec(text);
+    if (match && Object.hasOwn(SPANISH_ELEMENT_NAMES, match[3])) return `${match[1]} · ${match[2]} · ${SPANISH_ELEMENT_NAMES[match[3]]}`;
+    match = /^左侧 \/ 右侧：(.*)$/.exec(text);
+    if (match) return `Izquierda / derecha: ${match[1].replace(/电荷/g, 'carga')}`;
+    match = /^视图内 (\d+) \/ (\d+) 个点。点击保存才写入笔记。$/.exec(text);
+    if (match) return `${match[1]} / ${match[2]} puntos visibles. Guarda para actualizar la nota.`;
+    match = /^(X|Y|Re|Im) (最小值|最大值)$/.exec(text);
+    if (match) return `${match[1]} ${match[2] === '最小值' ? 'mín.' : 'máx.'}`;
+    match = /^第 (\d+) 行：请输入 3\+2i、−i 或 4 这样的数值；暂不支持表达式或名称。$/.exec(text);
+    if (match) return `Línea ${match[1]}: introduce un número como 3+2i, −i o 4; aún no se admiten expresiones ni nombres.`;
+    match = /^第 (\d+) 行：实部和虚部须为 −1000000 至 1000000 之间的有效数值。$/.exec(text);
+    if (match) return `Línea ${match[1]}: las partes real e imaginaria deben ser números válidos entre −1000000 y 1000000.`;
+  }
+  match = /^(\d+) 个匹配元素；点击元素可插入$/.exec(text);
+  if (match) return spanish ? `${match[1]} ${Number(match[1]) === 1 ? 'elemento coincidente' : 'elementos coincidentes'}; haz clic en uno para insertarlo` : `${match[1]} matching elements; click an element to insert`;
   match = /^(\d+) 个元素$/.exec(text);
-  if (match) return `${match[1]} elements`;
+  if (match) return spanish ? `${match[1]} ${Number(match[1]) === 1 ? 'elemento' : 'elementos'}` : `${match[1]} elements`;
   match = /^编辑第 (\d+) 个公式$/.exec(text);
-  if (match) return `Edit equation ${match[1]}`;
+  if (match) return spanish ? `Editar ecuación ${match[1]}` : `Edit equation ${match[1]}`;
   match = /^第 (\d+) 行 · (独立公式|行内公式)$/.exec(text);
-  if (match) return `Line ${match[1]} · ${UI_TRANSLATIONS[match[2]]}`;
+  if (match) return `${spanish ? 'Línea' : 'Line'} ${match[1]} · ${dictionary[match[2]]}`;
   match = /^此输入框暂不支持命令 (\\[A-Za-z]+)，请使用常用化学符号或单位。$/.exec(text);
-  if (match) return `This input does not support ${match[1]}. Use common chemical notation or units.`;
+  if (match) return spanish ? `Esta entrada no admite ${match[1]}. Usa notación química o unidades comunes.` : `This input does not support ${match[1]}. Use common chemical notation or units.`;
   match = /^插入(.+?)；选中内容后可套用结构$/.exec(text);
-  if (match && Object.hasOwn(UI_TRANSLATIONS, match[1])) return `Insert ${UI_TRANSLATIONS[match[1]]}; select content to wrap it`;
+  if (match && Object.hasOwn(dictionary, match[1])) return spanish ? `Insertar ${dictionary[match[1]]}; selecciona contenido para aplicar la estructura` : `Insert ${dictionary[match[1]]}; select content to wrap it`;
   match = /^(插入|添加)(.+)$/.exec(text);
   if (match) {
     const label = match[2];
-    if (Object.hasOwn(UI_TRANSLATIONS, label)) return `${match[1] === '插入' ? 'Insert' : 'Add'} ${UI_TRANSLATIONS[label]}`;
+    if (Object.hasOwn(dictionary, label)) return `${match[1] === '插入' ? (spanish ? 'Insertar' : 'Insert') : (spanish ? 'Añadir' : 'Add')} ${dictionary[label]}`;
     const words = /^(阿尔法|贝塔|西塔|圆周率|德尔塔|无穷大|正负号|乘号|除号|不等于|小于或等于|大于或等于) (.+)$/.exec(label);
-    if (words) return `Insert ${UI_TRANSLATIONS[words[1]]} ${words[2]}`;
+    if (words) return `${spanish ? 'Insertar' : 'Insert'} ${dictionary[words[1]]} ${words[2]}`;
   }
   return text;
 }
@@ -212,7 +271,29 @@ function translateCore(text: string): string {
 export function translateUiText(text: string, language: ResolvedLanguage): string {
   if (language === 'zh') return text;
   const match = /^(\s*)([\s\S]*?)(\s*)$/.exec(text)!;
-  return match[1] + translateCore(match[2]) + match[3];
+  return match[1] + translateCore(match[2], language) + match[3];
+}
+
+/** Only the renderer's fixed plot descriptions are translated; captured math stays verbatim. */
+export function translatePlotUiText(text: string, language: ResolvedLanguage): string {
+  if (language === 'en') return text;
+  const spanish = language === 'es';
+  const description = 'Approximate numerical graph. The horizontal axis is X and the vertical axis is Y. Trigonometric arguments use radians. Domain gaps and unresolved discontinuities are omitted.';
+  if (text === description) return spanish
+    ? 'Gráfica numérica aproximada. El eje horizontal es X y el vertical es Y. Los argumentos trigonométricos usan radianes. Se omiten los huecos del dominio y las discontinuidades no resueltas.'
+    : '数值近似图像。横轴为 X，纵轴为 Y。三角函数参数采用弧度。省略定义域空缺和未能解析的间断。';
+  if (text === 'Complex plane') return spanish ? 'Plano complejo' : '复平面';
+  let match = /^Equation graph: y = ([\s\S]*); horizontal axis X, vertical axis Y$/.exec(text);
+  if (match) return spanish ? `Gráfica de ecuación: y = ${match[1]}; eje horizontal X, eje vertical Y` : `函数图像：y = ${match[1]}；横轴 X，纵轴 Y`;
+  match = /^Equation graph: y = ([\s\S]*)$/.exec(text);
+  if (match) return spanish ? `Gráfica de ecuación: y = ${match[1]}` : `函数图像：y = ${match[1]}`;
+  match = /^Horizontal real axis Re; vertical imaginary axis Im\. Equal unit lengths on both axes\. (\d+) of (\d+) points visible\. ([\s\S]*)\.$/.exec(text);
+  if (match) return spanish
+    ? `Eje real horizontal Re; eje imaginario vertical Im. Ambos ejes tienen la misma escala. ${match[1]} de ${match[2]} ${Number(match[2]) === 1 ? 'punto visible' : 'puntos visibles'}. ${match[3]}.`
+    : `横向实轴 Re；纵向虚轴 Im。两轴每单位长度相同。当前显示 ${match[1]} / ${match[2]} 个点。${match[3]}。`;
+  match = /^(\d+)\/(\d+) points · equal units$/.exec(text);
+  if (match) return spanish ? `${match[1]}/${match[2]} ${Number(match[2]) === 1 ? 'punto' : 'puntos'} · misma escala` : `${match[1]}/${match[2]} 个点 · 等比例坐标`;
+  return text;
 }
 
 export interface EditorLocalization {
@@ -225,7 +306,9 @@ export function localizeEditor(root: HTMLElement, language: Language, systemLang
   type Remembered = { original: string; rendered: string };
   const textMemory = new WeakMap<Text, Remembered>();
   const attributeMemory = new WeakMap<Element, Map<string, Remembered>>();
+  const plotTextMemory = new WeakMap<Element, Remembered>();
   const attributeNames = ['title', 'aria-label', 'placeholder'] as const;
+  const plotSelector = 'svg[data-vme-plot="function"],svg[data-vme-plot="complex"]';
   let active = language;
   let destroyed = false;
   const blocked = 'script,style,code,pre,samp,kbd,svg,math,mjx-container,.ML__latex,[data-no-i18n],[data-i18n-ignore]';
@@ -235,6 +318,14 @@ export function localizeEditor(root: HTMLElement, language: Language, systemLang
     // content is not UI text, so do not rescan the editor for those changes.
     const meaningful = records.some((record) => {
       const target = record.target.nodeType === 1 ? record.target as Element : record.target.parentElement;
+      // Plot previews intentionally block scientific SVG content. Recognize
+      // only generated plot insertion and its explicit accessibility nodes.
+      if (record.type === 'childList' && Array.from(record.addedNodes).some(node =>
+        node.nodeType === 1 && ((node as Element).matches(plotSelector) || (node as Element).querySelector(plotSelector)))) return true;
+      const plot = target?.closest(plotSelector);
+      if (plot && root.contains(plot) && (target === plot
+        || (target?.parentElement === plot && ['title', 'desc'].includes(target.localName))
+        || target?.matches('[data-vme-plot-caption="title"],[data-vme-plot-caption="footer"]'))) return true;
       if (!target || target.closest(blocked)) return false;
       const editableAncestor = target.closest(editable);
       // CodeMirror's outer contenteditable lives outside our noneditable
@@ -262,9 +353,9 @@ export function localizeEditor(root: HTMLElement, language: Language, systemLang
       // Leave it untouched so translating the UI can never change a value.
       if (parent.tagName === 'OPTION' && !parent.hasAttribute('value')) return;
       const entry = remember(text.data, textMemory.get(text));
-      const explicitEnglish = parent.childNodes.length === 1 ? parent.getAttribute('data-i18n-en') : null;
-      const translated = currentLanguage === 'en' && explicitEnglish !== null
-        ? explicitEnglish : translateUiText(entry.original, currentLanguage);
+      const explicit = currentLanguage !== 'zh' && parent.childNodes.length === 1
+        ? parent.getAttribute(`data-i18n-${currentLanguage}`) : null;
+      const translated = explicit ?? translateUiText(entry.original, currentLanguage);
       if (text.data !== translated) text.data = translated;
       entry.rendered = translated;
       textMemory.set(text, entry);
@@ -295,9 +386,31 @@ export function localizeEditor(root: HTMLElement, language: Language, systemLang
     const currentLanguage = resolved();
     root.lang = currentLanguage;
     walk(root, currentLanguage);
+    // A narrow exception for plugin-generated plots. Never walk generic SVGs,
+    // axes, tick values, paths, point labels or formula text.
+    for (const svg of Array.from(root.querySelectorAll(plotSelector))) {
+      let attributes = attributeMemory.get(svg);
+      if (!attributes) { attributes = new Map(); attributeMemory.set(svg, attributes); }
+      const label = svg.getAttribute('aria-label');
+      if (label !== null) {
+        const entry = remember(label, attributes.get('aria-label'));
+        const translated = translatePlotUiText(entry.original, currentLanguage);
+        if (translated !== label) svg.setAttribute('aria-label', translated);
+        entry.rendered = translated; attributes.set('aria-label', entry);
+      } else attributes.delete('aria-label');
+      const captions = Array.from(svg.children).filter(child => ['title', 'desc'].includes(child.localName));
+      captions.push(...Array.from(svg.querySelectorAll('[data-vme-plot-caption="title"],[data-vme-plot-caption="footer"]')));
+      for (const caption of captions) {
+        const current = caption.textContent ?? '';
+        const entry = remember(current, plotTextMemory.get(caption));
+        const translated = translatePlotUiText(entry.original, currentLanguage);
+        if (translated !== current) caption.textContent = translated;
+        entry.rendered = translated; plotTextMemory.set(caption, entry);
+      }
+    }
     observer.observe(root, {
       childList: true, characterData: true, subtree: true, attributes: true,
-      attributeFilter: [...attributeNames, 'data-i18n-en'],
+      attributeFilter: [...attributeNames, 'data-i18n-en', 'data-i18n-es', 'data-vme-plot', 'data-vme-plot-caption'],
     });
   }
 

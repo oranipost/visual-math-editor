@@ -83,6 +83,10 @@ test('complex ranges enforce finite bounds, ordering, minimum span, and numeric 
 
 test('complex graph uses Re and Im, larger separated axis names, safe literals, and visible point values', () => {
   const result = graph('3+2i\n-2-i');
+  const openingTag = /^<svg\b[^>]*>/.exec(result.svg)?.[0];
+  assert.ok(openingTag, 'The document starts with an SVG root element.');
+  assert.match(openingTag, /\sxmlns="http:\/\/www\.w3\.org\/2000\/svg"/);
+  assert.match(openingTag, /\sdata-vme-plot="complex"/);
   assert.equal(result.visibleCount, 2);
   assert.match(result.svg, /data-axis-label="Re"[^>]*>Re<\/text>/);
   assert.match(result.svg, /data-axis-label="Im"[^>]*>Im<\/text>/);

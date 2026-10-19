@@ -1,3 +1,6 @@
+import { checkSpanishLocalization } from './spanish-check';
+import { checkFormulaShortcuts } from './shortcuts-check';
+import { checkInlineEquationGraph } from './inline-graph-check';
 import { mountEditor, type EditorMode, type EditorDraft } from "../src/editor-ui";
 import { configureMathLive, createPreview } from "../src/math-runtime";
 import { CHEMISTRY_TEMPLATES, UNIT_PRESETS, PHYSICS_TEMPLATES } from "../src/science-data";
@@ -36,7 +39,7 @@ async function checkInlinePanelLocalization(check: (condition: boolean, message:
   for (const [hostLanguage, systemLabel] of [
     ['en-US', 'Inline equation editor'],
     ['zh-CN', '笔记内公式编辑器'],
-    ['es', 'Inline equation editor'],
+    ['es', 'Editor de ecuaciones en la nota'],
   ] as const) {
     const fixture = document.createElement('div');
     document.body.append(fixture);
@@ -53,7 +56,7 @@ async function checkInlinePanelLocalization(check: (condition: boolean, message:
     const panel = () => fixture.querySelector<HTMLElement>('[data-testid="inline-equation-editor"]');
     const sourceUnchanged = () => panel()?.querySelector<HTMLTextAreaElement>('[data-testid="latex-source"]')?.value === formula
       && view.state.doc.toString() === note;
-    const chooseLanguage = async (language: 'en' | 'zh' | 'system') => {
+    const chooseLanguage = async (language: 'en' | 'zh' | 'es' | 'system') => {
       const selector = panel()!.querySelector<HTMLSelectElement>('[data-testid="interface-language"]')!;
       selector.value = language;
       selector.dispatchEvent(new Event('change', { bubbles: true }));
@@ -967,6 +970,9 @@ document.getElementById("selftest")!.onclick = async () => {
     check(host.querySelector<HTMLButtonElement>('[data-action="save"]')!.textContent === '保存修改' && mounted!.getDraft().latex === '\\frac{1}{', "切回中文仍保留未完成源码");
     await checkPlotTools(check);
     await checkIntegratedPlot(check);
+    await checkInlineEquationGraph(check);
+    await checkFormulaShortcuts(check);
+    await checkSpanishLocalization(check);
     await checkComplexTools(check);
     await checkComplexRenderer(check);
     await checkPlotGestures(check);

@@ -2,6 +2,18 @@
 
 This file records version changes. Builds before 0.6.2 were local MVP releases; 0.6.2 prepares the first public desktop beta. Publication status is shown on GitHub Releases. Neither a local package nor a public GitHub release implies Obsidian community-directory approval.
 
+## 0.7.0 — 2026-10-18
+
+- Rename the display name to **Visual Math**, retaining `visual-math-editor` as the plugin ID, installation folder and repository so existing settings and saved content remain compatible.
+- Add **Graph this equation** below the math editor. Supported single-variable formulas feed the preview directly, changes invalidate stale curves, and **Insert equation and graph** validates and saves both together. Advanced function and complex-plane tools remain available.
+- Add a bundled Spanish interface, Spanish element-name search and scoped graph accessibility translations alongside English and Simplified Chinese.
+- Add local formula keywords: save a completed equation, insert it from a list or type its keyword in the Visual/Hybrid math field. Protect built-in shortcuts, invalid templates and concurrent settings changes.
+- Clarify math, chemistry, physics and quick note-taking capabilities in the descriptions and add real 0.7 Obsidian screenshots.
+- Apply **GPL version 3 only with the narrow Obsidian linking exception** to new original code and this release as a whole. Commercial use is allowed under GPL; covered derivative code cannot be distributed closed-source. Earlier MIT grants and unchanged third-party licenses remain valid. The source ZIP includes exact upstream preferred-source archives, checksums and build instructions.
+- Include an **About and license** command and retain complete required notices in the three-file community distribution as well as the manual ZIP.
+
+The live connection between a formula and its graph operates inside the current editor. Saved formula and graph blocks remain separate; regenerate or edit the graph after later formula changes. Native checks cover macOS and Obsidian 1.14.4, not every desktop platform. Exact automated, browser, native and hosted-release observations are in [TEST-REPORT.md](TEST-REPORT.md).
+
 ## 0.6.5 — 2026-10-18
 
 - Localize the inline-editor accessibility label and equation hover-to-edit hint instead of displaying fixed Chinese text in the English interface.

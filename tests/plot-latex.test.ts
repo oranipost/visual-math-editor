@@ -41,3 +41,13 @@ test('partial formula structures cannot turn into a different drawable expressio
     String.raw`\frac{1}{x}^`, String.raw`\sqrt{}`, String.raw`\left(x`, 'x+', 'x'.repeat(1025),
   ]) assert.throws(() => expressionFromLatex(latex), latex);
 });
+
+test('equation-linked graphs accept explicit functions and constants without solving other equations', () => {
+  assert.equal(expressionFromLatex('y=x^2'), 'x^2');
+  assert.equal(expressionFromLatex('y=3'), '3');
+  assert.equal(at('3', 25), 3);
+  assert.equal(at(String.raw`y=\frac{x+1}{2}`, 7), 4);
+  for (const latex of ['x=2', 'y^2=x', 'x^2+y^2=1', 'y=x=2', 'y=y+1', 'y=x+z', 'f(x)=x^2']) {
+    assert.throws(() => expressionFromLatex(latex), latex);
+  }
+});

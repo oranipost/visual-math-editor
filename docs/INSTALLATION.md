@@ -4,29 +4,31 @@
 
 ## English
 
+**Visual Math 0.7.0 desktop public beta** is the same plugin previously named Visual Math Editor. Keep the existing `visual-math-editor` folder and its `data.json`; do not create a second installation. Confirm download availability on [GitHub Releases](https://github.com/oranipost/visual-math-editor/releases). Release publication, hosted verification and directory review are separate from the local/native results in the test report.
+
 ### Requirements and download
 
 - Obsidian **1.14.4 or later**, desktop main window. Native integration was checked on macOS with 1.14.4; other desktop systems have not been verified.
-- **0.6.5 desktop public beta:** [installation ZIP](https://github.com/oranipost/visual-math-editor/releases/download/0.6.5/visual-math-editor-0.6.5.zip) · [release notes and checksums](https://github.com/oranipost/visual-math-editor/releases/tag/0.6.5). Release availability is shown on [GitHub Releases](https://github.com/oranipost/visual-math-editor/releases); actual validation is recorded in [TEST-REPORT.md](../TEST-REPORT.md). [Community-directory installation](https://community.obsidian.md/plugins/visual-math-editor) also depends on availability in the app's index.
+- **0.7.0 desktop public beta:** [installation ZIP](https://github.com/oranipost/visual-math-editor/releases/download/0.7.0/visual-math-editor-0.7.0.zip) · [release notes and checksums](https://github.com/oranipost/visual-math-editor/releases/tag/0.7.0). Release availability is shown on [GitHub Releases](https://github.com/oranipost/visual-math-editor/releases); actual validation is recorded in [TEST-REPORT.md](../TEST-REPORT.md). [Community-directory installation](https://community.obsidian.md/plugins/visual-math-editor) also depends on availability in the app's index.
 - You do **not** need Node.js, npm, an account or an API key to use the compiled plugin.
 
-The historical official 0.6.3 review is **Completed**, with **Review Satisfactory**. Version **0.6.4 is published on GitHub**, with all six download assets' build provenance verified; its own community-directory review is **Completed** and the public scorecard shows **Review Passed**, with no Error or Warning entries and recommendations for clipboard access and optional manual-download assets. This records directory observations, not a completed native installation test; see [review observations](COMMUNITY-SUBMISSION.md) and [TEST-REPORT.md](../TEST-REPORT.md) for their separate scopes. **Code → Download ZIP**, `visual-math-editor-source-0.6.5.zip` and GitHub's automatic **Source code** downloads are for developers; they are not the ready-to-install plugin.
+Directory review and release verification apply to the specific version that was checked; see [review observations](COMMUNITY-SUBMISSION.md) and [TEST-REPORT.md](../TEST-REPORT.md). **Code → Download ZIP**, `visual-math-editor-source-0.7.0.zip` and GitHub's automatic **Source code** downloads are for developers; they are not the ready-to-install plugin.
 
 ### Community-directory installation (when available)
 
-1. Open the [Visual Math Editor directory page](https://community.obsidian.md/plugins/visual-math-editor) and click **Add to Obsidian**. Allow the browser to open Obsidian and choose the intended vault if prompted.
+1. Open the [Visual Math directory page](https://community.obsidian.md/plugins/visual-math-editor) and click **Add to Obsidian**. Allow the browser to open Obsidian and choose the intended vault if prompted.
 2. In Obsidian's plugin details, choose **Install**, then **Enable**. Enable community plugins in **Settings → Community plugins** first if required.
 3. Open a Markdown note and click **∑** in the note header or left ribbon.
 
-At the **2026-10-18** check, the latest fetch of the official installation index still lacked `visual-math-editor`; the earlier native **Browse** and **Check for updates** checks had offered no result. Use the manual ZIP procedure below while it is unavailable. Obsidian's [official announcement](https://obsidian.md/blog/future-of-plugins/) says a project that passes review becomes searchable and downloadable in the app within 24 hours. If it remains absent more than 24 hours after a passing review, report the discrepancy to Obsidian; this guide does not confirm an exact synchronization time for this entry. Successful native editing checks used manual installation; directory installation has not been completed in this report.
+At the **2026-10-18** check, the official installation index included `visual-math-editor` under **Visual Math Editor**. This does not establish that a marketplace installation was completed, that the name has synchronized to Visual Math, or that 0.7.0 is offered by the directory. Native editing tests used manual installation. Check the actual version shown in Obsidian or use the matching GitHub ZIP.
 
 ### Manual installation
 
 1. In Obsidian, open the vault in which you want to use the plugin. Locate that vault's folder in your file manager.
-2. Extract `visual-math-editor-0.6.5.zip`. Copy its entire `visual-math-editor` folder into the vault's `.obsidian/plugins/` folder. Create `plugins` if necessary.
+2. Extract `visual-math-editor-0.7.0.zip`. Copy its entire `visual-math-editor` folder into the vault's `.obsidian/plugins/` folder. Create `plugins` if necessary.
 3. Check the layout below. `main.js` must be directly inside `visual-math-editor`, with no second nested plugin folder.
-4. Restart Obsidian. Open **Settings → Community plugins**, turn on community plugins if necessary, and enable **Visual Math Editor**.
-5. Open a Markdown note. Click **∑** in the note header or left ribbon, or run **Visual Math Editor: Insert or edit equation** from the command palette.
+4. Restart Obsidian. Open **Settings → Community plugins**, turn on community plugins if necessary, and enable **Visual Math**.
+5. Open a Markdown note. Click **∑** in the note header or left ribbon, or run **Visual Math: Insert or edit equation** from the command palette.
 
 ```text
 your-vault/
@@ -54,6 +56,8 @@ The normal editor is an in-note panel below the selected paragraph in Obsidian's
 2. Switch to **Hybrid**. Change the numerator in the LaTeX source to `5`; check that the formatted fraction updates. Edits in the formatted field synchronize back to source.
 3. Click **Insert equation**. Put the cursor in the inserted equation and click **∑** to reopen it. Use Obsidian's **Undo** to reverse a saved change.
 
+In 0.7.0, enter `y=x^2` in the equation editor and use **Graph this equation** directly below it. Check that edits update the curve without retyping the expression. Choose **Insert equation and graph** to save it with the completed formula; merely viewing it does not write the note. Custom equation keywords can save a frequently used equation for reuse. Choose **Español** in the interface-language menu to try Spanish, or use **Follow Obsidian** with the app configured in Spanish. The equation and graph follow each other only inside the current editor. After saving, they are independent blocks: regenerate a graph from a changed equation or explicitly edit the saved graph. Consult the test report for the checks actually performed.
+
 For a complex plane, open **∑ → Graph → Complex plane**, enter `3+2i`, and click **Insert graph** once the input is valid. Drag or zoom inside the saved graph, then click **Save view**. Reopen the note or use **Edit graph** to check that the range was retained. Gestures alone do not save the note.
 
 Use **Units → Unit conversion → Length** to try `1 Inch (in) → Centimetre (cm)`. The result is `1 in = 2.54 cm`. **Use converted result** fills the helper, **Insert units** adds it to the equation draft, and the editor's final **Insert equation / Save changes** writes the note.
@@ -62,7 +66,7 @@ To open the editor by keyboard, assign a shortcut to **Insert or edit equation**
 
 ### Updating
 
-Open **Settings → Community plugins → Check for updates**, then **Update** next to Visual Math Editor when a newer version is available. Community plugins do not update automatically. The updater downloads the new program files (`main.js`, `manifest.json`, `styles.css`), not your vault. You do not apply code patches yourself. Save open drafts first, and restart Obsidian afterwards to refresh MathLive.
+Open **Settings → Community plugins → Check for updates**, then **Update** next to Visual Math when a newer version is available. Community plugins do not update automatically. The updater downloads the new program files (`main.js`, `manifest.json`, `styles.css`), not your vault. You do not apply code patches yourself. Save open drafts first, and restart Obsidian afterwards to refresh MathLive.
 
 For a manual update, use these steps:
 
@@ -84,7 +88,7 @@ Users already familiar with [BRAT](https://github.com/TfTHacker/obsidian42-brat)
 | Plugin does not appear | Check the exact folder layout, `manifest.json`, app version and community-plugin setting. Restart after copying the files. |
 | No ∑ button | Open a Markdown note in the desktop main window and confirm the plugin is enabled. Try the command palette. |
 | Shortcut opens another command | Reassign it under **Settings → Hotkeys**. |
-| MathLive conflict on startup | Disable the conflicting formula plugin and restart Obsidian before enabling Visual Math Editor again. |
+| MathLive conflict on startup | Disable the conflicting formula plugin and restart Obsidian before enabling Visual Math again. |
 | Cannot save after changing the note | Keep the draft and reopen the original note; stale-note checks prevent overwriting a changed file. Use **Recover equation draft** during the same app run if needed. |
 | Unsaved graph view resets | Dragging/zooming is temporary until **Save view** or **Save graph**. |
 
@@ -96,29 +100,31 @@ Developer: [Dongfang Wang / oranipost](https://github.com/oranipost). Public fee
 
 ## 简体中文
 
+**Visual Math 0.7.0 桌面公开测试版**就是原 Visual Math Editor。继续使用已有的 `visual-math-editor` 文件夹并保留 `data.json`，不要安装成两个插件。下载是否已提供以 [GitHub Releases](https://github.com/oranipost/visual-math-editor/releases) 为准；发行、托管验证与目录审核分别记录，不由本地或原生测试结果代替。
+
 ### 要求与下载
 
 - Obsidian **1.14.4 或更新版本**，目前支持桌面主窗口。原生测试使用 macOS 与 1.14.4，其他桌面系统尚未验证。
-- **0.6.5 桌面公开测试版：**[安装 ZIP](https://github.com/oranipost/visual-math-editor/releases/download/0.6.5/visual-math-editor-0.6.5.zip) · [发布说明与校验值](https://github.com/oranipost/visual-math-editor/releases/tag/0.6.5)。发行可用性见 [GitHub Releases](https://github.com/oranipost/visual-math-editor/releases)，实际验证见 [TEST-REPORT.md](../TEST-REPORT.md)。插件进入应用索引后也可[从社区目录安装](https://community.obsidian.md/plugins/visual-math-editor)。
+- **0.7.0 桌面公开测试版：**[安装 ZIP](https://github.com/oranipost/visual-math-editor/releases/download/0.7.0/visual-math-editor-0.7.0.zip) · [发布说明与校验值](https://github.com/oranipost/visual-math-editor/releases/tag/0.7.0)。发行可用性见 [GitHub Releases](https://github.com/oranipost/visual-math-editor/releases)，实际验证见 [TEST-REPORT.md](../TEST-REPORT.md)。插件进入应用索引后也可[从社区目录安装](https://community.obsidian.md/plugins/visual-math-editor)。
 - 使用编译好的插件**不需要** Node.js、npm、账号或 API 密钥。
 
-历史记录中，0.6.3 官方审核状态为 **Completed（已完成）**，结论为 **Review Satisfactory（审核满意）**。**0.6.4 已在 GitHub 发布**，六个下载附件的构建来源证明均已验证；该版独立的社区目录审核已 **Completed（完成）**，公开评分卡显示 **Review Passed**，未列出 Error 或 Warning，保留主动剪贴板用途和可选手动下载附件两类建议。这记录的是目录观察，不表示完成了原生安装实测；两类观察分别见[审核记录](COMMUNITY-SUBMISSION.md)和 [TEST-REPORT.md](../TEST-REPORT.md)。**Code → Download ZIP**、`visual-math-editor-source-0.6.5.zip` 和 GitHub 自动生成的 **Source code** 均是开发源码，需要自行构建。
+目录审核与发行验证只对应实际检查的具体版本；分别见[审核记录](COMMUNITY-SUBMISSION.md)和 [TEST-REPORT.md](../TEST-REPORT.md)。**Code → Download ZIP**、`visual-math-editor-source-0.7.0.zip` 和 GitHub 自动生成的 **Source code** 均是开发源码，需要自行构建。
 
 ### 社区目录安装（索引可用后）
 
-1. 打开 [Visual Math Editor 目录页面](https://community.obsidian.md/plugins/visual-math-editor)，点击 **Add to Obsidian**，允许浏览器打开 Obsidian；出现选择时使用目标笔记库。
+1. 打开 [Visual Math 目录页面](https://community.obsidian.md/plugins/visual-math-editor)，点击 **Add to Obsidian**，允许浏览器打开 Obsidian；出现选择时使用目标笔记库。
 2. 在 Obsidian 插件详情中点击 **Install（安装）**，再点 **Enable（启用）**。需要时先在 **设置 → 第三方插件** 中开启社区插件。
 3. 打开 Markdown 笔记，点击笔记右上角或左侧工具栏的 **∑**。
 
-**2026-10-18** 最新获取的官方安装索引仍未包含 `visual-math-editor`；此前原生 **Browse** 和 **检查更新** 实测也未提供结果。暂不可用时请使用下方手动 ZIP 安装。Obsidian [官方公告](https://obsidian.md/blog/future-of-plugins/)说明，项目审核通过后会在 24 小时内进入应用搜索与下载。若通过审核超过 24 小时仍无结果，应向 Obsidian 反馈；本说明不保证本条目的确切同步时间。成功的原生编辑实测通过手动安装完成，尚未完成原生社区目录安装。
+**2026-10-18** 核对的官方安装索引已包含 `visual-math-editor`，显示名称仍为 **Visual Math Editor**。这不等于已完成应用内商城安装、名称已同步为 Visual Math，或目录已提供 0.7.0。原生编辑测试通过手动安装完成。请核对 Obsidian 实际条目显示的版本，或使用对应的 GitHub ZIP。
 
 ### 手动安装
 
 1. 在 Obsidian 中打开准备使用插件的 vault，找到该 vault 在电脑中的文件夹。
-2. 解压 `visual-math-editor-0.6.5.zip`，将其中整个 `visual-math-editor` 文件夹放入 vault 的 `.obsidian/plugins/`。没有 `plugins` 时可新建。
+2. 解压 `visual-math-editor-0.7.0.zip`，将其中整个 `visual-math-editor` 文件夹放入 vault 的 `.obsidian/plugins/`。没有 `plugins` 时可新建。
 3. 对照上方目录示例：`main.js`、`manifest.json`、`styles.css` 必须直接位于 `visual-math-editor` 中，避免多嵌套一层同名目录。
-4. 重启 Obsidian，打开 **设置 → 第三方插件（Settings → Community plugins）**，需要时先开启第三方插件，再启用 **Visual Math Editor**。
-5. 打开 Markdown 笔记，点击笔记右上角或左侧工具栏的 **∑**；也可在命令面板运行 **Visual Math Editor: 插入或编辑公式**。
+4. 重启 Obsidian，打开 **设置 → 第三方插件（Settings → Community plugins）**，需要时先开启第三方插件，再启用 **Visual Math**。
+5. 打开 Markdown 笔记，点击笔记右上角或左侧工具栏的 **∑**；也可在命令面板运行 **Visual Math: 插入或编辑公式**。
 
 macOS 的 Finder 可按 **⌘⇧.** 显示隐藏文件；Windows 文件资源管理器可打开 **查看 → 显示 → 隐藏的项目**。若 vault 使用自定义配置目录，请以它代替 `.obsidian`。复制或分发时保留安装包中的许可证和第三方声明。
 
@@ -130,6 +136,8 @@ macOS 的 Finder 可按 **⌘⇧.** 显示隐藏文件；Windows 文件资源管
 2. 切到 **Hybrid**，在 LaTeX 源码中把分子改为 `5`，检查可视化分数同步变化；在可视化公式中修改，也会同步回源码。
 3. 点击 **插入公式**。将光标放入已插入的公式，再点 **∑** 即可重编。保存后的改动可用 Obsidian 的 **撤销（Undo）** 恢复。
 
+0.7.0 可直接在公式编辑器填写 `y=x^2`，在公式下方点击 **绘制此公式 / Graph this equation**，检查修改公式后曲线同步变化，无需重填函数。点击 **插入公式与图像 / Insert equation and graph** 才将完整公式与图像写入笔记；只查看不会保存。常用公式可保存为自定义关键词以便复用。语言菜单选择 **Español** 可试用西班牙语；也可将 Obsidian 设置为西班牙语后使用 **跟随 Obsidian**。公式与图像只在当前编辑器内联动。保存后两者是独立区块；以后修改公式，需重新绘图或明确编辑已有图像。实际验证见测试记录。
+
 复平面试用：打开 **∑ → 图像 → 复平面**，输入 `3+2i`；输入有效时点击 **插入图像**。在已保存图形内拖动或缩放，再点 **保存视野**。重开笔记或点 **编辑图像**，检查范围是否保留。仅拖动、缩放不会保存笔记。
 
 单位换算试用：在 **单位 → 单位换算 → 长度** 中选择 `1 英寸 → 厘米`，结果为 `1 in = 2.54 cm`。**使用换算结果** 只填入单位辅助输入；**插入单位** 加入公式草稿；面板顶部的 **插入公式 / 保存修改** 才写入笔记。
@@ -138,7 +146,7 @@ macOS 的 Finder 可按 **⌘⇧.** 显示隐藏文件；Windows 文件资源管
 
 ### 更新
 
-进入 **设置 → 第三方插件 → 检查更新**，有新版时点击 Visual Math Editor 旁的 **更新**。社区插件不会自动更新。更新器下载新版程序文件（`main.js`、`manifest.json`、`styles.css`），不会重新下载笔记库，也不需要用户自行补代码。更新前保存草稿，完成后重启 Obsidian，以刷新 MathLive。
+进入 **设置 → 第三方插件 → 检查更新**，有新版时点击 Visual Math 旁的 **更新**。社区插件不会自动更新。更新器下载新版程序文件（`main.js`、`manifest.json`、`styles.css`），不会重新下载笔记库，也不需要用户自行补代码。更新前保存草稿，完成后重启 Obsidian，以刷新 MathLive。
 
 手动更新按以下步骤操作：
 

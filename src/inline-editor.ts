@@ -4,6 +4,7 @@ import { mountEditor, type EditorDraft } from "./editor-ui";
 import { resolveLanguage, translateUiText, type Language } from "./i18n";
 import type { PlotSpec } from "./plot-engine";
 import { createHtml } from "./dom";
+import type { FormulaShortcuts } from "./shortcuts";
 
 export type InlineDraft = EditorDraft;
 export interface InlineSession {
@@ -13,6 +14,8 @@ export interface InlineSession {
   graphOnly?: boolean;
   language: Language;
   systemLanguage?: string;
+  shortcuts?: FormulaShortcuts;
+  onShortcutsChange?: (shortcuts: FormulaShortcuts, baseline: FormulaShortcuts) => FormulaShortcuts | void | Promise<FormulaShortcuts | void>;
   onLanguageChange: (language: Language) => void | Promise<void>;
   onSave: (latex: string, display: boolean) => void;
   onSaveGraph: (spec: PlotSpec, latex: string, display: boolean) => void;
@@ -52,6 +55,8 @@ class EquationWidget extends WidgetType {
         editing: this.session.editing,
         language: this.session.language,
         systemLanguage: this.session.systemLanguage,
+        shortcuts: this.session.shortcuts,
+        onShortcutsChange: this.session.onShortcutsChange,
         onLanguageChange: language => {
           this.session.language = language;
           updateLabel();

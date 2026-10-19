@@ -7,6 +7,7 @@ import { mountPlotTools, type PlotDraft } from './plot-ui';
 import { expressionFromLatex } from './plot-latex';
 import type { PlotSpec } from './plot-engine';
 import { createHtml, createSvgElement } from './dom';
+import { mountShortcutTools } from './shortcuts-ui';
 
 export type EditorMode = 'visual' | 'latex' | 'hybrid';
 
@@ -23,6 +24,8 @@ export interface EditorOptions {
   scienceDraft?: ScienceDraft;
   plotDraft?: PlotDraft;
   graphOnly?: boolean;
+  shortcuts?: Record<string, string>;
+  onShortcutsChange?: (shortcuts: Record<string, string>, baseline: Record<string, string>) => Record<string, string> | void | Promise<Record<string, string> | void>;
   onSaveGraph?: (spec: PlotSpec, latex: string, display: boolean) => void | Promise<void>;
   onLanguageChange?: (language: Language) => void | Promise<void>;
   onSave: (latex: string, display: boolean) => void | Promise<void>;
@@ -132,11 +135,12 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
   let incomplete = false;
   let parserIssue: string | null = null;
   let graphSelected = false;
+  let equationGraphOpen = Boolean(!options.graphOnly && options.plotDraft?.equationLinked);
 
   const heading = el('div', 'vme-heading');
   const headingCopy = el('div', 'vme-heading-copy');
   const eyebrow = el('div', 'vme-eyebrow', options.editing ? '编辑公式' : '插入公式');
-  const title = el('h2', 'vme-title', 'Visual Math Editor');
+  const title = el('h2', 'vme-title', 'Visual Math');
   title.id = `${instanceId}-title`;
   const subtitle = el('p', 'vme-subtitle', '选择熟悉的方式，写下你的公式。');
   headingCopy.append(eyebrow, title, subtitle);
@@ -145,7 +149,7 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
   const language = el('select', 'vme-language-select');
   language.dataset.testid = 'interface-language';
   language.setAttribute('aria-label', '界面语言');
-  for (const [value, label] of [['system', '跟随 Obsidian'], ['zh', '中文'], ['en', 'English']] as const) {
+  for (const [value, label] of [['system', '跟随 Obsidian'], ['zh', '中文'], ['en', 'English'], ['es', 'Español']] as const) {
     const option = el('option', '', label);
     option.value = value;
     language.append(option);
@@ -376,6 +380,34 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
   workspace.setAttribute('role', 'tabpanel');
   workspace.append(sourcePane, visualPane);
 
+  const equationGraph = el('section', 'vme-equation-graph');
+  const shortcutsHost = el('div', 'vme-shortcuts-host');
+  shortcutsHost.hidden = Boolean(options.graphOnly);
+  equationGraph.dataset.testid = 'equation-graph';
+  const equationGraphToggle = button('', 'vme-science-button vme-equation-graph-toggle', 'graph-equation', () => {
+    if (saving || options.graphOnly) return;
+    equationGraphOpen = !equationGraphOpen;
+    equationGraphHost.hidden = !equationGraphOpen;
+    if (equationGraphOpen) equationGraphHost.append(plotHost);
+    plotTools.setEquationLinked(equationGraphOpen);
+    updateEquationGraphToggle();
+  });
+  const equationGraphCaption = el('span');
+  equationGraphToggle.append(equationGraphCaption);
+  const equationGraphHost = el('div', 'vme-equation-graph-content');
+  equationGraphHost.id = `${instanceId}-equation-graph`;
+  equationGraphHost.hidden = !equationGraphOpen;
+  equationGraphToggle.setAttribute('aria-controls', equationGraphHost.id);
+  equationGraph.append(equationGraphToggle, equationGraphHost);
+  equationGraph.hidden = Boolean(options.graphOnly);
+
+  function updateEquationGraphToggle(): void {
+    equationGraphCaption.textContent = equationGraphOpen ? '隐藏图像' : '绘制此公式';
+    equationGraphCaption.dataset.i18nEn = equationGraphOpen ? 'Hide graph' : 'Graph this equation';
+    equationGraphToggle.setAttribute('aria-expanded', String(equationGraphOpen));
+  }
+  updateEquationGraphToggle();
+
   const layout = el('div', 'vme-layout-row');
   const layoutLabel = el('span', 'vme-section-label', '在笔记中的显示方式');
   const layoutOptions = el('div', 'vme-layout-options');
@@ -401,12 +433,14 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
   actions.append(cancel, save);
   footer.append(footerNote, actions);
   const subjectTools = el('div', 'vme-subject-tools');
-  root.append(heading, modeTabs, modeDescription, subjectTools, workspace, status, layout);
+  root.append(heading, modeTabs, modeDescription, subjectTools, workspace, shortcutsHost, equationGraph, status, layout);
   if (options.compact) heading.append(footer);
   else root.append(footer);
   container.append(root);
 
   const plotHost = el('div');
+  const advancedPlotHost = el('div');
+  advancedPlotHost.append(plotHost);
   const plotTools = mountPlotTools(plotHost, {
     initialDraft: options.plotDraft,
     editing: options.graphOnly,
@@ -416,6 +450,9 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
       if (!options.graphOnly && mode !== 'latex' && !visualBlocked) syncFromVisual();
       if (!options.graphOnly && rawSource.trim() && (sourceIssue || incomplete || unsupported)) {
         throw new Error('Finish or clear the current equation before inserting a graph.');
+      }
+      if (equationGraphOpen && expressionFromLatex(rawSource) !== spec.expression) {
+        throw new Error('The equation changed. Preview the graph again.');
       }
       saving = true;
       root.setAttribute('aria-busy', 'true');
@@ -432,12 +469,21 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
   plotHost.querySelector('.vme-plot-actions')?.before(combinedSaveNote);
   const scienceTools = mountScienceTools(subjectTools, {
     initialDraft: options.scienceDraft,
-    plotTools: [plotHost],
+    plotTools: [advancedPlotHost],
     graphOnly: options.graphOnly,
     onSubjectChange: subject => {
       graphSelected = subject === 'graph';
       root.dataset.subject = subject;
       workspace.hidden = layout.hidden = modeTabs.hidden = modeDescription.hidden = save.hidden = graphSelected;
+      equationGraph.hidden = graphSelected || Boolean(options.graphOnly);
+      shortcutsHost.hidden = graphSelected || Boolean(options.graphOnly);
+      if (graphSelected) {
+        equationGraphOpen = false;
+        equationGraphHost.hidden = true;
+        advancedPlotHost.append(plotHost);
+        plotTools.setEquationLinked(false);
+        updateEquationGraphToggle();
+      }
       status.hidden = graphSelected || !status.textContent;
     },
     mathTools: [toolbar, symbolBar],
@@ -458,6 +504,10 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
       } catch { showError('这段内容暂时无法更新，请检查写法。原公式已保留。'); }
     },
   });
+  if (equationGraphOpen) {
+    equationGraphHost.append(plotHost);
+    plotTools.setEquationLinked(true);
+  }
 
   field.defaultMode = 'math';
   field.smartMode = false;
@@ -477,6 +527,16 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
   const initialSerialized = field.getValue('latex');
   let lastVisualSerialized = initialSerialized;
   let initialSourceUntouched = true;
+  const shortcutTools = mountShortcutTools(shortcutsHost, {
+    field,
+    getLatex: () => {
+      if (mode !== 'latex' && !visualBlocked) syncFromVisual();
+      return rawSource;
+    },
+    shortcuts: options.shortcuts,
+    onChange: options.onShortcutsChange,
+    onInsert: insert,
+  });
 
   function updateHistory(): void {
     undo.disabled = !field.canUndo() || saving || visualBlocked;
@@ -491,6 +551,8 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
     clear.disabled = saving || visualBlocked;
     scienceTools.setDisabled(saving, visualBlocked);
     plotTools.setDisabled(saving);
+    shortcutTools.setDisabled(saving);
+    equationGraphToggle.disabled = saving;
     cancel.disabled = language.disabled = saving;
     for (const tab of modeButtons.values()) tab.disabled = saving;
     field.readOnly = saving || visualBlocked;
@@ -520,6 +582,7 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
     else showError('');
     updateControls();
     scienceTools.refreshCurrent();
+    if (equationGraphOpen) plotTools.refreshCurrentEquation();
   }
 
   function syncFromSource(): void {
@@ -627,7 +690,7 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
     if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
       event.preventDefault();
       event.stopPropagation();
-      if (graphSelected) root.querySelector<HTMLButtonElement>('[data-action="plot-insert"]')?.click();
+      if (graphSelected || equationGraphOpen) root.querySelector<HTMLButtonElement>('[data-action="plot-insert"]')?.click();
       else void saveEquation();
     }
   };
@@ -689,6 +752,7 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
       localization.destroy();
       scienceTools.destroy();
       plotTools.destroy();
+      shortcutTools.destroy();
       window.clearTimeout(focusTimer);
       field.removeEventListener('input', onInput);
       field.removeEventListener('undo-state-change', updateHistory);

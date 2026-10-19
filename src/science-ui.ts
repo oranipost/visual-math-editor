@@ -7,6 +7,7 @@ import { UNIT_CATEGORIES, convertQuantity } from './unit-conversion';
 import { getElementDetails } from './element-details';
 import { checkReaction, type ReactionCheck } from './reaction-check';
 import { createHtml } from './dom';
+import { getElementSearchNames } from './i18n';
 
 export type Subject = 'math' | 'chemistry' | 'physics' | 'units' | 'elements' | 'graph';
 export interface ScienceDraft {
@@ -576,7 +577,6 @@ export function mountScienceTools(host: HTMLElement, options: ScienceOptions): {
     if (!detail) return;
     visibleElement = cell;
     const title = el('div', 'vme-element-detail-title', `${cell.item.number} · ${cell.item.symbol} · ${cell.item.name}`);
-    title.setAttribute('data-i18n-ignore', '');
     const values = el('dl', 'vme-element-detail-values');
     const appendValue = (label: string, value: string, testId: string): HTMLElement => {
       const term = el('dt', '', label);
@@ -661,7 +661,7 @@ export function mountScienceTools(host: HTMLElement, options: ScienceOptions): {
     button.dataset.category = isLanthanide ? 'lanthanide' : isActinide ? 'actinide' : item.group === 18 ? 'noble' : item.group === 1 ? 'alkali' : item.group >= 13 ? 'main' : 'transition';
     button.append(el('span', 'vme-element-number', String(item.number)), el('strong', 'vme-element-symbol', item.symbol), el('span', 'vme-element-name', item.name));
     table.append(button);
-    elementButtons.push({ button, search: `${item.number} ${item.symbol} ${item.name}`.toLowerCase(), number: item.number, symbol: item.symbol.toLowerCase() });
+    elementButtons.push({ button, search: `${item.number} ${item.symbol} ${getElementSearchNames(item.name)}`.toLowerCase(), number: item.number, symbol: item.symbol.toLowerCase() });
   }
   for (const [row, label] of [[10, '镧系'], [11, '锕系']] as const) {
     const legend = el('span', 'vme-periodic-series', label);

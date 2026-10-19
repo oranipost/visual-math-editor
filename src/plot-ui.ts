@@ -19,6 +19,8 @@ export interface PlotDraft extends PlotViewDraft {
   mode?: 'function' | 'complex';
   functionDraft?: PlotViewDraft;
   complexDraft?: PlotViewDraft;
+  /** The graph lives below, and derives its expression from, the equation editor. */
+  equationLinked?: boolean;
 }
 
 interface PlotOptions {
@@ -87,6 +89,8 @@ function plotErrorZh(error: string): string {
 export function mountPlotTools(host: HTMLElement, options: PlotOptions = {}): {
   getDraft: () => PlotDraft;
   setDisabled: (disabled: boolean) => void;
+  setEquationLinked: (linked: boolean) => void;
+  refreshCurrentEquation: () => void;
   destroy: () => void;
 } {
   const root = el('div', 'vme-plot-tools');
@@ -102,6 +106,8 @@ export function mountPlotTools(host: HTMLElement, options: PlotOptions = {}): {
   let pendingInput = true;
   let lastPlot: { spec: PlotSpec; svg: string } | undefined;
   const draft = options.initialDraft;
+  let equationLinked = Boolean(draft?.equationLinked && options.getCurrentExpression);
+  let linkedExpression: string | undefined;
   let mode: 'function' | 'complex' = draft?.mode ?? 'function';
   const caches: Partial<Record<'function' | 'complex', PlotViewDraft>> = { function: draft?.functionDraft, complex: draft?.complexDraft };
   const initial = draft ?? { ...DEFAULT_PLOT_SPEC, xMin: '-10', xMax: '10', yMin: '-10', yMax: '10' };
@@ -181,6 +187,8 @@ export function mountPlotTools(host: HTMLElement, options: PlotOptions = {}): {
   }
   const syntaxHint = el('p', 'vme-plot-note');
   text(syntaxHint, '用普通写法输入，例如 x^2、2x + 1、sqrt(x)。', 'Use ordinary notation, such as x^2, 2x + 1 or sqrt(x).');
+  const linkedHint = el('p', 'vme-plot-note vme-plot-linked-hint');
+  text(linkedHint, '图像与上方公式同步；直接修改公式即可更新。', 'The graph follows the equation above. Edit the equation to update it.');
   const range = el('details', 'vme-plot-range');
   range.open = draft?.rangeOpen ?? false;
   const rangeHeading = el('summary');
@@ -248,7 +256,7 @@ export function mountPlotTools(host: HTMLElement, options: PlotOptions = {}): {
   text(previewOnly, '此预览页面可以画图；在 Obsidian 中可将图像插入笔记。',
     'You can preview graphs here. Open the editor in Obsidian to insert a graph into a note.');
   previewOnly.hidden = Boolean(options.onInsertGraph);
-  body.append(kindLabel, label, expression, complexLabel, complexInput, presets, complexPresets, syntaxHint, range, actions, status, navigation, gestureHint, preview, pointList, note, previewOnly);
+  body.append(linkedHint, kindLabel, label, expression, complexLabel, complexInput, presets, complexPresets, syntaxHint, range, actions, status, navigation, gestureHint, preview, pointList, note, previewOnly);
   const inputs = [expression, complexInput, ...Object.values(rangeInputs)];
   for (const input of inputs) {
     input.addEventListener('input', () => { invalidate(); schedulePreview(); });
@@ -310,6 +318,7 @@ export function mountPlotTools(host: HTMLElement, options: PlotOptions = {}): {
     if (!preserveGesture) interaction?.setDisabled(true);
     lastPlot = undefined;
     pointList.replaceChildren(); pointList.hidden = true;
+    if (equationLinked && !readCurrentEquation()) return;
     const values = Object.fromEntries(Object.entries(rangeInputs).map(([key, input]) => [key, input.value.trim() === '' ? NaN : Number(input.value)])) as Record<keyof typeof rangeInputs, number>;
     const result = createGraph({ ...(mode === 'complex' ? { mode: 'complex' as const } : {}), expression: mode === 'complex' ? complexInput.value : expression.value, ...values });
     preview.replaceChildren();
@@ -336,6 +345,7 @@ export function mountPlotTools(host: HTMLElement, options: PlotOptions = {}): {
     }
     status.dataset.state = 'ready';
     text(status, options.editing ? '图像已就绪。点击保存图像更新笔记。' : '图像已就绪。点击插入图像加入笔记。', options.editing ? 'The graph is ready. Choose Save graph to update the note.' : 'The graph is ready. Choose Insert graph to add it to the note.');
+    if (equationLinked) text(status, '图像已就绪。点击插入公式与图像加入笔记。', 'The graph is ready. Choose Insert equation and graph to add both to the note.');
     if ('visibleCount' in result) text(status, `视图内 ${result.visibleCount} / ${result.points.length} 个点。点击保存才写入笔记。`, `${result.visibleCount} / ${result.points.length} points visible. Save to update the note.`);
     refreshDisabled();
   }
@@ -355,8 +365,16 @@ export function mountPlotTools(host: HTMLElement, options: PlotOptions = {}): {
       previewed: Boolean(lastPlot), rangeOpen: range.open, home: { ...home } };
   }
   function updateModeUi(): void {
-    label.hidden = expression.hidden = presets.hidden = mode === 'complex';
+    root.dataset.equationLinked = String(equationLinked);
+    kindLabel.hidden = equationLinked;
+    linkedHint.hidden = !equationLinked;
+    label.hidden = expression.hidden = presets.hidden = equationLinked || mode === 'complex';
     complexLabel.hidden = complexInput.hidden = complexPresets.hidden = fit.hidden = mode !== 'complex';
+    syntaxHint.hidden = equationLinked;
+    const insertCaption = insertButton.querySelector<HTMLElement>('span')!;
+    text(insertCaption,
+      equationLinked ? '插入公式与图像' : options.editing ? '保存图像' : '插入图像',
+      equationLinked ? 'Insert equation and graph' : options.editing ? 'Save graph' : 'Insert graph');
     if (mode === 'complex') {
       text(syntaxHint, '输入 a+bi，例如 3+2i、−i、4；每行一个，最多 20 个点。', 'Enter a+bi, such as 3+2i, −i or 4; one per line, up to 20 points.');
       text(note, 'Re 为实轴、Im 为虚轴，两轴每单位长度相同；暂不计算复数表达式。', 'Re is the real axis and Im is the imaginary axis, with equal unit lengths. Complex expressions are not evaluated.');
@@ -370,7 +388,7 @@ export function mountPlotTools(host: HTMLElement, options: PlotOptions = {}): {
     }
   }
   kind.addEventListener('change', () => {
-    if (destroyed || externalDisabled || inserting) return;
+    if (destroyed || externalDisabled || inserting || equationLinked) return;
     caches[mode] = viewDraft(); invalidate();
     mode = kind.value === 'complex' ? 'complex' : 'function';
     const cached = caches[mode];
@@ -409,6 +427,9 @@ export function mountPlotTools(host: HTMLElement, options: PlotOptions = {}): {
         if (message === 'Finish or clear the current equation before inserting a graph.') {
           showError('请先完成或清空当前公式，再插入图像。绘图输入和预览仍保留。',
             'Finish or clear the current equation before inserting a graph. Your graph input and preview are preserved.');
+        } else if (message === 'The equation changed. Preview the graph again.') {
+          invalidate();
+          showError('公式已修改，请重新预览后插入。', 'The equation changed. Preview the graph again.');
         } else {
           showError('未能插入图像，输入和预览仍保留，请重试。',
             `The graph could not be inserted. Your input and preview are preserved. ${message || 'Try again.'}`);
@@ -420,15 +441,66 @@ export function mountPlotTools(host: HTMLElement, options: PlotOptions = {}): {
     }
   }
 
+  function readCurrentEquation(): boolean {
+    try {
+      expression.value = options.getCurrentExpression!();
+      linkedExpression = expression.value;
+      return true;
+    } catch {
+      linkedExpression = undefined;
+      lastPlot = undefined;
+      preview.replaceChildren(); preview.hidden = true;
+      interaction?.setDisabled(true);
+      showError('此公式暂不能绘图。支持 y=f(x)、仅含 x 的表达式和常数；不支持隐式方程或多变量。请在上方修改公式。',
+        'This equation cannot be graphed yet. Use y=f(x), an expression in x, or a constant. Implicit equations and multiple variables are not supported. Edit the equation above.');
+      return false;
+    }
+  }
+
+  function refreshCurrentEquation(): void {
+    if (!equationLinked || destroyed || inserting) return;
+    const previous = linkedExpression;
+    if (!readCurrentEquation()) { cancelPreview(); return; }
+    if (previous === linkedExpression && (lastPlot || pendingInput)) return;
+    invalidate();
+    if (!externalDisabled) schedulePreview();
+  }
+
+  function setEquationLinked(linked: boolean): void {
+    if (destroyed || externalDisabled || inserting) return;
+    const next = linked && Boolean(options.getCurrentExpression);
+    // Opening an existing standalone graph must keep its restored preview and
+    // gesture state. Subject initialization also calls this with false.
+    if (next === equationLinked) {
+      if (next) refreshCurrentEquation();
+      return;
+    }
+    equationLinked = next;
+    if (equationLinked && mode !== 'function') {
+      caches[mode] = viewDraft();
+      mode = 'function'; kind.value = mode;
+      const cached = caches.function;
+      for (const key of ['xMin', 'xMax', 'yMin', 'yMax'] as const) rangeInputs[key].value = cached?.[key] ?? String(DEFAULT_PLOT_SPEC[key]);
+      home = cached?.home ?? { ...DEFAULT_PLOT_SPEC };
+      range.open = cached?.rangeOpen ?? false;
+    }
+    linkedExpression = undefined;
+    updateModeUi(); invalidate();
+    if (equationLinked) previewGraph();
+    else schedulePreview();
+  }
+
   updateModeUi(); refreshDisabled();
   if (draft?.previewed) previewGraph();
   return {
     getDraft: () => ({
-      ...viewDraft(), mode,
+      ...viewDraft(), mode, equationLinked,
       functionDraft: mode === 'function' ? viewDraft() : caches.function,
       complexDraft: mode === 'complex' ? viewDraft() : caches.complex,
     }),
     setDisabled(value) { externalDisabled = value; if (value) cancelPreview(); refreshDisabled(); },
+    setEquationLinked,
+    refreshCurrentEquation,
     destroy() { destroyed = true; cancelPreview(); interaction?.destroy(); root.remove(); },
   };
 }

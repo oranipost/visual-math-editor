@@ -1,6 +1,10 @@
 # Contributing
 
-Bug reports, small improvements and language corrections are welcome in English or Chinese. Describe a concrete task and provide an invented minimal example; never attach a real vault or private note.
+Bug reports, small improvements and language corrections are welcome in English, Simplified Chinese or Spanish. Describe a concrete task and provide an invented minimal example; never attach a real vault or private note.
+
+## License of contributions
+
+Starting with version 0.7.0, new original contributions are accepted under **GNU GPL version 3 only with the Obsidian linking exception**, the current project terms in [LICENSING.md](LICENSING.md) and the base text in [LICENSE](LICENSE). Apply the stated Obsidian additional permission to your original contributions so they remain usable with the intended host. Submit only material you have the right to contribute under those terms, and identify any third-party source and its license. Retain original copyrights, attribution and compatible third-party license notices; do not relabel upstream MIT or Apache 2.0 code as solely your own work. Existing releases through 0.6.5 retain their earlier MIT grant; see the [dated transition](THIRD-PARTY-NOTICES.md#project-license-and-transition--2026-10-18).
 
 ## Development
 
@@ -28,7 +32,7 @@ Add regression tests for changed parsing, persistence, numerical behavior or oth
 
 ## Translations
 
-The current supported interface languages are English and Simplified Chinese, with a system-language choice and English fallback. A new language should cover complete task flows, validation messages, accessibility labels and narrow layouts. Please discuss a language addition before introducing a partial dictionary; a native speaker should review scientific terms. Translation contributions do not change mathematical commands, element symbols, stored expressions or unit identifiers. The current scope and comparison with other plugins are documented in [LANGUAGE-SUPPORT.md](LANGUAGE-SUPPORT.md).
+The 0.7.0 interface languages are English, Simplified Chinese and Spanish, with a Follow Obsidian choice and English fallback. A new language should cover complete task flows, validation messages, accessibility labels and narrow layouts. Please discuss a language addition before introducing a partial dictionary; a native speaker should review scientific terms. Translation contributions do not change mathematical commands, element symbols, stored expressions or unit identifiers. The current scope and comparison with other plugins are documented in [LANGUAGE-SUPPORT.md](LANGUAGE-SUPPORT.md).
 
 ## Packaging
 

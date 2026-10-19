@@ -2,11 +2,29 @@
 
 [English README](../README.md) · [中文说明](../README.zh-CN.md) · [发布维护](../RELEASING.md)
 
-**0.6.5 小修复状态**：[普通 latest GitHub Release 已公开](https://github.com/oranipost/visual-math-editor/releases/tag/0.6.5)；[发布工作流 39180466984](https://github.com/oranipost/visual-math-editor/actions/runs/39180466984)、main/tag 的 Node.js 22/24 检查、六个附件的严格来源证明与交付字节核对均通过。选择 **Check for new releases** 后，管理页显示 **“Your manifest points at version 0.6.5. A scan has been queued.”**，尚无 0.6.5 最终审核结果。验证范围见 [TEST-REPORT.md](../TEST-REPORT.md)；下方保留 0.6.4 与 0.6.3 的历史审核结果。
+## 0.7.0 更名与发行准备
+
+0.7.0 为 **Visual Math 桌面公开测试版**，保留既有 ID、目录地址和仓库 `visual-math-editor`。官方 [Manifest 说明](https://docs.obsidian.md/Reference/Manifest)允许通过修改 `name` 更新插件名称，但要求名称唯一并符合命名规则。2026-10-18 核对官方安装索引时，已有 `visual-math-editor` 条目仍名为 **Visual Math Editor**，索引中未发现另一个名称恰为 **Visual Math** 的插件；最终仍须通过目录命名校验。索引观察不表示已完成原生商城安装或新版审核。
+
+产品定位为：无需 LaTeX 基础即可开始的可视化数学、化学和物理笔记工具，支持三种编辑模式、当前公式下方的函数图像、离线科学工具和自定义公式快捷词。提供英语、简体中文和西班牙语；西班牙语元素搜索支持省略重音。联动只在当前编辑器中生效；保存后的公式与图像区块独立，修改公式须重新绘图或明确编辑已有图像。
+
+**下载可用性见 [GitHub Releases](https://github.com/oranipost/visual-math-editor/releases)，实际本地、原生、托管与发行结果见 [TEST-REPORT.md](../TEST-REPORT.md)。本版准备资料不预先宣称托管 CI、公开发行或目录审核已通过。** tag 使用 `0.7.0`，发行入口为 [0.7.0 Release](https://github.com/oranipost/visual-math-editor/releases/tag/0.7.0)。
+### 可自行定义哪些搜索资料
+
+- **社区目录**：可在 **Edit listing** 编辑简短／详细介绍、已有分类和截图，按页面实际提供的分类选择数学、科学或相关工具。官方 [条目管理说明](https://docs.obsidian.md/community-directory/manage-entry)没有承诺任意自定义搜索标签；不要添加未定义的 manifest `keywords` 或 `tags` 字段。
+- **GitHub topics**：可自行填写与实现相关的标签，例如 `obsidian-plugin`、`equation-editor`、`latex`、`chemistry`、`physics`、`unit-conversion`。官方要求小写字母、数字或连字符，每项不超过 50 字符、最多 20 项；仓库描述、README 和 topic 各有自己的搜索范围。参见 [topics 规则](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/classifying-your-repository-with-topics)和[仓库搜索范围](https://docs.github.com/en/search-github/searching-on-github/searching-for-repositories)。
+- **package.json**：`keywords` 是标准 npm 元数据，本项目已经加入相关词，但仍为 `private: true`、不发布 npm。它不会自动成为 Obsidian 目录关键词，也不意味着目录排名提高；[npm 的说明](https://docs.npmjs.com/cli/v11/configuring-npm/package-json/#keywords)针对 npm 搜索。
+- **编辑器中的公式关键词**：由用户在本地保存，用来复用公式，与公开搜索标签彼此独立。
+
+相关词基于实际用途选择，没有经验证的关键词搜索量数据。不要宣称这些词搜索量最大、保证下载增长，或堆砌无关热门词。将 “No LaTeX knowledge required in Visual mode” 写入自然的功能说明即可；它不意味着所有复杂 TeX 都能可视化编辑。
+
+## 0.6.5 历史发布观察
+
+**0.6.5 当时记录的小修复状态**：[普通 latest GitHub Release 已公开](https://github.com/oranipost/visual-math-editor/releases/tag/0.6.5)；[发布工作流 39180466984](https://github.com/oranipost/visual-math-editor/actions/runs/39180466984)、main/tag 的 Node.js 22/24 检查、六个附件的严格来源证明与交付字节核对均通过。选择 **Check for new releases** 后，管理页显示 **“Your manifest points at version 0.6.5. A scan has been queued.”**，当时尚无 0.6.5 最终审核结果；这段保留历史观察，不表示当前状态。验证范围见 [TEST-REPORT.md](../TEST-REPORT.md)；下方保留 0.6.4 与 0.6.3 的历史审核结果。
 
 历史 0.6.4 核对记录：本地 2026-10-18，目录审核页面日期为 **2026-10-19 UTC**。[0.6.4 当时已作为普通 latest GitHub Release 发布](https://github.com/oranipost/visual-math-editor/releases/tag/0.6.4)，六个下载附件的构建来源证明均已验证。[社区目录页面](https://community.obsidian.md/plugins/visual-math-editor)的 **0.6.4 / fedf59c 审核已 Completed（完成）**，当时目录发行版为 **0.6.4**，公开评分卡显示 **Review Passed**，未列出 Error 或 Warning，仅保留主动剪贴板用途和可选手动下载附件两类建议。历史 0.6.3 官方审核 **Completed / Review Satisfactory** 仍独立保留。GitHub Release 安装 ZIP 可用于手动安装；目录入口启用与完成原生安装测试是不同观察，后者以 [TEST-REPORT.md](../TEST-REPORT.md) 中实际记录为准。
 
-此前原生 **Browse** 实测结果为 0，**Check for updates** 未提供更新。最新获取的官方 [`community-plugins.json`](https://github.com/obsidianmd/obsidian-releases/blob/master/community-plugins.json) 含 **9,116 条**记录，仍未包含 `visual-math-editor`。官方仓库[安装机制](https://github.com/obsidianmd/obsidian-releases#how-community-plugins-are-pulled)说明应用使用该列表搜索，网站展示和应用索引可用性需分别核对。Obsidian [官方上线公告](https://obsidian.md/blog/future-of-plugins/)说明，项目审核通过后会在 **24 小时内**进入应用搜索与下载；这不是本条目已同步的证明，也不保证确切同步时刻。若通过审核超过 24 小时仍无结果，应向官方反馈。原生编辑验证通过[手动安装](INSTALLATION.md)完成，不能声称已从原生社区目录安装成功。
+此前原生 **Browse** 与 **Check for updates** 曾无结果，这是当时的历史观察。最新 2026-10-18 获取的官方 [`community-plugins.json`](https://github.com/obsidianmd/obsidian-releases/blob/master/community-plugins.json) **已包含** `visual-math-editor`，当时显示名称仍为 **Visual Math Editor**。官方仓库[安装机制](https://github.com/obsidianmd/obsidian-releases#how-community-plugins-are-pulled)说明应用使用该列表搜索；目录网页、安装索引、应用实际显示版本以及完成原生安装须分别核对。已有原生编辑验证通过[手动安装](INSTALLATION.md)完成，不称为已从原生社区目录安装成功。
 
 ## 0.6.3 官方审核观察
 
@@ -25,7 +43,7 @@
 
 ## 0.6.4 发行与审核跟进
 
-0.6.4 针对上述提醒调整界面与发行流程。GitHub 发行版已公开，官方目录审核于 **2026-10-19 UTC** 显示 **Completed**，当前发行版为 **0.6.4**；本节记录该版结果，历史 0.6.3 提醒保留在上一节：
+0.6.4 针对上述提醒调整界面与发行流程。GitHub 发行版已公开，官方目录审核于 **2026-10-19 UTC** 显示 **Completed**，当时发行版为 **0.6.4**；本节记录该版结果，历史 0.6.3 提醒保留在上一节：
 
 - 标准 HTML/SVG 使用 Obsidian 提供的创建辅助方法；独立浏览器预览保留兼容回退，MathLive 仍使用已注册的自定义元素。预览样式改按插件类名限定，调整隐藏状态与减少动画规则的顺序和选择器，不依赖 `!important`。
 - 命令名称和界面语言无障碍标签按所选支持语言显示；仍仅支持英语和简体中文，未扩展科学工具或平台范围。
@@ -44,7 +62,7 @@ Obsidian 当前的[官方提交指南](https://docs.obsidian.md/Plugins/Releasin
 流程如下：
 
 1. 在 GitHub 公开源代码，仓库根目录放好 `README.md`、`LICENSE`、`manifest.json`。
-2. 发布与 manifest 版本号完全一致的 GitHub Release。当前 GitHub 发行版为 **`0.6.5`**，tag 为 **`0.6.5`**，不要加 `v`。
+2. 发布与 manifest 版本号完全一致的 GitHub Release。0.7.0 应使用 tag **`0.7.0`**，不要加 `v`；在真正发布前，已公开的 0.6.5 及其附件保持原样。
 3. Release 附件单独上传 **`main.js`、`manifest.json`、`styles.css`**；安装 ZIP 和源码 ZIP 是额外的便利下载，不能替代这三个单独附件。
 4. 在社区网站登录 Obsidian 账号，在个人资料的 **GitHub → Connect** 关联 `oranipost`。这是网站用来验证仓库所有权的步骤。
 5. 进入侧栏 **Plugins → New plugin**，填入仓库 URL，Owner 选择自己，阅读开发者政策与维护承诺后提交。
@@ -57,44 +75,44 @@ Obsidian 当前的[官方提交指南](https://docs.obsidian.md/Plugins/Releasin
 | 字段 | 内容 |
 | --- | --- |
 | GitHub repository URL | `https://github.com/oranipost/visual-math-editor` |
-| Name | `Visual Math Editor` |
+| Name | `Visual Math` |
 | ID | `visual-math-editor` |
 | Author | `Dongfang Wang` |
 | Author URL | `https://github.com/oranipost` |
-| Version / release tag | `0.6.5`（GitHub 普通 latest 已发布，发行验证通过，目录扫描已排队；尚无本版最终审核结果） |
+| Version / release tag | `0.7.0`（桌面公开测试版；下载可用性、验证与目录审核状态分别记录，不引用旧版结论代替） |
 | Minimum Obsidian version | `1.14.4` |
 | Platforms | Desktop only；目前实际验证 macOS，Windows / Linux 尚未做原生应用测试 |
-| License | MIT；依赖与字体遵循各自许可证，见 [Third-party notices](../THIRD-PARTY-NOTICES.md) |
+| License | 0.7.0 新代码／本版整体：GPLv3 加 Obsidian 链接例外；0.6.5 及此前 MIT 授权保持有效，第三方 MIT／Apache 2.0 不变，见 [Third-party notices](../THIRD-PARTY-NOTICES.md) |
 | Payment | Free |
 | Support | `https://github.com/oranipost/visual-math-editor/issues` |
 | Contact email | `oranipost@outlook.com`（私下联系；放在 README 与详细介绍中） |
 
 英文短描述与 `manifest.json` 保持一致：
 
-> Edit math and science formulas, plot real functions and complex numbers, and pan or zoom saved graphs, entirely offline.
+> Write math, chemistry and physics notes visually with no LaTeX knowledge required. Plot supported equations, explore a complex plane and convert units offline.
 
 中文介绍可用：
 
-> 在笔记正文中可视化编辑数学公式，也可切换 LaTeX 和双栏同步模式。内置化学式、配平建议、元素信息、单位换算、实函数图像与复平面。全部在本地运行；公式保存为 LaTeX/Markdown，图像保存为可再次编辑的配置。开发者：[Dongfang Wang / oranipost](https://github.com/oranipost)。公开问题反馈请用 [GitHub Issues](https://github.com/oranipost/visual-math-editor/issues)；私下联系请发邮件至 [oranipost@outlook.com](mailto:oranipost@outlook.com)。
+> Visual Math（原 Visual Math Editor）帮助你在笔记正文中快速记录数学、化学和物理内容；Visual 模式零 LaTeX 基础即可上手，也可切换源码与双栏同步模式。在当前公式下方直接预览受支持的函数图像，无需重复输入；保存后公式与图像独立，修改公式后需明确重绘或编辑图像。内置化学式与可选配平建议、物理模板、元素信息、单位换算、实函数图像与复平面，以及本地自定义公式关键词。界面提供英语、简体中文和西班牙语，全部离线运行。公式保存为 LaTeX/Markdown，图像保存为可再次编辑的配置。开发者：[Dongfang Wang / oranipost](https://github.com/oranipost)。公开问题反馈请用 [GitHub Issues](https://github.com/oranipost/visual-math-editor/issues)；私下联系请发邮件至 [oranipost@outlook.com](mailto:oranipost@outlook.com)。
 
 英文详细介绍可用：
 
-> Write and revise equations inside your notes with Visual, LaTeX, and synchronized Hybrid modes. Insert fractions, roots, scripts, sums, and integrals without learning LaTeX. Use chemistry notation, optional balancing suggestions, element details, and deterministic unit conversion. Plot a real function or mark complex numbers on a Re/Im plane, pan and zoom, and explicitly save the view for later editing. Everything runs locally without accounts or runtime network requests. Formulas remain LaTeX/Markdown; editable graphs use a `vme-plot` code block. This desktop public beta is tested in Obsidian 1.14.4 on macOS. It is not a computer algebra system or a chemical structure drawing application.
+> Visual Math (formerly Visual Math Editor) helps you take math, chemistry and physics notes quickly inside Obsidian. Visual mode provides Word-like fractions, roots, scripts, sums and integrals with no LaTeX knowledge required. Switch to LaTeX or synchronized Hybrid mode when useful. Preview a supported function directly below the current equation without entering it again. After saving, equation and graph blocks are independent; regenerate or explicitly edit the graph after changing the equation. Alternatively, use the advanced tools for a standalone function or Re/Im complex plane. Add chemistry notation, optional balancing suggestions, physics templates, element details and offline unit conversion. Save custom equation keywords to reuse your common formulas. Choose English, Simplified Chinese or Spanish. Everything runs locally, without accounts or runtime network requests. Formulas remain LaTeX/Markdown; editable graphs use a `vme-plot` block. The desktop main window is the current target; consult the test report for the exact environments checked. This is not a computer algebra system or a chemical structure drawing application.
 >
 > Developer: [Dongfang Wang / oranipost](https://github.com/oranipost). Report public issues on [GitHub Issues](https://github.com/oranipost/visual-math-editor/issues), or email [oranipost@outlook.com](mailto:oranipost@outlook.com) for private contact.
 
 普通 GitHub 个人主页没有私信功能。Manifest 的 `authorUrl` 指向 GitHub；不要添加未定义的 email 字段，也不要将 `fundingUrl` 用作支持或联系链接。社区 Profile 可配置 Website 与 Social accounts；邮箱作为 README 和目录长介绍中的联系链接。
 
-如果目录表单提供分类或关键词，可以优先选择现有的 **Math / LaTeX / Graph**，再按页面实际选项补充 Chemistry；不要在 manifest 中添加未定义的 `tags` 字段。
+目录分类以表单的实际选项为准，优先选择数学／科学及符合已实现功能的选项。目录分类、GitHub topics 与本地公式关键词是不同机制；不要在 manifest 中添加未定义的 `tags` 或 `keywords` 字段。
 
 以下是仓库索引使用的资料形状，方便核对一致性。**当前提交表单填仓库 URL 即可，不需要把这段 JSON 手动提交到官方仓库。**
 
 ```json
 {
   "id": "visual-math-editor",
-  "name": "Visual Math Editor",
+  "name": "Visual Math",
   "author": "Dongfang Wang",
-  "description": "Edit math and science formulas, plot real functions and complex numbers, and pan or zoom saved graphs, entirely offline.",
+  "description": "Write math, chemistry and physics notes visually with no LaTeX knowledge required. Plot supported equations, explore a complex plane and convert units offline.",
   "repo": "oranipost/visual-math-editor"
 }
 ```
@@ -122,7 +140,7 @@ Obsidian 当前的[官方提交指南](https://docs.obsidian.md/Plugins/Releasin
 - 两种手动安装方法都说明清楚：下载完整安装 ZIP，或者下载三个独立插件文件放入 `.obsidian/plugins/visual-math-editor/`；完成后在 Community plugins 启用。目录审核通过前不声称能在 Browse 中搜索到本项目。
 - README 披露实际行为：无账户、无费用、无遥测、无运行时网络；只在用户明确插入/保存时修改当前笔记；草稿目前只暂存在内存，重启前要保存。
 - 说明功能边界：复数是每行一个 `a+bi` 数值点；实函数有范围与采样限制；配平建议可选，不阻止保留原式；元素电子排布与壳层数据有来源与预测标记；没有通用符号求解、OCR 或分子结构绘图。
-- 仓库公开源码、MIT LICENSE，以及完整依赖、字体、mhchem 许可证与必要归属；附带许可证的完整 ZIP 也一并提供。
+- 仓库公开源码、当前 GPL LICENSE、含完整 Obsidian 例外的 LICENSING.md、历史 MIT 声明，以及完整依赖、字体、mhchem 许可证与必要归属；随编译发行版提供完整对应源码与含许可证的安装 ZIP。
 - 构建、逻辑测试、宽窄界面检查和实际 Obsidian 操作验证的结果写入 [TEST-REPORT.md](../TEST-REPORT.md)，不要把这些本地结果称为“官方审核通过”。
 - 最终 Release tag、根目录 manifest、Release manifest 和构建产物一致；检查 GitHub Actions 成功，三个独立附件可下载。更新时同步 `versions.json`。
 

@@ -1,0 +1,48 @@
+{
+  "recordedDate": "2026-10-18",
+  "purpose": "Preferred source and exact published inputs for bundled runtime dependencies",
+  "archives": [
+    {
+      "package": "mathlive",
+      "version": "0.111.1",
+      "sourceRepository": "git+https://github.com/arnog/mathlive.git",
+      "sourceCommit": "30ad20a7a47ea43a2f6915808023202c78f37742",
+      "sourceArchiveUrl": "https://codeload.github.com/arnog/mathlive/tar.gz/30ad20a7a47ea43a2f6915808023202c78f37742",
+      "sourceArchiveFile": "mathlive-0.111.1-source.tar.gz",
+      "sourceArchiveSha256": "1b7a01fe03d362796179664dc5f6508e43eb6abb38e2502a0159b0e8b885f5e4",
+      "sourceArchiveBytes": 4943769,
+      "preferredSourceFiles": 174,
+      "npmArchiveUrl": "https://registry.npmjs.org/mathlive/-/mathlive-0.111.1.tgz",
+      "npmArchiveFile": "mathlive-0.111.1-npm.tgz",
+      "npmArchiveSha256": "f285cd7b8ab5cbd67d792305c753dd4b6444f1799e012c2aef701eb87fe95f8b",
+      "npmIntegrity": "sha512-RVaC7NO02Lmx3ZNUxOHR2xCRpcvTfBb2BtdgV60cTanAMufaUkWcPPB2VxChcsNeL+0rTQKqOPDYxXLPOXJI+A==",
+      "packageAndSourceVersionMatch": true
+    },
+    {
+      "package": "convert",
+      "version": "8.0.2",
+      "sourceRepository": "git+https://github.com/jonahsnider/convert.git",
+      "sourceCommit": "a2c58fe0d4ed875a951e52f3d93dbf3162515a0e",
+      "sourceArchiveUrl": "https://codeload.github.com/jonahsnider/convert/tar.gz/a2c58fe0d4ed875a951e52f3d93dbf3162515a0e",
+      "sourceArchiveFile": "convert-8.0.2-source.tar.gz",
+      "sourceArchiveSha256": "00f1e606e73938c9317f5364705dde6022b6d6d86afb33ec968f19227e399db1",
+      "sourceArchiveBytes": 76370,
+      "preferredSourceFiles": 63,
+      "npmArchiveUrl": "https://registry.npmjs.org/convert/-/convert-8.0.2.tgz",
+      "npmArchiveFile": "convert-8.0.2-npm.tgz",
+      "npmArchiveSha256": "b7c7bf7a823cf2804656933a818a186c22bcfbdd0ef6f6030a530f6c4a3bd1c2",
+      "npmIntegrity": "sha512-Fc/9LZbtnjdrcwnV4M6TJaUnpIWIRp6sR8Qhvn0x+22pVjNhLdqRJMih4Nue3g0W7PH2zy3wdp/+iysZYYg0IQ==",
+      "packageAndSourceVersionMatch": true
+    }
+  ],
+  "checks": {
+    "npmSha512MatchesRegistryAndPluginLockfile": true,
+    "sourcePackageVersionsMatch": true,
+    "upstreamRebuildPerformed": false,
+    "upstreamProvenanceSignatureIndependentlyVerified": false
+  },
+  "sourceCommitEvidence": {
+    "mathlive": "Official npm release gitHead",
+    "convert": "GitHub v8.0.2 tag and decoded npm SLSA provenance declare the same commit; signature not independently verified"
+  }
+}

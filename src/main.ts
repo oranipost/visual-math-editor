@@ -16,9 +16,28 @@ import { formatComplex, parseComplexNumbers } from "./complex-plane";
 import { mountPlotInteraction, zoomPlotBounds, type PlotBounds } from "./plot-interaction";
 import { canAppendAfterGraph, findPlotBlocks, parsePlotSpec, planGraphInsert, planGraphUpdate, type PlotBlock } from "./plot-markdown";
 import type { PlotDraft } from "./plot-ui";
+import { mergeShortcutChanges, normalizeShortcuts, type FormulaShortcuts } from "./shortcuts";
 
 function graphDraft(spec: PlotSpec): PlotDraft {
   return { mode: spec.mode ?? 'function', expression: spec.expression, xMin: String(spec.xMin), xMax: String(spec.xMax), yMin: String(spec.yMin), yMax: String(spec.yMax), previewed: true };
+}
+
+class AboutVisualMath extends Modal {
+  constructor(private plugin: VisualMathEditor) { super(plugin.app); }
+  onOpen(): void {
+    this.setTitle('Visual Math');
+    this.contentEl.createEl('p', { text: `Visual Math ${this.plugin.manifest.version}` });
+    this.contentEl.createEl('p', { text: 'Copyright (c) 2026 Dongfang Wang' });
+    this.contentEl.createEl('p', { text: this.plugin.text('本插件采用 GNU GPLv3 许可，不提供任何担保。你可按许可使用、修改与再分发。笔记内容不受此许可约束。') });
+    const license = this.contentEl.createEl('a', { text: this.plugin.text('查看许可与第三方声明') });
+    license.href = `https://github.com/oranipost/visual-math-editor/blob/${this.plugin.manifest.version}/THIRD-PARTY-NOTICES.md`;
+    license.target = '_blank'; license.rel = 'noopener noreferrer';
+    this.contentEl.createEl('br');
+    const source = this.contentEl.createEl('a', { text: this.plugin.text('下载此版本源码') });
+    source.href = `https://github.com/oranipost/visual-math-editor/releases/tag/${this.plugin.manifest.version}`;
+    source.target = '_blank'; source.rel = 'noopener noreferrer';
+  }
+  onClose(): void { this.contentEl.empty(); this.plugin.modals.delete(this); }
 }
 
 class EquationModal extends Modal {
@@ -37,6 +56,8 @@ class EquationModal extends Modal {
       editing: !!this.range,
       language: this.plugin.language,
       systemLanguage: this.plugin.systemLanguage(),
+      shortcuts: this.plugin.shortcuts,
+      onShortcutsChange: (shortcuts, baseline) => this.plugin.setShortcuts(shortcuts, baseline),
       onLanguageChange: language => {
         const saved = this.plugin.setLanguage(language);
         this.setTitle(this.plugin.text(this.range ? "编辑公式" : "插入公式"));
@@ -136,6 +157,8 @@ export default class VisualMathEditor extends Plugin {
   modals = new Set<Modal>();
   isLoaded = false;
   language: Language = "system";
+  shortcuts: FormulaShortcuts = {};
+  private settingsQueue: Promise<void> = Promise.resolve();
   private pluginSettings: Record<string, unknown> = {};
   private inline?: EditorView;
   private inlineView?: MarkdownView;
@@ -151,10 +174,11 @@ export default class VisualMathEditor extends Plugin {
   async onload(): Promise<void> {
     const data: unknown = await this.loadData();
     if (data && typeof data === "object" && !Array.isArray(data)) this.pluginSettings = data as Record<string, unknown>;
-    if (["system", "zh", "en"].includes(String(this.pluginSettings.language))) this.language = this.pluginSettings.language as Language;
+    if (["system", "zh", "en", "es"].includes(String(this.pluginSettings.language))) this.language = this.pluginSettings.language as Language;
+    this.shortcuts = normalizeShortcuts(this.pluginSettings.shortcuts);
     try { configureMathLive(); } catch (error) { this.notify(String(error)); throw error; }
     this.isLoaded = true;
-    this.ribbonAction = this.addRibbonIcon("sigma", this.text("Visual Math Editor：插入或编辑公式"), () => {
+    this.ribbonAction = this.addRibbonIcon("sigma", this.text("Visual Math：插入或编辑公式"), () => {
       const view = this.app.workspace.getActiveViewOfType(MarkdownView);
       if (!view?.file) { this.notify("请先打开一篇 Markdown 笔记。"); return; }
       this.activate(view);
@@ -162,6 +186,10 @@ export default class VisualMathEditor extends Plugin {
     this.app.workspace.onLayoutReady(() => this.refreshHeaderActions());
     this.registerEvent(this.app.workspace.on("layout-change", () => this.refreshHeaderActions()));
     this.registerEvent(this.app.workspace.on("active-leaf-change", () => this.refreshHeaderActions()));
+    this.addCommand({
+      id: 'about', name: this.text('关于与许可'),
+      callback: () => this.present(new AboutVisualMath(this)),
+    });
     this.addCommand({
       id: "insert-or-edit-equation", name: this.text("插入或编辑公式 / Insert or edit equation"),
       editorCallback: (editor, context) => {
@@ -265,11 +293,37 @@ export default class VisualMathEditor extends Plugin {
     this.language = language;
     this.pluginSettings.language = language;
     this.refreshHeaderActions();
-    this.ribbonAction?.setAttribute('aria-label', this.text('Visual Math Editor：插入或编辑公式'));
+    this.ribbonAction?.setAttribute('aria-label', this.text('Visual Math：插入或编辑公式'));
     for (const localization of this.localizations) localization.setLanguage(language);
     for (const refresh of this.readingTitleRefreshers) refresh();
-    try { await this.saveData(this.pluginSettings); }
+    try { await this.persistSettings({ language }); }
     catch { this.notify("无法保存语言偏好 / Unable to save language preference"); }
+  }
+
+  private persistSettings(patch: Record<string, unknown>): Promise<void> {
+    const operation = this.settingsQueue.catch(() => undefined).then(async () => {
+      const next = { ...this.pluginSettings, ...patch };
+      await this.saveData(next);
+      this.pluginSettings = next;
+    });
+    this.settingsQueue = operation;
+    return operation;
+  }
+
+  async setShortcuts(shortcuts: FormulaShortcuts, baseline: FormulaShortcuts = this.shortcuts): Promise<FormulaShortcuts> {
+    let committed: FormulaShortcuts = {};
+    const operation = this.settingsQueue.catch(() => undefined).then(async () => {
+      const normalized = mergeShortcutChanges(this.shortcuts, baseline, normalizeShortcuts(shortcuts));
+      const next = { ...this.pluginSettings, shortcuts: normalized };
+      await this.saveData(next);
+      this.pluginSettings = next;
+      this.shortcuts = normalized;
+      if (this.inlineSession) this.inlineSession.shortcuts = normalized;
+      committed = normalized;
+    });
+    this.settingsQueue = operation;
+    await operation;
+    return committed;
   }
 
   private present(modal: Modal): void { this.modals.add(modal); modal.open(); }
@@ -304,7 +358,7 @@ export default class VisualMathEditor extends Plugin {
     for (const [view, action] of this.headerActions) {
       if (!views.has(view) || !action.isConnected) { action.remove(); this.headerActions.delete(view); }
     }
-    const label = this.text("Visual Math Editor：插入或编辑公式");
+    const label = this.text("Visual Math：插入或编辑公式");
     for (const view of views) {
       let action = this.headerActions.get(view);
       if (!action) {
@@ -394,6 +448,8 @@ export default class VisualMathEditor extends Plugin {
       id: this.nextSessionId++, editing: !!range, graphOnly: Boolean(plot),
       language: this.language,
       systemLanguage: this.systemLanguage(),
+      shortcuts: this.shortcuts,
+      onShortcutsChange: (shortcuts, baseline) => this.setShortcuts(shortcuts, baseline),
       onLanguageChange: language => this.setLanguage(language),
       draft: draft ? { ...draft } : { latex: range?.latex ?? "", display: range?.display ?? true, mode: "visual" },
       onCancel: () => { hideInlineEditor(cm); this.inline = undefined; this.inlineView = undefined; this.inlineSession = undefined; cm.focus(); },
