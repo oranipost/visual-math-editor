@@ -2,7 +2,7 @@
 
 [English README](../README.md) · [中文说明](../README.zh-CN.md) · [发布维护](../RELEASING.md)
 
-资料核对日期：本地 2026-10-18；当前目录审核页面日期为 **2026-10-19 UTC**。[0.6.4 已作为普通 latest GitHub Release 发布](https://github.com/oranipost/visual-math-editor/releases/tag/0.6.4)，六个下载附件的构建来源证明均已验证。[社区目录页面](https://community.obsidian.md/plugins/visual-math-editor)的 **0.6.4 审核目前为 Pending（待完成）**，尚无最终结论。历史 0.6.3 官方审核为 **Completed / Review Satisfactory**，不能直接延用至本版。GitHub Release 安装 ZIP 可用于手动安装；目录入口启用与完成原生安装测试是不同观察，后者以 [TEST-REPORT.md](../TEST-REPORT.md) 中实际记录为准。
+资料核对日期：本地 2026-10-18；当前目录审核页面日期为 **2026-10-19 UTC**。[0.6.4 已作为普通 latest GitHub Release 发布](https://github.com/oranipost/visual-math-editor/releases/tag/0.6.4)，六个下载附件的构建来源证明均已验证。[社区目录页面](https://community.obsidian.md/plugins/visual-math-editor)的 **0.6.4 / fedf59c 审核已 Completed（完成）**，当前发行版为 **0.6.4**，公开评分卡显示 **Review Passed**，未列出 Error 或 Warning，仅保留主动剪贴板用途和可选手动下载附件两类建议。历史 0.6.3 官方审核 **Completed / Review Satisfactory** 仍独立保留。GitHub Release 安装 ZIP 可用于手动安装；目录入口启用与完成原生安装测试是不同观察，后者以 [TEST-REPORT.md](../TEST-REPORT.md) 中实际记录为准。
 
 此前原生 **Browse** 实测结果为 0，**Check for updates** 未提供更新。最新获取的官方 [`community-plugins.json`](https://github.com/obsidianmd/obsidian-releases/blob/master/community-plugins.json) 含 **9,116 条**记录，仍未包含 `visual-math-editor`。官方仓库[安装机制](https://github.com/obsidianmd/obsidian-releases#how-community-plugins-are-pulled)说明应用使用该列表搜索，网站展示和应用索引可用性需分别核对。Obsidian [官方上线公告](https://obsidian.md/blog/future-of-plugins/)说明，项目审核通过后会在 **24 小时内**进入应用搜索与下载；这不是本条目已同步的证明，也不保证确切同步时刻。若通过审核超过 24 小时仍无结果，应向官方反馈。原生编辑验证通过[手动安装](INSTALLATION.md)完成，不能声称已从原生社区目录安装成功。
 
@@ -23,17 +23,17 @@
 
 ## 0.6.4 发行与审核跟进
 
-0.6.4 针对上述提醒调整界面与发行流程。GitHub 发行版已公开，官方目录审核于 **2026-10-19 UTC** 显示 **Pending**，检查仍在进行，尚无最终审核结果：
+0.6.4 针对上述提醒调整界面与发行流程。GitHub 发行版已公开，官方目录审核于 **2026-10-19 UTC** 显示 **Completed**，当前发行版为 **0.6.4**；本节记录该版结果，历史 0.6.3 提醒保留在上一节：
 
 - 标准 HTML/SVG 使用 Obsidian 提供的创建辅助方法；独立浏览器预览保留兼容回退，MathLive 仍使用已注册的自定义元素。预览样式改按插件类名限定，调整隐藏状态与减少动画规则的顺序和选择器，不依赖 `!important`。
 - 命令名称和界面语言无障碍标签按所选支持语言显示；仍仅支持英语和简体中文，未扩展科学工具或平台范围。
-- 用户主动剪切、复制、粘贴功能继续保留；没有新增后台剪贴板读取或 MathLive 补丁。该依赖所带的主动剪贴板 API 仍可能触发用途告知，不能在未经复审时宣称相关提示已消失。
+- 用户主动剪切、复制、粘贴功能继续保留；没有新增后台剪贴板读取或 MathLive 补丁。本次完成的审核仍将 Clipboard Access 列为用途建议；它没有被删除或隐藏。
 - 固定 SHA 的官方 GitHub 来源证明 Action 已在同名版本标签上运行成功：[发布流程 39179067951](https://github.com/oranipost/visual-math-editor/actions/runs/39179067951)。六个附件均通过下载后的来源证明验证，并核对准确源码提交、标签和签名工作流。独立程序附件与安装 ZIP、本地构建、已安装程序逐字节一致，详见 [TEST-REPORT.md](../TEST-REPORT.md)。
-- 新发行版不再重复上传独立许可证附件；完整条款保留在程序文件与 ZIP。手动安装/源码 ZIP 和校验文件保留，目录仍可能提示这些属于安装器不使用的额外附件。
+- 新发行版不再重复上传独立许可证附件；完整条款保留在程序文件与 ZIP。手动安装/源码 ZIP 和校验文件保留，本次审核继续将这些安装器不使用的文件列为额外附件建议。
 
-目前扫描已将 `main.js`、`styles.css` 的 **verified GitHub artifact attestation** 列为 **Pass**，额外附件建议仅列出 `SHA256SUMS.txt` 和两个 ZIP。其他检查尚在运行；这两项 Pass 不表示整版已通过审核。
+本次完整报告没有 Error、Warning，也没有列出 Source code 或 CSS lint 条目。**Pass** 包括 `main.js`、`styles.css` 的 verified GitHub artifact attestation、Vault Read、无已知漏洞依赖、无代码混淆，以及 `main.js` 逐字节构建复现。仅保留两类 **Recommendation**：Clipboard Access 和额外附件（`SHA256SUMS.txt`、两个 ZIP）。公开条目显示 **Health Excellent / Review Passed**，评分卡为 **Passed 6 / Other 2**，**Add to Obsidian** 链接已启用。Disclosures 同时明确列出 **Malware scan not available** 与 **Network requests scan not available**，说明本次恶意软件与网络请求扫描不可用。该结果不是所有平台实测或独立安全审计。
 
-本地测试、托管发行验证与原生观察分别记入 [TEST-REPORT.md](../TEST-REPORT.md)。继续以 0.6.4 的实际目录扫描结果为准；不能把本地通过、GitHub 发布、个别检查 Pass 或历史 0.6.3 结论写成该版本已获官方通过。
+本地测试、托管发行验证与原生观察分别记入 [TEST-REPORT.md](../TEST-REPORT.md)。0.6.4 已有独立的 Completed 审核结果；目录审核完成、应用安装索引包含条目以及完成原生社区目录安装仍是不同状态，不可相互替代。
 
 ## 当前应该在哪里提交
 
@@ -59,7 +59,7 @@ Obsidian 当前的[官方提交指南](https://docs.obsidian.md/Plugins/Releasin
 | ID | `visual-math-editor` |
 | Author | `Dongfang Wang` |
 | Author URL | `https://github.com/oranipost` |
-| Version / release tag | `0.6.4`（GitHub 已发布；2026-10-19 UTC 官方审核 Pending） |
+| Version / release tag | `0.6.4`（GitHub 已发布；2026-10-19 UTC 官方审核 Completed） |
 | Minimum Obsidian version | `1.14.4` |
 | Platforms | Desktop only；目前实际验证 macOS，Windows / Linux 尚未做原生应用测试 |
 | License | MIT；依赖与字体遵循各自许可证，见 [Third-party notices](../THIRD-PARTY-NOTICES.md) |

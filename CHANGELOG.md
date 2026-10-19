@@ -11,7 +11,7 @@ This file records version changes. Builds before 0.6.2 were local MVP releases; 
 - Stop duplicating standalone license attachments in new releases; complete notices remain embedded in the runtime files and included in both ZIPs. Keep manual installation/source downloads and checksums available.
 - Preserve user-initiated equation cut/copy/paste and the documented absence of background clipboard monitoring; no clipboard feature is removed and no new MathLive compatibility patch is added.
 
-Version 0.6.4 is published as the latest ordinary GitHub Release. Its community-directory review is **Pending**; the completed 0.6.3 review remains historical evidence for that version. The release and changes above do not establish official approval. Actual tests and remaining limits are recorded separately in [TEST-REPORT.md](TEST-REPORT.md).
+Version 0.6.4 is published as the latest ordinary GitHub Release. Its own community-directory review is **Completed** and the public scorecard shows **Review Passed**, with no Error or Warning entries; only recommendations for clipboard access and optional manual-download assets remain. The completed 0.6.3 review remains historical evidence for that earlier version. Directory review does not establish native catalog availability or coverage on untested platforms. Actual tests and remaining limits are recorded separately in [TEST-REPORT.md](TEST-REPORT.md).
 
 ## 0.6.3 — 2026-10-18
 

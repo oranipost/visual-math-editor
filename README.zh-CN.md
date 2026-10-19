@@ -6,7 +6,7 @@
 
 编辑体验：绘图输入后自动预览，输入有效时可直接点击插入/保存，或按 **Ctrl+Enter**，不必先点击预览。操作按钮采用统一 SVG 图标并保留文字；已保存图的语言切换同步更新，保留尚未保存的视图。
 
-当前版本：**0.6.4，桌面公开测试版（MVP），已在 GitHub 发布**。提供化学式、线性化学键、反应式、物理模板、单位排版与离线换算、118 元素表，界面目前仅支持**英语和简体中文**，后续计划逐步增加更多语言。提供本地方程绘图，包含以 Re / Im 为轴的复平面和图中平移、缩放。[0.6.4 发行版](https://github.com/oranipost/visual-math-editor/releases/tag/0.6.4)的全部六个下载附件均已验证 GitHub 构建来源证明。**该版社区目录审核目前为 Pending（待完成）；0.6.3 的历史审核通过不代表本次更新已通过。**审核观察见[提交指南](docs/COMMUNITY-SUBMISSION.md)，范围见 [MVP.md](MVP.md)，实际验证环境和结果见 [TEST-REPORT.md](TEST-REPORT.md)。
+当前版本：**0.6.4，桌面公开测试版（MVP），已在 GitHub 发布**。提供化学式、线性化学键、反应式、物理模板、单位排版与离线换算、118 元素表，界面目前仅支持**英语和简体中文**，后续计划逐步增加更多语言。提供本地方程绘图，包含以 Re / Im 为轴的复平面和图中平移、缩放。[0.6.4 发行版](https://github.com/oranipost/visual-math-editor/releases/tag/0.6.4)的全部六个下载附件均已验证 GitHub 构建来源证明。**该版社区目录审核已 Completed（完成），公开评分卡显示 Review Passed，未列出 Error 或 Warning；仍保留主动剪贴板用途和可选手动下载附件两类建议。**审核观察见[提交指南](docs/COMMUNITY-SUBMISSION.md)，范围见 [MVP.md](MVP.md)，实际验证环境和结果见 [TEST-REPORT.md](TEST-REPORT.md)。
 
 ## 下载与安装
 
@@ -179,7 +179,7 @@ npm run preview
 
 欢迎修复、文案和翻译贡献，详见 [贡献指南](CONTRIBUTING.md)。本版维护完整英文与简体中文；没有内置所有语言。新增语言需要覆盖完整操作、错误提示和键盘辅助信息，并由熟悉该语言的人复核。
 
-GitHub 发布与 Obsidian 社区目录上架是两件事。0.6.3 已完成官方目录审核；历史结论、该版非阻断提醒、已发布 0.6.4 的改进与 Pending 审核状态及维护流程见 [社区插件提交指南](docs/COMMUNITY-SUBMISSION.md)。公开前使用官方工具进行的 [0.6.2 源码前置检查](docs/CODE-REVIEW.md)仍独立保留；本地检查、目录审核和实际运行测试分别记录。
+GitHub 发布与 Obsidian 社区目录上架是两件事。0.6.3 已完成官方目录审核；历史结论、该版非阻断提醒、已发布 0.6.4 的改进与已完成审核结果及维护流程见 [社区插件提交指南](docs/COMMUNITY-SUBMISSION.md)。公开前使用官方工具进行的 [0.6.2 源码前置检查](docs/CODE-REVIEW.md)仍独立保留；本地检查、目录审核和实际运行测试分别记录。
 
 ## 源码与第三方来源
 

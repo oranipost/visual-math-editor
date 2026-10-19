@@ -10,7 +10,7 @@
 - [Install from the community directory](https://community.obsidian.md/plugins/visual-math-editor) when the entry is available in the app's index. The published [0.6.4 installation ZIP](https://github.com/oranipost/visual-math-editor/releases/download/0.6.4/visual-math-editor-0.6.4.zip) is available for manual installation now.
 - You do **not** need Node.js, npm, an account or an API key to use the compiled plugin.
 
-The historical official 0.6.3 review is **Completed**, with **Review Satisfactory**. Version **0.6.4 is published on GitHub**, with all six download assets' build provenance verified; its community-directory review is **Pending**. The previous review does not approve this update. This records directory observations, not a completed native installation test; see [review observations](COMMUNITY-SUBMISSION.md) and [TEST-REPORT.md](../TEST-REPORT.md) for their separate scopes. **Code → Download ZIP**, `visual-math-editor-source-0.6.4.zip` and GitHub's automatic **Source code** downloads are for developers; they are not the ready-to-install plugin.
+The historical official 0.6.3 review is **Completed**, with **Review Satisfactory**. Version **0.6.4 is published on GitHub**, with all six download assets' build provenance verified; its own community-directory review is **Completed** and the public scorecard shows **Review Passed**, with no Error or Warning entries and recommendations for clipboard access and optional manual-download assets. This records directory observations, not a completed native installation test; see [review observations](COMMUNITY-SUBMISSION.md) and [TEST-REPORT.md](../TEST-REPORT.md) for their separate scopes. **Code → Download ZIP**, `visual-math-editor-source-0.6.4.zip` and GitHub's automatic **Source code** downloads are for developers; they are not the ready-to-install plugin.
 
 ### Community-directory installation (when available)
 
@@ -102,7 +102,7 @@ Developer: [Dongfang Wang / oranipost](https://github.com/oranipost). Public fee
 - 插件进入应用索引后可[从社区目录安装](https://community.obsidian.md/plugins/visual-math-editor)；目前可下载已发布的 [0.6.4 安装 ZIP](https://github.com/oranipost/visual-math-editor/releases/download/0.6.4/visual-math-editor-0.6.4.zip) 手动安装。
 - 使用编译好的插件**不需要** Node.js、npm、账号或 API 密钥。
 
-历史记录中，0.6.3 官方审核状态为 **Completed（已完成）**，结论为 **Review Satisfactory（审核满意）**。**0.6.4 已在 GitHub 发布**，六个下载附件的构建来源证明均已验证；该版社区目录审核目前为 **Pending（待完成）**，旧结果不代表本次更新已通过。这记录的是目录观察，不表示完成了原生安装实测；两类观察分别见[审核记录](COMMUNITY-SUBMISSION.md)和 [TEST-REPORT.md](../TEST-REPORT.md)。**Code → Download ZIP**、`visual-math-editor-source-0.6.4.zip` 和 GitHub 自动生成的 **Source code** 均是开发源码，需要自行构建。
+历史记录中，0.6.3 官方审核状态为 **Completed（已完成）**，结论为 **Review Satisfactory（审核满意）**。**0.6.4 已在 GitHub 发布**，六个下载附件的构建来源证明均已验证；该版独立的社区目录审核已 **Completed（完成）**，公开评分卡显示 **Review Passed**，未列出 Error 或 Warning，保留主动剪贴板用途和可选手动下载附件两类建议。这记录的是目录观察，不表示完成了原生安装实测；两类观察分别见[审核记录](COMMUNITY-SUBMISSION.md)和 [TEST-REPORT.md](../TEST-REPORT.md)。**Code → Download ZIP**、`visual-math-editor-source-0.6.4.zip` 和 GitHub 自动生成的 **Source code** 均是开发源码，需要自行构建。
 
 ### 社区目录安装（索引可用后）
 
