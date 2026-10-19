@@ -6,7 +6,7 @@ Escribe apuntes de **matemáticas, química y física en Obsidian** sin aprender
 
 ## 0.8.2: nombre y autor
 
-La próxima actualización de metadatos usa **Visual Math / Oliver**. El identificador sigue siendo `visual-math-editor`. La búsqueda del catálogo se sincroniza por separado; consulta [TEST-REPORT.md](TEST-REPORT.md) para conocer el estado de publicación y verificación.
+[La versión 0.8.2](https://github.com/oranipost/visual-math-editor/releases/tag/0.8.2) usa **Visual Math / Oliver**. El identificador sigue siendo `visual-math-editor`. La búsqueda del catálogo se sincroniza por separado; consulta [TEST-REPORT.md](TEST-REPORT.md) para conocer el estado de publicación y verificación.
 
 ## 0.8.1: mantenimiento
 
@@ -18,7 +18,7 @@ La versión 0.8.1 pasó 194 pruebas automatizadas y 368 comprobaciones de compon
 
 Esta versión añade gráficas polares, cálculo numérico y superficies XYZ. **Han pasado 194 pruebas automatizadas y 368 comprobaciones de componentes en navegador. La inserción, el guardado y la reapertura en Obsidian nativo con 0.8.0 todavía no se han verificado.** Prueba primero en una bóveda desechable. Publicación en GitHub, revisión del directorio e instalación nativa son estados distintos; consulta [el informe de pruebas](TEST-REPORT.md).
 
-[Versión 0.8.1 y descargas](https://github.com/oranipost/visual-math-editor/releases/tag/0.8.1) · [ZIP de instalación](https://github.com/oranipost/visual-math-editor/releases/download/0.8.1/visual-math-editor-0.8.1.zip) · [Directorio comunitario](https://community.obsidian.md/plugins/visual-math-editor)
+[Versión 0.8.2 y descargas](https://github.com/oranipost/visual-math-editor/releases/tag/0.8.2) · [ZIP de instalación](https://github.com/oranipost/visual-math-editor/releases/download/0.8.2/visual-math-editor-0.8.2.zip) · [Directorio comunitario](https://community.obsidian.md/plugins/visual-math-editor)
 
 Requiere **Obsidian 1.14.4 o posterior** y está dirigido a la ventana principal de escritorio. Windows, Linux, móvil, ventanas independientes y combinaciones arbitrarias de temas o complementos no están verificados. Las pruebas nativas anteriores conservan sus versiones originales; no validan automáticamente 0.8.0.
 

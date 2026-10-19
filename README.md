@@ -8,7 +8,7 @@ Built for quick science notes: optional chemical balance suggestions, physics te
 
 ## 0.8.2 — Display name and developer
 
-The next metadata update uses **Visual Math / Oliver** in installed plugin details and public developer bylines. The plugin ID remains `visual-math-editor`. Community search follows a separately synchronized index; release and verification status are recorded in [TEST-REPORT.md](TEST-REPORT.md).
+[Version 0.8.2](https://github.com/oranipost/visual-math-editor/releases/tag/0.8.2) uses **Visual Math / Oliver** in installed plugin details and public developer bylines. The plugin ID remains `visual-math-editor`. Community search follows a separately synchronized index; release and verification status are recorded in [TEST-REPORT.md](TEST-REPORT.md).
 
 ## 0.8.1 — Maintenance update
 
@@ -51,7 +51,7 @@ Real screenshots from Visual Math 0.7.0 running in Obsidian on macOS. The Spanis
 
 ### Manual installation
 
-**[0.8.1 installation ZIP](https://github.com/oranipost/visual-math-editor/releases/download/0.8.1/visual-math-editor-0.8.1.zip)** · [Release notes and checksums](https://github.com/oranipost/visual-math-editor/releases/tag/0.8.1) · [Detailed installation, updates and removal](docs/INSTALLATION.md#english)
+**[0.8.2 installation ZIP](https://github.com/oranipost/visual-math-editor/releases/download/0.8.2/visual-math-editor-0.8.2.zip)** · [Release notes and checksums](https://github.com/oranipost/visual-math-editor/releases/tag/0.8.2) · [Detailed installation, updates and removal](docs/INSTALLATION.md#english)
 
 For manual installation, download the published installation ZIP, rather than **Code → Download ZIP** or GitHub's automatic **Source code** archives, which require building.
 

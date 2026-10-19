@@ -8,7 +8,7 @@
 
 ## 0.8.2 — 名称与开发者显示
 
-下一项元数据更新统一显示为 **Visual Math / Oliver**，插件 ID 继续使用 `visual-math-editor`。社区搜索由独立索引同步；发布与实测状态见 [TEST-REPORT.md](TEST-REPORT.md)。
+[0.8.2 已公开发布](https://github.com/oranipost/visual-math-editor/releases/tag/0.8.2)，统一显示为 **Visual Math / Oliver**，插件 ID 继续使用 `visual-math-editor`。社区搜索由独立索引同步；发布与实测状态见 [TEST-REPORT.md](TEST-REPORT.md)。
 
 ## 0.8.1 — 维护更新
 
@@ -51,7 +51,7 @@
 
 ### 手动安装
 
-**[0.8.1 安装包](https://github.com/oranipost/visual-math-editor/releases/download/0.8.1/visual-math-editor-0.8.1.zip)** · [查看发布说明和校验值](https://github.com/oranipost/visual-math-editor/releases/tag/0.8.1) · [完整安装 / 更新 / 卸载说明](docs/INSTALLATION.md#简体中文)
+**[0.8.2 安装包](https://github.com/oranipost/visual-math-editor/releases/download/0.8.2/visual-math-editor-0.8.2.zip)** · [查看发布说明和校验值](https://github.com/oranipost/visual-math-editor/releases/tag/0.8.2) · [完整安装 / 更新 / 卸载说明](docs/INSTALLATION.md#简体中文)
 
 选择手动安装时，请下载已公开 Release 的安装 ZIP；GitHub 的 **Code → Download ZIP** 和自动生成的 **Source code** 是源码，需要自行构建。
 

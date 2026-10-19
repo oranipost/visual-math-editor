@@ -70,7 +70,7 @@ Obsidian 当前的[官方提交指南](https://docs.obsidian.md/Plugins/Releasin
 流程如下：
 
 1. 在 GitHub 公开源代码，仓库根目录放好 `README.md`、`LICENSE`、`manifest.json`。
-2. 发布与 manifest 版本号完全一致的 GitHub Release。0.8.0 应使用 tag **`0.8.0`**，不要加 `v`；不得改写旧标签或替换旧版程序附件；0.6.2–0.6.5 当前保留为可恢复草稿，旧 MIT 授权不变。
+2. 发布与 manifest 版本号完全一致的 GitHub Release。0.8.2 使用 tag **`0.8.2`**，不要加 `v`；不得改写旧标签或替换旧版程序附件；0.6.2–0.6.5 当前保留为可恢复草稿，旧 MIT 授权不变。
 3. Release 附件单独上传 **`main.js`、`manifest.json`、`styles.css`**；安装 ZIP 和源码 ZIP 是额外的便利下载，不能替代这三个单独附件。
 4. 在社区网站登录 Obsidian 账号，在个人资料的 **GitHub → Connect** 关联 `oranipost`。这是网站用来验证仓库所有权的步骤。
 5. 进入侧栏 **Plugins → New plugin**，填入仓库 URL，Owner 选择自己，阅读开发者政策与维护承诺后提交。
@@ -87,7 +87,7 @@ Obsidian 当前的[官方提交指南](https://docs.obsidian.md/Plugins/Releasin
 | ID | `visual-math-editor` |
 | Author | `Oliver` |
 | Author URL | `https://github.com/oranipost` |
-| Version / release tag | `0.8.0`（GitHub、目录审核与原生验证分别核实；详见 TEST-REPORT） |
+| Version / release tag | `0.8.2`（GitHub、目录审核与原生验证分别核实；详见 TEST-REPORT） |
 | Minimum Obsidian version | `1.14.4` |
 | Platforms | Desktop only；目前实际验证 macOS，Windows / Linux 尚未做原生应用测试 |
 | License | 0.7.0 新代码／本版整体：GPLv3 加 Obsidian 链接例外；0.6.5 及此前 MIT 授权保持有效，第三方 MIT／Apache 2.0 不变，见 [Third-party notices](../THIRD-PARTY-NOTICES.md) |
@@ -97,7 +97,7 @@ Obsidian 当前的[官方提交指南](https://docs.obsidian.md/Plugins/Releasin
 
 英文短描述与 `manifest.json` 保持一致：
 
-> Write math, chemistry and physics notes visually without learning LaTeX. Plot functions, polar curves and 3D surfaces; explore calculus and convert units offline.
+> Write math, chemistry and physics notes visually without learning LaTeX. Plot functions, polar curves and 3D surfaces. Explore calculus and convert units offline.
 
 中文介绍可用：
 
@@ -120,7 +120,7 @@ Obsidian 当前的[官方提交指南](https://docs.obsidian.md/Plugins/Releasin
   "id": "visual-math-editor",
   "name": "Visual Math",
   "author": "Oliver",
-  "description": "Write math, chemistry and physics notes visually without learning LaTeX. Plot functions, polar curves and 3D surfaces; explore calculus and convert units offline.",
+  "description": "Write math, chemistry and physics notes visually without learning LaTeX. Plot functions, polar curves and 3D surfaces. Explore calculus and convert units offline.",
   "repo": "oranipost/visual-math-editor"
 }
 ```
