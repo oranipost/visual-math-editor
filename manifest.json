@@ -1,7 +1,7 @@
 {
   "id": "visual-math-editor",
   "name": "Visual Math Editor",
-  "version": "0.6.4",
+  "version": "0.6.5",
   "minAppVersion": "1.14.4",
   "description": "Edit math and science formulas, plot real functions and complex numbers, and pan or zoom saved graphs, entirely offline.",
   "author": "Dongfang Wang",

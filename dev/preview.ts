@@ -7,6 +7,9 @@ import { localizeEditor } from "../src/i18n";
 import type { PlotSpec } from "../src/plot-engine";
 import { createComplexPlot, DEFAULT_COMPLEX_SPEC, fitComplexPoints, parseComplexNumbers } from "../src/complex-plane";
 import { mountPlotInteraction, type PlotBounds } from "../src/plot-interaction";
+import { EditorState } from "@codemirror/state";
+import { EditorView } from "@codemirror/view";
+import { hideInlineEditor, inlineEditorField, showInlineEditor, type InlineSession } from "../src/inline-editor";
 
 configureMathLive();
 const host = document.getElementById("editor")!;
@@ -20,6 +23,61 @@ function open(latex?: string, initialMode: EditorMode = "visual", display = true
     onSave: value => { saved = value; result.textContent = "已保存到本次测试内存；点击“新建公式”可继续测试。\n保存、再打开测试成功。"; open(value); },
     onCancel: () => { mounted?.destroy(); result.textContent = "已取消，未保存。"; },
   });
+}
+
+async function checkInlinePanelLocalization(check: (condition: boolean, message: string) => void): Promise<void> {
+  const formula = String.raw`\frac{5}{8}+\text{中文草稿}`;
+  const note = `English and 中文正文 remain unchanged.\n\n$$${formula}$$\n`;
+  const settle = async () => {
+    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+    await Promise.resolve();
+  };
+  for (const [hostLanguage, systemLabel] of [
+    ['en-US', 'Inline equation editor'],
+    ['zh-CN', '笔记内公式编辑器'],
+    ['es', 'Inline equation editor'],
+  ] as const) {
+    const fixture = document.createElement('div');
+    document.body.append(fixture);
+    const view = new EditorView({
+      state: EditorState.create({ doc: note, extensions: [inlineEditorField] }),
+      parent: fixture,
+    });
+    const session: InlineSession = {
+      id: 1, editing: true, language: 'en', systemLanguage: hostLanguage,
+      draft: { latex: formula, display: true, mode: 'hybrid' },
+      onLanguageChange: () => undefined,
+      onSave: () => undefined, onSaveGraph: () => undefined, onCancel: () => undefined,
+    };
+    const panel = () => fixture.querySelector<HTMLElement>('[data-testid="inline-equation-editor"]');
+    const sourceUnchanged = () => panel()?.querySelector<HTMLTextAreaElement>('[data-testid="latex-source"]')?.value === formula
+      && view.state.doc.toString() === note;
+    const chooseLanguage = async (language: 'en' | 'zh' | 'system') => {
+      const selector = panel()!.querySelector<HTMLSelectElement>('[data-testid="interface-language"]')!;
+      selector.value = language;
+      selector.dispatchEvent(new Event('change', { bubbles: true }));
+      await settle();
+    };
+    try {
+      showInlineEditor(view, note.length, session);
+      await settle();
+      check(panel()?.getAttribute('role') === 'region' && panel()?.getAttribute('aria-label') === 'Inline equation editor' && sourceUnchanged(), `${hostLanguage} 宿主的真实正文编辑器首次使用英文区域标签，公式与正文原文不变`);
+      await chooseLanguage('zh');
+      check(panel()?.getAttribute('aria-label') === '笔记内公式编辑器' && sourceUnchanged(), `${hostLanguage} 宿主内切中文同步更新外层区域标签，公式与正文原文不变`);
+      await chooseLanguage('en');
+      check(panel()?.getAttribute('aria-label') === 'Inline equation editor' && sourceUnchanged(), `${hostLanguage} 宿主内切回英文恢复外层区域标签，公式与正文原文不变`);
+      await chooseLanguage('system');
+      check(panel()?.getAttribute('aria-label') === systemLabel && sourceUnchanged(), `${hostLanguage} 宿主的跟随 Obsidian 选项使用正确语言及英文回退，公式与正文原文不变`);
+      hideInlineEditor(view);
+      await settle();
+      check(!panel() && session.draft.latex === formula && session.draft.mode === 'hybrid' && session.draft.display && view.state.doc.toString() === note, `${hostLanguage} 宿主关闭真实正文面板后完整保留公式草稿和笔记正文，并移除界面`);
+    } finally {
+      hideInlineEditor(view);
+      view.destroy();
+      fixture.remove();
+    }
+  }
 }
 
 async function checkPlotTools(check: (condition: boolean, message: string) => void): Promise<void> {
@@ -834,6 +892,7 @@ document.getElementById("selftest")!.onclick = async () => {
       inlineFixture.destroy();
       codeMirrorFixture.remove();
     }
+    await checkInlinePanelLocalization(check);
     const search = host.querySelector<HTMLInputElement>('[data-testid="element-search"]')!;
     search.value = "26"; search.dispatchEvent(new Event("input", { bubbles: true }));
     check(host.querySelectorAll('.vme-element-button[data-dimmed="false"]').length === 1, "按原子序数检索只高亮匹配元素");

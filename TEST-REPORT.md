@@ -1,8 +1,19 @@
 # Test report / 测试记录
 
-Version: **0.6.4**, desktop public beta. Updated: **2026-10-18**.
+Prepared version: **0.6.5**, desktop public beta; local checks and focused native follow-up completed. Last publicly verified release: **0.6.4**. Updated: **2026-10-18**.
 
 This report distinguishes automated checks, browser components and native Obsidian integration. Passing one does not establish that the others passed. Public release status is shown on [GitHub Releases](https://github.com/oranipost/visual-math-editor/releases); community-directory approval is separate.
+
+## 0.6.5 localization hotfix — local checks
+
+- Scope: inline-editor accessibility label, reading-mode equation hover hint and dialog title follow the selected English or Simplified Chinese interface; labels refresh when the language changes while editing.
+- `npm run check` passed: **159 automated tests**, TypeScript checking and the production build. `npm run package` also passed.
+- The full local browser component suite passed **295 checks**. This includes 15 new checks using real CodeMirror hosts with `en-US`, `zh-CN` and `es` locales: initial English labeling, switching among Chinese/English/Follow Obsidian, and retaining the formula draft and note text when closing the editor.
+- The local official-rule source precheck recorded **0 errors and 1 known mathematical-variable sentence-case warning**.
+- The checksum-verified local 0.6.5 installation ZIP replaced the previous plugin with existing settings retained. After restarting the Personal vault in Obsidian 1.14.4 on macOS, the inline editor's native accessibility name was **Inline equation editor** in English, immediately changed to **笔记内公式编辑器** when Chinese was selected, and immediately returned to English when switched back. The final preference was English.
+- This focused native check did not insert or save the existing formula or empty draft. A separate byte comparison confirmed that the demonstration note and settings were unchanged from their pre-upgrade backup. Reading-mode hover hints and modal-dialog titles were code-reviewed but were not exercised in the native application in this follow-up.
+- No 0.6.5 public release, hosted provenance verification or community-directory review result is recorded yet.
+- 0.6.5 本地类型检查、159 项自动测试、生产构建和打包通过；完整浏览器组件检查 **295 项通过**，包含新增的 15 项真实 CodeMirror 多宿主语言、切换和草稿保留检查。源码扫描为 0 错误、1 项已知数学变量大小写提示。经校验的本地 ZIP 已替换安装并保留设置；重启后，原生正文外框名称在 English → 中文 → English 间立即正确切换，最终使用 English。本次未插入或保存公式/空草稿，另行逐字节核对演示笔记和设置与升级前备份一致；阅读模式悬停和弹窗标题仅做源码复核，未进行原生交互实测。托管发行、来源证明和官方目录审核尚未记录结果；下文 0.6.4 的 159/280 历史结果独立保留。
 
 ## 0.6.4 checks and native follow-up
 
@@ -21,7 +32,7 @@ This report distinguishes automated checks, browser components and native Obsidi
 - The directory's **0.6.4 / fedf59c** review page, dated **2026-10-19 UTC** (still 2026-10-18 locally), showed **Completed**, with current release **0.6.4**. No Error or Warning entries were present, and no Source code or CSS lint entries were listed. Pass results covered the `main.js` and `styles.css` GitHub artifact attestations, Vault Read, no known vulnerable dependencies, no obfuscated code, and byte-for-byte reproduction of `main.js`. Only two recommendation categories remained: user-initiated Clipboard Access and extra assets (`SHA256SUMS.txt` and the two manual-download ZIPs). The public listing showed current version **0.6.4**, an enabled **Add to Obsidian** link and **Health Excellent / Review Passed**; the scorecard reported **Passed 6 / Other 2**. It also explicitly disclosed **“Malware scan not available.”** and **“Network requests scan not available.”** Those two scan categories were unavailable in this review. These results do not replace native integration tests or an independent security audit.
 - A fresh fetch of the official installation index contained **9,116 entries** and still lacked `visual-math-editor`. The earlier native Browse check returned no result. Obsidian's [official announcement](https://obsidian.md/blog/future-of-plugins/) says passing projects become searchable and downloadable in the app within 24 hours. This does not prove synchronization for this entry; if it remains absent more than 24 hours after a passing review, report the discrepancy to Obsidian. No native community-directory installation has been completed in this report.
 
-## Environment and automated checks
+## Environment and automated checks (0.6.4 verified baseline)
 
 - Native application: **Obsidian 1.14.4 on macOS**, main window. The 0.6.2 baseline used a separate test vault; the 0.6.3 and 0.6.4 follow-ups used a demonstration note with invented formula inputs in an existing desktop vault.
 - Locked runtime dependencies: MathLive **0.111.1** and Convert **8.0.2**.

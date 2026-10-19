@@ -1,6 +1,6 @@
 # GitHub and release preparation
 
-Repository: [oranipost/visual-math-editor](https://github.com/oranipost/visual-math-editor). Version **0.6.4** is a desktop MVP, described as **Public beta** in its release title and notes. Public betas use ordinary GitHub releases with the latest-release designation so the standard download and update paths can find them. This does not establish support for untested platforms or community-directory approval. Verify the actual release and workflow results before reporting them as published or passed.
+Repository: [oranipost/visual-math-editor](https://github.com/oranipost/visual-math-editor). Version **0.6.5** is a desktop MVP hotfix in preparation, described as **Public beta** in release titles and notes. Public betas use ordinary GitHub releases with the latest-release designation so the standard download and update paths can find them. This does not establish support for untested platforms or community-directory approval. Verify the actual release and workflow results before reporting them as published or passed.
 
 ## Before publishing
 
@@ -17,8 +17,8 @@ The source ZIP contains no Git history, remote URL, private vault or application
 1. Choose a new version for each public update; never move an existing release tag or replace a published version's program files. Update `manifest.json`, `package.json` and the root package entries in `package-lock.json` together. Add the version/minimum mapping in `versions.json` for every release, as required by this project's packaging checks, and finalize `CHANGELOG.md`. The official compatibility table only requires an update when the minimum app version changes; this repository keeps a mapping for every release.
 2. Run `npm ci`, `npm run check`, browser component checks and the relevant native Obsidian flows in a disposable vault. Record actual results and untested platforms.
 3. Run `npm run package`. Check the installation/source archives and `release/SHA256SUMS.txt`. Install from the generated archive and verify its three runtime files match the build.
-4. After reviewing and committing the source, create and push a tag that matches the manifest **exactly**, such as `0.6.4`, without a `v` prefix.
-5. Run **Prepare draft release** manually. Under **Use workflow from**, choose that existing version tag and enter the identical value in **tag**. For example, `gh workflow run draft-release.yml --ref 0.6.4 -f tag=0.6.4` runs the prepared `0.6.4` tag once it exists; use the actual reviewed version. The tag must contain this workflow. Branch runs are rejected so the signed provenance identifies the same commit that is checked out and built. The workflow rebuilds/tests/packages that exact commit, creates provenance for the three runtime files, both ZIPs and their checksum file, then creates a **draft release** titled **Public beta**. It does not set the pre-release flag and fails rather than updating an existing release.
+4. After reviewing and committing the source, create and push a tag that matches the manifest **exactly**, such as `0.6.5`, without a `v` prefix.
+5. Run **Prepare draft release** manually. Under **Use workflow from**, choose that existing version tag and enter the identical value in **tag**. For example, `gh workflow run draft-release.yml --ref 0.6.5 -f tag=0.6.5` runs the prepared `0.6.5` tag once it exists; use the actual reviewed version. The tag must contain this workflow. Branch runs are rejected so the signed provenance identifies the same commit that is checked out and built. The workflow rebuilds/tests/packages that exact commit, creates provenance for the three runtime files, both ZIPs and their checksum file, then creates a **draft release** titled **Public beta**. It does not set the pre-release flag and fails rather than updating an existing release.
 6. Review the draft assets, attestation result and release notes before explicitly publishing as an ordinary release and marking it **latest**. Keep **Public beta**, desktop MVP scope and untested-platform limits visible in the title/notes. Download the public assets, verify ZIP checksums and verify their provenance as described below. Publishing a GitHub release and joining the Obsidian community directory are separate steps.
 
 CI checks logic/types/build and verifies package inputs. It does not launch Obsidian, perform native integration tests, publish releases on push, or certify support for every version.
@@ -47,7 +47,7 @@ After downloading a release into a separate review directory, check each runtime
 gh attestation verify main.js --repo oranipost/visual-math-editor
 gh attestation verify manifest.json --repo oranipost/visual-math-editor
 gh attestation verify styles.css --repo oranipost/visual-math-editor
-gh attestation verify visual-math-editor-0.6.4.zip --repo oranipost/visual-math-editor
+gh attestation verify visual-math-editor-0.6.5.zip --repo oranipost/visual-math-editor
 ```
 
 Use the actual version and also verify the source ZIP and checksum file. Inspect the verification result's source commit and workflow identity against the reviewed tag; a successful signature alone does not certify that code is bug-free. Provenance applies to the exact bytes produced by that run. It does not claim byte-for-byte reproducible ZIPs across machines, and no attestation is claimed until the hosted job and downloaded-asset verification have actually passed. Do not retrofit a published release by rebuilding and overwriting its assets; use the next reviewed version.
@@ -56,7 +56,7 @@ For **0.6.4**, [hosted workflow 39179067951](https://github.com/oranipost/visual
 
 ## 简体中文
 
-每次公开更新使用新的版本号，同步 manifest、package/lock、`versions.json` 和发布说明。完成构建、测试、打包与实际验证后，创建与 manifest 完全相同的标签（例如 `0.6.4`，不加 `v`），准备草稿 Release，核对独立程序附件、安装/源码 ZIP 和校验值后再发布。不要反复覆盖同版本附件或移动已发布标签。
+每次公开更新使用新的版本号，同步 manifest、package/lock、`versions.json` 和发布说明。完成构建、测试、打包与实际验证后，创建与 manifest 完全相同的标签（例如 `0.6.5`，不加 `v`），准备草稿 Release，核对独立程序附件、安装/源码 ZIP 和校验值后再发布。不要反复覆盖同版本附件或移动已发布标签。
 
 手动运行发布流程时，**Use workflow from** 和 **tag** 都选择相同的新版本标签，确保来源证明所记录的提交与实际构建一致。流程为三个程序文件、两个 ZIP 和校验文件生成 GitHub 来源证明，使用临时令牌，无需额外保存密钥；实际成功与否必须以托管流程和下载后的验证结果为准。自 0.6.4 起已完成这一发行和验证流程。独立许可证附件不再重复上传，但完整条款保留在程序文件和 ZIP 内。手动安装包仍然有用，即使目录继续提示额外附件也不代表安装错误。旧版附件保持原样，已发布标签与程序附件不覆盖。
 

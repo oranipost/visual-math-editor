@@ -2,6 +2,8 @@
 
 [English README](../README.md) · [中文说明](../README.zh-CN.md) · [发布维护](../RELEASING.md)
 
+**0.6.5 小修复状态**：本地准备中，验证与发布待完成。下方保留 0.6.4 与 0.6.3 的历史审核结果。
+
 资料核对日期：本地 2026-10-18；当前目录审核页面日期为 **2026-10-19 UTC**。[0.6.4 已作为普通 latest GitHub Release 发布](https://github.com/oranipost/visual-math-editor/releases/tag/0.6.4)，六个下载附件的构建来源证明均已验证。[社区目录页面](https://community.obsidian.md/plugins/visual-math-editor)的 **0.6.4 / fedf59c 审核已 Completed（完成）**，当前发行版为 **0.6.4**，公开评分卡显示 **Review Passed**，未列出 Error 或 Warning，仅保留主动剪贴板用途和可选手动下载附件两类建议。历史 0.6.3 官方审核 **Completed / Review Satisfactory** 仍独立保留。GitHub Release 安装 ZIP 可用于手动安装；目录入口启用与完成原生安装测试是不同观察，后者以 [TEST-REPORT.md](../TEST-REPORT.md) 中实际记录为准。
 
 此前原生 **Browse** 实测结果为 0，**Check for updates** 未提供更新。最新获取的官方 [`community-plugins.json`](https://github.com/obsidianmd/obsidian-releases/blob/master/community-plugins.json) 含 **9,116 条**记录，仍未包含 `visual-math-editor`。官方仓库[安装机制](https://github.com/obsidianmd/obsidian-releases#how-community-plugins-are-pulled)说明应用使用该列表搜索，网站展示和应用索引可用性需分别核对。Obsidian [官方上线公告](https://obsidian.md/blog/future-of-plugins/)说明，项目审核通过后会在 **24 小时内**进入应用搜索与下载；这不是本条目已同步的证明，也不保证确切同步时刻。若通过审核超过 24 小时仍无结果，应向官方反馈。原生编辑验证通过[手动安装](INSTALLATION.md)完成，不能声称已从原生社区目录安装成功。
@@ -42,7 +44,7 @@ Obsidian 当前的[官方提交指南](https://docs.obsidian.md/Plugins/Releasin
 流程如下：
 
 1. 在 GitHub 公开源代码，仓库根目录放好 `README.md`、`LICENSE`、`manifest.json`。
-2. 发布与 manifest 版本号完全一致的 GitHub Release。当前发行版为 **`0.6.4`**，tag 为 **`0.6.4`**，不要加 `v`。
+2. 发布与 manifest 版本号完全一致的 GitHub Release。准备中的版本为 **`0.6.5`**，发布时 tag 应为 **`0.6.5`**，不要加 `v`。
 3. Release 附件单独上传 **`main.js`、`manifest.json`、`styles.css`**；安装 ZIP 和源码 ZIP 是额外的便利下载，不能替代这三个单独附件。
 4. 在社区网站登录 Obsidian 账号，在个人资料的 **GitHub → Connect** 关联 `oranipost`。这是网站用来验证仓库所有权的步骤。
 5. 进入侧栏 **Plugins → New plugin**，填入仓库 URL，Owner 选择自己，阅读开发者政策与维护承诺后提交。
@@ -59,7 +61,7 @@ Obsidian 当前的[官方提交指南](https://docs.obsidian.md/Plugins/Releasin
 | ID | `visual-math-editor` |
 | Author | `Dongfang Wang` |
 | Author URL | `https://github.com/oranipost` |
-| Version / release tag | `0.6.4`（GitHub 已发布；2026-10-19 UTC 官方审核 Completed） |
+| Prepared version / release tag | `0.6.5`（本地准备，验证、发布和独立目录审核待完成；历史 0.6.4 已发布并审核 Completed） |
 | Minimum Obsidian version | `1.14.4` |
 | Platforms | Desktop only；目前实际验证 macOS，Windows / Linux 尚未做原生应用测试 |
 | License | MIT；依赖与字体遵循各自许可证，见 [Third-party notices](../THIRD-PARTY-NOTICES.md) |

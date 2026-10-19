@@ -2,6 +2,14 @@
 
 This file records version changes. Builds before 0.6.2 were local MVP releases; 0.6.2 prepares the first public desktop beta. Publication status is shown on GitHub Releases. Neither a local package nor a public GitHub release implies Obsidian community-directory approval.
 
+## 0.6.5 — 2026-10-18
+
+- Localize the inline-editor accessibility label and equation hover-to-edit hint instead of displaying fixed Chinese text in the English interface.
+- Refresh the inline label and dialog title when the editor's supported interface language changes, while retaining the current formula draft.
+- Keep English/Simplified Chinese scope, offline operation and existing equation storage unchanged.
+
+Local validation passed: 159 automated tests, type checking, the production build, packaging, 295 browser checks and the focused native label-switching check. Hosted release/provenance verification and the independent community-directory review remain separate; see [TEST-REPORT.md](TEST-REPORT.md) for actual status.
+
 ## 0.6.4 — 2026-10-18
 
 - Use Obsidian's DOM creation helpers where available, with a fallback for the standalone browser preview and the registered MathLive custom element.
@@ -11,7 +19,7 @@ This file records version changes. Builds before 0.6.2 were local MVP releases; 
 - Stop duplicating standalone license attachments in new releases; complete notices remain embedded in the runtime files and included in both ZIPs. Keep manual installation/source downloads and checksums available.
 - Preserve user-initiated equation cut/copy/paste and the documented absence of background clipboard monitoring; no clipboard feature is removed and no new MathLive compatibility patch is added.
 
-Version 0.6.4 is published as the latest ordinary GitHub Release. Its own community-directory review is **Completed** and the public scorecard shows **Review Passed**, with no Error or Warning entries; only recommendations for clipboard access and optional manual-download assets remain. The completed 0.6.3 review remains historical evidence for that earlier version. Directory review does not establish native catalog availability or coverage on untested platforms. Actual tests and remaining limits are recorded separately in [TEST-REPORT.md](TEST-REPORT.md).
+Version 0.6.4 was published as the latest ordinary GitHub Release at its recorded check. Its own community-directory review is **Completed** and the public scorecard shows **Review Passed**, with no Error or Warning entries; only recommendations for clipboard access and optional manual-download assets remain. The completed 0.6.3 review remains historical evidence for that earlier version. Directory review does not establish native catalog availability or coverage on untested platforms. Actual tests and remaining limits are recorded separately in [TEST-REPORT.md](TEST-REPORT.md).
 
 ## 0.6.3 — 2026-10-18
 

@@ -1,7 +1,7 @@
 import { StateEffect, StateField } from "@codemirror/state";
 import { Decoration, EditorView, WidgetType, type DecorationSet } from "@codemirror/view";
 import { mountEditor, type EditorDraft } from "./editor-ui";
-import type { Language } from "./i18n";
+import { resolveLanguage, translateUiText, type Language } from "./i18n";
 import type { PlotSpec } from "./plot-engine";
 import { createHtml } from "./dom";
 
@@ -32,7 +32,11 @@ class EquationWidget extends WidgetType {
     panel.className = "vme-inline-panel";
     panel.contentEditable = "false";
     panel.setAttribute("role", "region");
-    panel.setAttribute("aria-label", "笔记内公式编辑器");
+    const updateLabel = () => panel.setAttribute("aria-label", translateUiText(
+      "笔记内公式编辑器",
+      resolveLanguage(this.session.language, this.session.systemLanguage ?? panel.ownerDocument.defaultView?.navigator.language ?? 'en'),
+    ));
+    updateLabel();
     panel.dataset.testid = "inline-equation-editor";
     this.frame = window.requestAnimationFrame(() => {
       this.frame = undefined;
@@ -50,6 +54,7 @@ class EquationWidget extends WidgetType {
         systemLanguage: this.session.systemLanguage,
         onLanguageChange: language => {
           this.session.language = language;
+          updateLabel();
           return this.session.onLanguageChange(language);
         },
         onSave: this.session.onSave,

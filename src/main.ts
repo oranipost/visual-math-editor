@@ -37,7 +37,11 @@ class EquationModal extends Modal {
       editing: !!this.range,
       language: this.plugin.language,
       systemLanguage: this.plugin.systemLanguage(),
-      onLanguageChange: language => this.plugin.setLanguage(language),
+      onLanguageChange: language => {
+        const saved = this.plugin.setLanguage(language);
+        this.setTitle(this.plugin.text(this.range ? "编辑公式" : "插入公式"));
+        return saved;
+      },
       onCancel: () => this.close(),
       onSaveGraph: (spec, latex, display) => {
         if (!this.plugin.isLoaded || this.view.file?.path !== this.pluginPath || this.view.getMode() !== "source" || !this.view.containerEl.isConnected) throw new Error("原笔记已关闭或切换，请取消后重新打开公式。");
@@ -141,6 +145,7 @@ export default class VisualMathEditor extends Plugin {
   private recoveredDraft?: InlineDraft;
   private nextSessionId = 1;
   private localizations = new Set<ReturnType<typeof localizeEditor>>();
+  private readingTitleRefreshers = new Set<() => void>();
   private ribbonAction?: HTMLElement;
 
   async onload(): Promise<void> {
@@ -234,6 +239,7 @@ export default class VisualMathEditor extends Plugin {
     this.modals.clear();
     for (const localization of this.localizations) localization.destroy();
     this.localizations.clear();
+    this.readingTitleRefreshers.clear();
   }
 
   /** Follow Obsidian's chosen language; older supported hosts use the browser locale. */
@@ -261,6 +267,7 @@ export default class VisualMathEditor extends Plugin {
     this.refreshHeaderActions();
     this.ribbonAction?.setAttribute('aria-label', this.text('Visual Math Editor：插入或编辑公式'));
     for (const localization of this.localizations) localization.setLanguage(language);
+    for (const refresh of this.readingTitleRefreshers) refresh();
     try { await this.saveData(this.pluginSettings); }
     catch { this.notify("无法保存语言偏好 / Unable to save language preference"); }
   }
@@ -633,8 +640,11 @@ export default class VisualMathEditor extends Plugin {
     maths.forEach((math, index) => {
       const title = math.getAttribute("title");
       math.classList.add("vme-clickable");
-      math.setAttribute("title", "双击以可视化编辑公式");
+      const refreshTitle = () => math.setAttribute("title", this.text("双击以可视化编辑公式"));
+      refreshTitle();
+      this.readingTitleRefreshers.add(refreshTitle);
       child.register(() => {
+        this.readingTitleRefreshers.delete(refreshTitle);
         math.classList.remove("vme-clickable");
         if (title === null) math.removeAttribute("title"); else math.setAttribute("title", title);
       });

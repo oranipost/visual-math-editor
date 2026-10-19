@@ -4,7 +4,7 @@ English · [简体中文](README.zh-CN.md)
 
 Edit equations directly inside Obsidian notes using **Visual**, **LaTeX** or **Hybrid** mode. Visual mode provides Word-like structures for fractions, roots, scripts, integrals and sums. Hybrid mode keeps the formatted equation and LaTeX source synchronized. Equations are saved as ordinary LaTeX/Markdown.
 
-**0.6.4 · Desktop public beta (MVP), published on GitHub.** Also includes chemistry notation and balance suggestions, physics templates, offline unit conversion, a periodic table, real-function graphs and a Re/Im complex plane. The interface currently supports **English and Simplified Chinese only**. More languages are planned for future updates. The [0.6.4 release](https://github.com/oranipost/visual-math-editor/releases/tag/0.6.4) includes verified GitHub build provenance for all six download assets. **Its 0.6.4 community-directory review is Completed and the public scorecard shows Review Passed, with no Error or Warning entries; recommendations remain for clipboard access and the optional manual-download assets.** See [review observations](docs/COMMUNITY-SUBMISSION.md), [scope](MVP.md), [test observations](TEST-REPORT.md) and [language support](LANGUAGE-SUPPORT.md).
+**0.6.5 · Desktop public beta (MVP).** This hotfix aligns the inline-editor accessibility label, equation hover hint and dialog title with the selected English or Simplified Chinese interface, including language changes while an editor is open. Also includes chemistry notation and balance suggestions, physics templates, offline unit conversion, a periodic table, real-function graphs and a Re/Im complex plane. More languages are planned for future updates. Release availability is shown on [GitHub Releases](https://github.com/oranipost/visual-math-editor/releases); actual validation is recorded in [TEST-REPORT.md](TEST-REPORT.md). The historical [0.6.4 release](https://github.com/oranipost/visual-math-editor/releases/tag/0.6.4) has verified build provenance and a completed **Review Passed** result; those observations do not establish the status of 0.6.5. See [review observations](docs/COMMUNITY-SUBMISSION.md), [scope](MVP.md), [test observations](TEST-REPORT.md) and [language support](LANGUAGE-SUPPORT.md).
 
 ## Download and install
 
@@ -14,7 +14,7 @@ Edit equations directly inside Obsidian notes using **Visual**, **LaTeX** or **H
 
 ### Manual installation
 
-**[Download 0.6.4 installation ZIP](https://github.com/oranipost/visual-math-editor/releases/download/0.6.4/visual-math-editor-0.6.4.zip)** · [Release notes and checksums](https://github.com/oranipost/visual-math-editor/releases/tag/0.6.4) · [Detailed installation, updates and removal](docs/INSTALLATION.md#english)
+**[Download 0.6.5 installation ZIP](https://github.com/oranipost/visual-math-editor/releases/download/0.6.5/visual-math-editor-0.6.5.zip)** · [Release notes and checksums](https://github.com/oranipost/visual-math-editor/releases/tag/0.6.5) · [Detailed installation, updates and removal](docs/INSTALLATION.md#english)
 
 For manual installation, download the release's installation ZIP, rather than **Code → Download ZIP** or GitHub's automatic **Source code** archives, which require building.
 
@@ -141,7 +141,7 @@ Report a problem through the [bug report form](https://github.com/oranipost/visu
 
 Code, wording fixes and translation contributions are welcome; read [CONTRIBUTING.md](CONTRIBUTING.md) first. English and Simplified Chinese are maintained today. A new locale should cover full workflows, errors and accessibility labels and receive fluent-speaker review.
 
-A GitHub release is separate from approval for Obsidian's community directory. The [community submission guide](docs/COMMUNITY-SUBMISSION.md) records the completed 0.6.3 review, its nonblocking warnings, the published 0.6.4 changes and completed review, and the maintenance process. Review results do not replace the runtime observations in [TEST-REPORT.md](TEST-REPORT.md).
+A GitHub release is separate from approval for Obsidian's community directory. The [community submission guide](docs/COMMUNITY-SUBMISSION.md) records the completed 0.6.3 review, its nonblocking warnings, the published 0.6.4 changes and completed review, the 0.6.5 localization hotfix, and the maintenance process. Review results do not replace the runtime observations in [TEST-REPORT.md](TEST-REPORT.md).
 
 ## License and dependencies
 

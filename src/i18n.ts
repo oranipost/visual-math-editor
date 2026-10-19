@@ -152,7 +152,7 @@ export const UI_TRANSLATIONS: Readonly<Record<string, string>> = {
   '原笔记已关闭或切换，请取消后重新打开公式。': 'The original note was closed or changed. Cancel and reopen the equation.',
   '笔记已发生变化。为避免覆盖内容，请取消后重新打开公式。': 'The note has changed. Cancel and reopen the equation to avoid overwriting content.',
   '笔记已变化，草稿仍保留。为避免覆盖，请复制草稿后取消并重新打开公式。': 'The note has changed and your draft is preserved. Copy it, then cancel and reopen the equation.',
-  '笔记内公式编辑器': 'Equation editor in note', '选择要编辑的公式': 'Choose an equation to edit',
+  '笔记内公式编辑器': 'Inline equation editor', '选择要编辑的公式': 'Choose an equation to edit',
   '点击公式重新编辑。公式按笔记中的位置排列。': 'Click an equation to edit it. Equations follow their order in the note.',
   '这篇笔记中没有可编辑的公式。请先切到编辑模式，再点击左侧 ∑ 插入。': 'No editable equations found. Switch to editing mode and click ∑ on the left to insert one.',
   '暂不支持的公式（原文保留）': 'Unsupported equation (source preserved)', '上一页': 'Previous page', '下一页': 'Next page',
