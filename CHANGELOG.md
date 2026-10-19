@@ -2,6 +2,14 @@
 
 This file records version changes. Builds before 0.6.2 were local MVP releases; 0.6.2 prepares the first public desktop beta. Publication status is shown on GitHub Releases. Neither a local package nor a public GitHub release implies Obsidian community-directory approval.
 
+## 0.8.1 — 2026-10-18 · Desktop public beta
+
+- Remove the unnecessary numeric type assertion in saved graph validation reported by the 0.8.0 community scan. Existing numeric and mode validation stays in place.
+- Remove an unused equation-conversion import.
+- Validate stored graph modes and calculus choices as strings before membership checks; reject malformed arrays/objects explicitly. Keep the manifest description within the official punctuation rules.
+- Add a complete Spanish README and English / 简体中文 / Español documentation navigation. Include the Spanish document in both installation and source packages; correct the isolated packaging fixture and verify complete archived contents.
+- Retain the 0.8 graph formats and offline polar/XYZ/calculus features. Exact automated, browser, native and hosted-release observations are in [TEST-REPORT.md](TEST-REPORT.md).
+
 ## 0.8.0 — 2026-10-18 · Desktop public beta
 
 Adds polar plots, numerical calculus, XYZ wireframes and faster graph input. Local checks passed: **194 automated tests and 368 browser component checks**. Native 0.8.0 insertion/save/reopen remains unverified; GitHub publication and community review are separate. Actual checks are recorded in [TEST-REPORT.md](TEST-REPORT.md).

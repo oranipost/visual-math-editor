@@ -13,14 +13,14 @@ export function parsePlotSpec(source: string): PlotSpec {
   if (!data || typeof data !== 'object' || Array.isArray(data)) throw new Error('Invalid graph settings.');
   const record = data as Record<string, unknown>;
   if (record.version !== 1 || Object.keys(record).some(key => key !== 'version' && key !== 'mode' && ![...FIELDS, ...EXTRA_FIELDS].includes(key as typeof FIELDS[number]))) throw new Error('Unsupported graph settings version.');
-  if (record.mode !== undefined && !['function', 'complex', 'polar', 'surface'].includes(String(record.mode))) throw new Error('Unsupported graph mode.');
+  if (record.mode !== undefined && (typeof record.mode !== 'string' || !['function', 'complex', 'polar', 'surface'].includes(record.mode))) throw new Error('Unsupported graph mode.');
   if (typeof record.expression !== 'string' || !FIELDS.slice(1).every(key => typeof record[key] === 'number' && Number.isFinite(record[key]))) throw new Error('Invalid graph settings.');
   const spec = Object.fromEntries(FIELDS.map(key => [key, record[key]])) as unknown as PlotSpec;
   if (record.mode !== undefined) spec.mode = record.mode as PlotSpec['mode'];
   for (const key of EXTRA_FIELDS) {
     if (record[key] === undefined) continue;
     if (key === 'calculus') {
-      if (!['none', 'derivative', 'second-derivative', 'integral'].includes(String(record[key]))) throw new Error('Invalid calculus settings.');
+      if (typeof record[key] !== 'string' || !['none', 'derivative', 'second-derivative', 'integral'].includes(record[key])) throw new Error('Invalid calculus settings.');
       spec.calculus = record[key] as PlotSpec['calculus'];
     } else {
       if (typeof record[key] !== 'number' || !Number.isFinite(record[key])) throw new Error('Invalid graph settings.');

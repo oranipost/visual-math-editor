@@ -4,11 +4,17 @@
 
 Escribe apuntes de **matemáticas, química y física en Obsidian** sin aprender LaTeX. Visual Math ofrece edición visual, código LaTeX y un modo Hybrid sincronizado. Las fórmulas se guardan como LaTeX/Markdown; funciona localmente, sin cuenta ni conexión.
 
+## 0.8.1: mantenimiento
+
+Elimina una aserción de tipo innecesaria y una importación sin usar detectadas en 0.8.0. Ambos paquetes incluyen este README en español. Conserva las gráficas polares/XYZ y los formatos guardados. Consulta la [versión 0.8.1](https://github.com/oranipost/visual-math-editor/releases/tag/0.8.1) y el [informe de pruebas](TEST-REPORT.md) para conocer disponibilidad y verificaciones reales.
+
+La versión 0.8.1 pasó 194 pruebas automatizadas y 368 comprobaciones de componentes. En macOS con Obsidian 1.14.4 se insertaron fórmulas y gráficas polares/XYZ, se guardaron las vistas y se reinició la aplicación. Al reabrir los editores se conservaron los rangos, los límites de theta y los ángulos. Es una prueba limitada de actualización manual, no de instalación desde el catálogo ni de otras plataformas.
+
 ## 0.8.0: beta pública para escritorio
 
 Esta versión añade gráficas polares, cálculo numérico y superficies XYZ. **Han pasado 194 pruebas automatizadas y 368 comprobaciones de componentes en navegador. La inserción, el guardado y la reapertura en Obsidian nativo con 0.8.0 todavía no se han verificado.** Prueba primero en una bóveda desechable. Publicación en GitHub, revisión del directorio e instalación nativa son estados distintos; consulta [el informe de pruebas](TEST-REPORT.md).
 
-[Versión 0.8.0 y descargas](https://github.com/oranipost/visual-math-editor/releases/tag/0.8.0) · [ZIP de instalación](https://github.com/oranipost/visual-math-editor/releases/download/0.8.0/visual-math-editor-0.8.0.zip) · [Directorio comunitario](https://community.obsidian.md/plugins/visual-math-editor)
+[Versión 0.8.1 y descargas](https://github.com/oranipost/visual-math-editor/releases/tag/0.8.1) · [ZIP de instalación](https://github.com/oranipost/visual-math-editor/releases/download/0.8.1/visual-math-editor-0.8.1.zip) · [Directorio comunitario](https://community.obsidian.md/plugins/visual-math-editor)
 
 Requiere **Obsidian 1.14.4 o posterior** y está dirigido a la ventana principal de escritorio. Windows, Linux, móvil, ventanas independientes y combinaciones arbitrarias de temas o complementos no están verificados. Las pruebas nativas anteriores conservan sus versiones originales; no validan automáticamente 0.8.0.
 

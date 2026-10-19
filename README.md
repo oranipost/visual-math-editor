@@ -6,6 +6,12 @@ Write **math, chemistry and physics notes** directly inside Obsidian with **Visu
 
 Built for quick science notes: optional chemical balance suggestions, physics templates, a periodic table, offline unit conversion, function graphs and a Re/Im complex plane. Everything runs locally without an account or runtime network connection.
 
+## 0.8.1 — Maintenance update
+
+Removes the unnecessary type assertion and unused import reported by the 0.8.0 directory scan, and includes complete Spanish documentation in both packages. Polar/XYZ graph features and saved formats are unchanged. See the [0.8.1 release page](https://github.com/oranipost/visual-math-editor/releases/tag/0.8.1) for availability and [TEST-REPORT.md](TEST-REPORT.md) for actual verification.
+
+Local verification for 0.8.1: 194 automated tests and 368 browser component checks passed. On macOS with Obsidian 1.14.4, linked polar and XYZ formulas/graphs were inserted, navigated and explicitly saved; quitting/restarting the app and reopening both graph editors restored their numeric ranges, theta limits and camera angles. This focused manual-upgrade check does not establish native marketplace installation or coverage of other platforms.
+
 ## 0.8.0 — Desktop public beta
 
 **[Visual Math 0.8.0 — Desktop public beta](https://github.com/oranipost/visual-math-editor/releases/tag/0.8.0)** adds polar plots, numerical calculus and XYZ wireframes. **194 automated tests and 368 browser component checks passed. Native Obsidian 0.8.0 insertion/save/reopen has not been verified**; test in a disposable vault first. GitHub publication, directory review and a successful native installation are separate states. See [TEST-REPORT.md](TEST-REPORT.md) for actual checks and the live release page for download availability.
@@ -37,11 +43,11 @@ Real screenshots from Visual Math 0.7.0 running in Obsidian on macOS. The Spanis
 
 **[Open the Obsidian community-directory page](https://community.obsidian.md/plugins/visual-math-editor).** When the plugin is available in the app's index, click **Add to Obsidian**, allow the link to open Obsidian, then choose **Install → Enable** in the plugin details. Open a Markdown note and click **∑** in its header or left ribbon. The directory's enabled installation link and a completed native installation test are separate observations; consult [TEST-REPORT.md](TEST-REPORT.md) for what has actually been tested.
 
-**Directory and installation status (2026-10-18, America/Chicago):** the 0.8.0 / cd28d52 review is **Completed**; the public listing shows **Current version 0.8.0 / Health Excellent / Review Satisfactory**, with one code warning and three recommendations. See [TEST-REPORT.md](TEST-REPORT.md) for exact checks and limitations. The official installation index previously included `visual-math-editor` under its earlier display name **Visual Math Editor**. A native community-directory installation of 0.8.0 has not been completed in these checks. The user’s existing Personal vault remains on manually installed 0.7.0; directory publication does not update it automatically.
+**Directory and installation status (2026-10-18, America/Chicago):** the 0.8.0 / cd28d52 review is **Completed**; the public listing shows **Current version 0.8.0 / Health Excellent / Review Satisfactory**, with one code warning and three recommendations. See [TEST-REPORT.md](TEST-REPORT.md) for exact checks and limitations. The official installation index previously included `visual-math-editor` under its earlier display name **Visual Math Editor**. A native community-directory installation of 0.8.0 has not been completed in these checks. The Personal vault has now been manually upgraded from 0.7.0 to the checked 0.8.1 candidate, preserving its previous settings and demonstration note. The focused polar/XYZ native checks are recorded above; directory publication does not update local installations automatically. The 0.8.1 hosted review will be recorded separately.
 
 ### Manual installation
 
-**[0.8.0 installation ZIP](https://github.com/oranipost/visual-math-editor/releases/download/0.8.0/visual-math-editor-0.8.0.zip)** · [Release notes and checksums](https://github.com/oranipost/visual-math-editor/releases/tag/0.8.0) · [Detailed installation, updates and removal](docs/INSTALLATION.md#english)
+**[0.8.1 installation ZIP](https://github.com/oranipost/visual-math-editor/releases/download/0.8.1/visual-math-editor-0.8.1.zip)** · [Release notes and checksums](https://github.com/oranipost/visual-math-editor/releases/tag/0.8.1) · [Detailed installation, updates and removal](docs/INSTALLATION.md#english)
 
 For manual installation, download the published installation ZIP, rather than **Code → Download ZIP** or GitHub's automatic **Source code** archives, which require building.
 

@@ -1,6 +1,10 @@
 # GitHub and release preparation
 
-## 0.8.0 release target
+## 0.8.1 release target
+
+Maintenance patch for the unnecessary type assertion, unused import, strict enum guards and manifest punctuation. Includes complete Spanish documentation in both archives. Local verification passed 194 automated tests, 368 browser component checks and focused native polar/XYZ insertion, navigation, explicit Save view, application restart and editor reopening on macOS with Obsidian 1.14.4. The local official-rule scan has zero source errors, three reviewed sentence-case warnings and zero manifest findings. Final hosted checks and the 0.8.1 directory review remain separate; see [TEST-REPORT.md](TEST-REPORT.md). Historical tags/assets must remain unchanged.
+
+## 0.8.0 historical release verification
 
 Version 0.8.0 adds polar plots, numerical calculus, XYZ wireframes and symbol input. Pre-publication checks passed: 194 automated tests, type checking/build, packaging and 368 browser component checks. Native 0.8.0 insertion/save/reopen has not been verified. Hosted build/provenance and directory review must be checked independently; see [TEST-REPORT.md](TEST-REPORT.md) and the [0.8.0 release page](https://github.com/oranipost/visual-math-editor/releases/tag/0.8.0). Do not apply historical 0.7.0 results to 0.8.0.
 

@@ -1,5 +1,20 @@
 # Test report / 测试记录
 
+## 0.8.1 — maintenance verification (2026-10-18)
+
+This maintenance build removes the unnecessary type assertion and unused import reported by the 0.8.0 directory scan, uses explicit string guards for saved enum values, and retains compatible valid graph formats. Spanish documentation is included in both packages.
+
+- **194 automated tests**, TypeScript checks, production build and actual installation/source packaging passed. The existing strict-settings test now rejects malformed mode/calculus arrays, objects, null, booleans and numbers without string coercion. Packaging checks verify the complete Spanish README in both archives and retain privacy/license boundaries.
+- **368 browser component checks passed** on the final build. These include polar/XYZ serialization and remounts, multi-frame rotation/pinch gestures, direct equation conversion and existing editing/science/localization regressions. Browser writes remain test memory rather than vault integration.
+- The local official-rule scan reports **0 source errors and 3 reviewed sentence-case warnings** (Visual Math branding, copyright holder and mathematical variable notation), with **0 manifest errors/warnings**. Neither the unnecessary-type-assertion finding, unused import nor unsafe object-stringification finding remains. The manifest description now uses allowed punctuation. This local check is separate from the hosted directory review.
+- **Native macOS / Obsidian 1.14.4 / 0.8.1:** a checksum-verified local installation ZIP upgraded the previously installed 0.7.0 plugin with a recoverable backup. Original settings and the earlier demonstration note remained byte-identical. Native About displayed 0.8.1. This was a manual upgrade, not an app community-catalog installation.
+- In a newly created example note, Hybrid source `r=2\sin(3\theta)` generated a three-petal polar plot directly below the equation. The plot was zoomed and dragged, the equation and graph inserted together, then the rendered graph's **Save view** explicitly committed further navigation. The saved polar theta range is **0 to 6.283185307179586**. Its final saved X range is **-4.238914122285888 to 3.6516560813482153**, and Y is **-3.6550930997093163 to 4.2354771039247865**.
+- Hybrid source `z=\frac{x^2-y^2}{10}` generated an explicit XYZ saddle wireframe without retyping into Graph. Z limits were adjusted, the surface rotated using a button and actual pointer drag, and all axes zoomed. Formula and graph were inserted together; the saved graph was zoomed again and **Save view** committed the result. Saved X/Y are **-3.2 to 3.2**, Z is approximately **-1.92 to 1.92**, azimuth **35.2317987583649 degrees**, elevation **38.49195440576177 degrees**.
+- **The application was quit and restarted**, both graphs rendered again, and each **Edit graph** panel reopened. Formula expressions, all X/Y/Z limits, theta limits and camera angles matched persisted Markdown JSON exactly. Unchanged re-edit/save preserved the example note bytes. Existing settings and the earlier demonstration note remained byte-identical to their pre-upgrade backups. These are focused polar/XYZ native checks; they do not establish every calculus/science flow, Windows, Linux, mobile, detached windows or arbitrary third-party combinations.
+- Hosted CI/provenance and the independent **0.8.1** directory review are pending publication; recorded 0.8.0 findings below remain historical. Hosted runtime attachments will be compared with the natively tested bytes before publication is declared verified.
+
+0.8.1 修复类型声明与未使用导入；194 项自动测试、368 项浏览器组件检查通过。官方本地规则为源码 0 错误、3 项已审阅的句式提示，manifest 0 错误/0 提示。macOS Obsidian 1.14.4 已实际插入极坐标和 XYZ，操作拖动/缩放并保存视图，退出重启后逐项核对数值一致；旧笔记与设置保留。本次属于手动升级，尚未进行原生社区目录安装；托管来源证明和 0.8.1 目录结果另记。
+
 ## 0.8.0 — pre-publication graph checks (2026-10-18)
 
 This section records checks before GitHub publication and community submission. Hosted results are recorded separately in the follow-up section; earlier 0.7.0 review/native results do not establish 0.8.0 outcomes. The user's Personal vault remains on 0.7.0.

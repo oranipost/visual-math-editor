@@ -6,6 +6,12 @@
 
 内置化学式与可选配平建议、物理模板、离线单位换算、118 元素表、函数图像和 Re / Im 复平面。全部本地运行，无需账号或运行时网络。
 
+## 0.8.1 — 维护更新
+
+修复 0.8.0 目录扫描指出的多余类型声明与未使用导入，并把完整西班牙语说明加入安装包和源码包。极坐标、XYZ 等功能和保存格式保持兼容；公开状态以 [0.8.1 发行页](https://github.com/oranipost/visual-math-editor/releases/tag/0.8.1) 为准，实际验证见 [TEST-REPORT.md](TEST-REPORT.md)。
+
+0.8.1 已通过 194 项自动测试与 368 项浏览器组件检查。在 macOS 的 Obsidian 1.14.4 中，已实际插入关联的极坐标及 XYZ 公式/图像，拖动缩放后保存视图；退出重启应用并重开两张图，坐标、θ 范围和相机角度均保留。此项是限定范围的手动升级实测，不代表已完成社区目录安装或其他平台验证。
+
 ## 0.8.0 — 桌面公开测试版
 
 **[Visual Math 0.8.0 — 桌面公开测试版](https://github.com/oranipost/visual-math-editor/releases/tag/0.8.0)** 新增极坐标、数值微积分和 XYZ 曲面。已通过 **194 项自动测试与 368 项浏览器组件检查**；**0.8.0 原生 Obsidian 插入、保存重开尚未验证**，请优先在独立测试库试用。GitHub 公开、目录审核和成功的原生安装是不同状态；下载可用性以发行页为准，实际验证见 [TEST-REPORT.md](TEST-REPORT.md)。
@@ -37,11 +43,11 @@
 
 **[打开 Obsidian 社区插件目录页面](https://community.obsidian.md/plugins/visual-math-editor)。** 插件进入应用安装索引后，点击 **Add to Obsidian**，允许链接打开 Obsidian，再在插件详情中选择 **Install（安装）→ Enable（启用）**。打开 Markdown 笔记，点击右上角或左侧工具栏的 **∑**。目录安装入口启用与完成原生安装实测是不同观察，实际测试以 [TEST-REPORT.md](TEST-REPORT.md) 为准。
 
-**目录与安装状态（2026-10-18，America/Chicago）：** 0.8.0 / cd28d52 审核已 **Completed**，公开目录显示 **Current version 0.8.0 / Health Excellent / Review Satisfactory**，保留一项代码警告及三项建议。具体检查及限制见 [TEST-REPORT.md](TEST-REPORT.md)。此前核对的官方安装索引包含 `visual-math-editor`，名称仍为 **Visual Math Editor**；本次尚未完成 0.8.0 原生社区目录安装。用户现有 Personal vault 仍为手动安装的 0.7.0，目录发布不会自动升级本地插件。
+**目录与安装状态（2026-10-18，America/Chicago）：** 0.8.0 / cd28d52 审核已 **Completed**，公开目录显示 **Current version 0.8.0 / Health Excellent / Review Satisfactory**，保留一项代码警告及三项建议。具体检查及限制见 [TEST-REPORT.md](TEST-REPORT.md)。此前核对的官方安装索引包含 `visual-math-editor`，名称仍为 **Visual Math Editor**；本次尚未完成 0.8.0 原生社区目录安装。Personal vault 已从 0.7.0 手动升级到核对过的 0.8.1 候选构建，保留原设置与旧演示笔记；上文记录限定范围的极坐标/XYZ 原生验证。目录发布不会自动更新本机安装，0.8.1 托管审核另记。
 
 ### 手动安装
 
-**[0.8.0 安装包](https://github.com/oranipost/visual-math-editor/releases/download/0.8.0/visual-math-editor-0.8.0.zip)** · [查看发布说明和校验值](https://github.com/oranipost/visual-math-editor/releases/tag/0.8.0) · [完整安装 / 更新 / 卸载说明](docs/INSTALLATION.md#简体中文)
+**[0.8.1 安装包](https://github.com/oranipost/visual-math-editor/releases/download/0.8.1/visual-math-editor-0.8.1.zip)** · [查看发布说明和校验值](https://github.com/oranipost/visual-math-editor/releases/tag/0.8.1) · [完整安装 / 更新 / 卸载说明](docs/INSTALLATION.md#简体中文)
 
 选择手动安装时，请下载已公开 Release 的安装 ZIP；GitHub 的 **Code → Download ZIP** 和自动生成的 **Source code** 是源码，需要自行构建。
 

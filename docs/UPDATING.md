@@ -1,5 +1,11 @@
 # Updates / 更新机制
 
+**0.8.1:** removes the unnecessary assertion and unused import, adds explicit string validation and complete Spanish documentation in both downloads. Save drafts, back up the plugin folder, keep `data.json`, replace program files and restart. Focused polar/XYZ save/reopen checks passed on macOS with Obsidian 1.14.4; other workflows/platforms and app-catalog installation retain their limits.
+
+**0.8.1：** 清理多余类型声明与未使用导入，明确检查字符串参数，两种下载包均包含完整西班牙语文档。先保存草稿、备份插件目录，保留 `data.json` 并重启应用。macOS Obsidian 1.14.4 已通过极坐标/XYZ 保存与重开实测；不扩展为其他功能、平台或商城安装验证。
+
+Historical 0.8.0 compatibility notes / 0.8.0 历史兼容性说明：
+
 **0.8.0:** back up the plugin folder and retain `data.json`. Earlier function and complex-plane blocks remain supported. New polar/XYZ/calculus settings require 0.8.0 to render/edit; downgrading leaves their original definitions in the note but an older build may report unsupported settings. Save drafts before updating and restart Obsidian. Native 0.8.0 save/reopen still needs verification; use a disposable note/vault first.
 
 **0.8.0：** 更新前备份插件目录并保留 `data.json`。旧函数与复平面区块继续支持；新增极坐标、XYZ 和微积分参数需要 0.8.0，降级后原始定义仍留在笔记里，但旧版可能提示不支持。先保存草稿，更新后重启 Obsidian。原生 0.8.0 保存重开仍待验证，请先用独立测试笔记或笔记库。

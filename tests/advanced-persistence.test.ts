@@ -41,6 +41,8 @@ test('strict saved settings reject cross-mode and invalid parameters',()=>{
     {...DEFAULT_PLOT_SPEC,calculus:'integral',integralMin:2,integralMax:1},
     {...DEFAULT_PLOT_SPEC,mode:'complex',thetaMax:1},
     {...DEFAULT_PLOT_SPEC,mode:'polar',thetaMax:'2*pi'},
+    ...[null, ['integral'], {value:'integral'}, 1, true].map(calculus=>({...DEFAULT_PLOT_SPEC,calculus})),
+    ...[['polar'], {value:'polar'}].map(mode=>({...DEFAULT_PLOT_SPEC,mode})),
   ]) assert.throws(()=>parsePlotSpec(source(spec)),source(spec));
 });
 
