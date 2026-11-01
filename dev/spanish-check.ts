@@ -29,7 +29,7 @@ export async function checkSpanishLocalization(check: (condition: boolean, messa
       && fixture.querySelector<HTMLTextAreaElement>('[data-testid="latex-source"]')?.value === latex,
     'Hybrid 模式名及源码保持原值，仅翻译源码区域的可访问标签');
     check(button('graph-equation').textContent === 'Graficar esta ecuación'
-      && fixture.querySelector('[data-testid="formula-shortcuts"] summary')?.textContent === 'Mis atajos de fórmulas', '新增公式绘图及自定义快捷词入口使用西班牙语');
+      && fixture.querySelector('[data-testid="formula-shortcuts"]') === null, '公式绘图入口使用西班牙语，已移除的自定义快捷词入口不再出现');
 
     button('subject-units').click(); await settle();
     const category = fixture.querySelector<HTMLSelectElement>('[data-testid="conversion-category"]')!;

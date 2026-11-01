@@ -4,23 +4,15 @@
 
 Escribe apuntes de **matemáticas, química y física en Obsidian** sin aprender LaTeX. Visual Math ofrece edición visual, código LaTeX y un modo Hybrid sincronizado. Las fórmulas se guardan como LaTeX/Markdown; funciona localmente, sin cuenta ni conexión.
 
-## 0.8.2: nombre y autor
+## 1.0.0: más herramientas de notación
 
-[La versión 0.8.2](https://github.com/oranipost/visual-math-editor/releases/tag/0.8.2) usa **Visual Math / Oliver**. El identificador sigue siendo `visual-math-editor`. La búsqueda del catálogo se sincroniza por separado; consulta [TEST-REPORT.md](TEST-REPORT.md) para conocer el estado de publicación y verificación.
+[Visual Math 1.0.0 · Versión de escritorio](https://github.com/oranipost/visual-math-editor/releases/tag/1.0.0) incorpora la importación revisada de una fórmula, matrices de 1–6 filas y columnas, sistemas de 2–6 filas con llave izquierda, nueve plantillas de matemáticas avanzadas y 19 herramientas de conjuntos y sucesiones. Añade siete modelos geométricos y tres escenas espaciales con parámetros ajustables, giro, zoom y guardado explícito de la vista.
 
-## 0.8.1: mantenimiento
+Se mantiene **Visual Math / Oliver** y el identificador `visual-math-editor`. Se han eliminado las palabras clave de fórmulas para simplificar la interfaz; las fórmulas ya insertadas y los demás ajustes se conservan. Siguen disponibles Deshacer/Rehacer del borrador y la recuperación temporal. No hay biblioteca ni historial permanente de fórmulas.
 
-Elimina una aserción de tipo innecesaria y una importación sin usar detectadas en 0.8.0. Ambos paquetes incluyen este README en español. Conserva las gráficas polares/XYZ y los formatos guardados. Consulta la [versión 0.8.1](https://github.com/oranipost/visual-math-editor/releases/tag/0.8.1) y el [informe de pruebas](TEST-REPORT.md) para conocer disponibilidad y verificaciones reales.
+[ZIP de instalación 1.0.0](https://github.com/oranipost/visual-math-editor/releases/download/1.0.0/visual-math-editor-1.0.0.zip) · [Notas y sumas de verificación](https://github.com/oranipost/visual-math-editor/releases/tag/1.0.0) · [Directorio comunitario](https://community.obsidian.md/plugins/visual-math-editor)
 
-La versión 0.8.1 pasó 194 pruebas automatizadas y 368 comprobaciones de componentes. En macOS con Obsidian 1.14.4 se insertaron fórmulas y gráficas polares/XYZ, se guardaron las vistas y se reinició la aplicación. Al reabrir los editores se conservaron los rangos, los límites de theta y los ángulos. Es una prueba limitada de actualización manual, no de instalación desde el catálogo ni de otras plataformas.
-
-## 0.8.0: beta pública para escritorio
-
-Esta versión añade gráficas polares, cálculo numérico y superficies XYZ. **Han pasado 194 pruebas automatizadas y 368 comprobaciones de componentes en navegador. La inserción, el guardado y la reapertura en Obsidian nativo con 0.8.0 todavía no se han verificado.** Prueba primero en una bóveda desechable. Publicación en GitHub, revisión del directorio e instalación nativa son estados distintos; consulta [el informe de pruebas](TEST-REPORT.md).
-
-[Versión 0.8.2 y descargas](https://github.com/oranipost/visual-math-editor/releases/tag/0.8.2) · [ZIP de instalación](https://github.com/oranipost/visual-math-editor/releases/download/0.8.2/visual-math-editor-0.8.2.zip) · [Directorio comunitario](https://community.obsidian.md/plugins/visual-math-editor)
-
-Requiere **Obsidian 1.14.4 o posterior** y está dirigido a la ventana principal de escritorio. Windows, Linux, móvil, ventanas independientes y combinaciones arbitrarias de temas o complementos no están verificados. Las pruebas nativas anteriores conservan sus versiones originales; no validan automáticamente 0.8.0.
+Requiere **Obsidian 1.14.4 o posterior**, en la ventana principal de escritorio. Windows, Linux, móvil, ventanas independientes y combinaciones arbitrarias de temas/complementos no están verificados. La publicación en GitHub, la revisión del directorio y las pruebas nativas son estados distintos: consulta [TEST-REPORT.md](TEST-REPORT.md) para la versión y el entorno realmente comprobados.
 
 ## Instalar y actualizar
 
@@ -41,6 +33,36 @@ En **Visual → Math**, pulsa **Fraction**, escribe `3`, avanza con **Tab** y es
 
 El panel aparece debajo del párrafo. Para volver a editar, coloca el cursor dentro de una fórmula y pulsa **∑**, o utiliza **Choose equation to edit**. **Cancel** conserva la nota. Puedes asignar un atajo desde **Settings → Hotkeys**.
 
+## Importar una fórmula
+
+Elige **Import one equation** o pega en el campo visual para preparar la importación. Acepta contenido LaTeX sin envoltura o una única pareja completa de `$…$`, `$$…$$`, `\(...\)` o `\[...\]`. El texto original, el candidato y la intención de mostrarlo en línea o separado se presentan por separado.
+
+Comprueba la vista previa; **Apply and replace equation** sustituye la fórmula completa del borrador. **Cancel import** vuelve sin aplicar. La nota solo cambia con la inserción o el guardado final. Deshacer/Rehacer permite recuperar el borrador anterior.
+
+El código completo con macros no admitidas puede conservarse mediante **Save source**. Conservar código no equivale a admitirlo visualmente ni garantiza su representación en otro programa. No se eliminan comandos desconocidos, comentarios ni fragmentos, ni se reparan paréntesis o se adivina el significado matemático. Documentos, definiciones de macros, texto mezclado, archivos, OCR e importación por lotes quedan fuera del alcance.
+
+Una importación admite hasta **8.192 unidades de código UTF-16** de entrada original, incluidos los delimitadores y los espacios exteriores. La representación visual tiene un límite independiente de **4.096 unidades de código UTF-16** para el contenido de la fórmula. Una fórmula válida más larga conserva todo su código, omite la vista previa visual y requiere aplicar explícitamente solo el código y después usar **Save source** en LaTeX/Hybrid. Se mantiene la validación de sintaxis; esto no equivale a edición visual completa. Al acortarla hasta el límite visual se recupera la edición visual si la notación es compatible. El contenido no se trunca. También se aplican límites de comandos y estructura; estar dentro de ellos no garantiza fluidez. Véanse las mediciones en [TEST-REPORT.md](TEST-REPORT.md).
+
+## Matrices, sistemas, conjuntos y sucesiones
+
+En **Math**, despliega la herramienta necesaria:
+
+- **Matrix editor:** 1–6 filas y columnas, con varios delimitadores y celdas visuales. Vista previa e inserción/sustitución explícitas. Las celdas vacías no se completan solas; rellenarlas con cero es una acción separada.
+- **System of equations:** 2–6 ecuaciones o desigualdades y una llave izquierda automática. No interpreta una función a trozos de dos columnas como un sistema ni calcula sus soluciones.
+- **Sets and sequences:** 19 botones para conjuntos por enumeración o condición, ℕ/ℤ/ℚ/ℝ/ℂ, pertenencia, subconjuntos, unión, intersección y conjunto vacío; términos, llaves, sucesiones finitas y términos aritméticos/geométricos. Introduce las variables y condiciones; no calcula, ordena ni elimina duplicados.
+- **Advanced math templates:** límites, derivadas ordinarias/de segundo orden/parciales, integrales dobles, series infinitas, productos, vectores y gradientes. Insertan notación editable, no peticiones de cálculo.
+- **Símbolos:** seno, coseno, tangente, semejanza ∼, congruencia ≅, ángulo ∠, triángulo △ y ángulo recto editable 90°.
+
+Las matrices y los sistemas usan borradores temporales separados. Vista previa y Cancel no cambian la fórmula principal. Aplicar cambia su borrador; el guardado final actualiza la nota. Las estructuras no admitidas o incompletas se conservan y bloquean el guardado ordinario.
+
+## Modelos geométricos
+
+Abre **Graph → Geometry**. Elige esfera, cilindro, cono, pirámide regular, prisma regular, ortoedro o plano. Las bases regulares admiten 3–12 lados; el radio va del centro a un vértice. Las tres escenas básicas muestran **dos planos**, **recta y plano** o **esfera y plano**, con parámetros ajustables y la línea, circunferencia o punto de tangencia correspondiente.
+
+Arrastra para girar y usa la rueda o botones para ampliar. **Insert graph / Save graph** o **Save view** guardan dimensiones, caras, ángulos y zoom. Reabre el gráfico para editar sus parámetros. Se usa una proyección ortográfica con iguales unidades X/Y/Z; las curvas son aproximaciones poligonales y los parámetros tienen límites.
+
+Son escenas didácticas fijas, no CAD, intersecciones arbitrarias de sólidos, geometría simbólica ni un constructor general de modelos. Se guardan en bloques `vme-plot` y requieren el complemento para renderizarse. Las versiones antiguas no muestran el modo geométrico; esta versión sigue leyendo los formatos anteriores.
+
 ## Gráficas, trigonometría y cálculo
 
 Debajo de una fórmula compatible, pulsa **Graph this equation**: no hace falta volver a escribirla. Prueba `y=x^2`, cambia la fórmula y observa la vista previa. **Insert equation and graph** guarda ambos. Después del guardado son **bloques independientes**: modificar la fórmula guardada no actualiza automáticamente su gráfica. Regenera la gráfica o utiliza **Edit graph**.
@@ -57,11 +79,11 @@ Las herramientas avanzadas **Graph** incluyen:
 
 Son aproximaciones numéricas, **no álgebra simbólica**. No incluyen ecuaciones implícitas generales ni superficies paramétricas. La integración requiere una función continua y finita con límites crecientes; no admite integrales impropias. Las expresiones tienen un máximo de 500 caracteres y los ejes, límites de ±1 000 000. El muestreo puede omitir detalles. Más restricciones en [el README completo](README.md#graphs-and-the-complex-plane).
 
-## Ciencias, idiomas y atajos
+## Ciencias e idiomas
 
 **Chemistry** admite subíndices, cargas, enlaces lineales y reacciones. Para `H2 + O2 -> H2O`, ofrece `2H2 + O2 -> 2H2O`; **Insert as written** permite conservar el original sin equilibrar. La comprobación no demuestra viabilidad química. **Physics** aporta vectores, letras griegas y plantillas. **Units** convierte unidades predefinidas sin conexión: `1 in = 2.54 cm`. **Elements** incluye 118 elementos; pasa el cursor o enfócalos para consultar masa y configuración electrónica.
 
-La interfaz incluye **English, 简体中文 y Español**. **Usar el idioma de Obsidian** sigue su idioma; los no admitidos usan inglés. En **My formula shortcuts**, guarda palabras de 3–24 letras/números ASCII, comenzando por letra; hasta 50 por bóveda. Se expanden en el campo visual de Visual/Hybrid, no en texto ordinario ni código LaTeX.
+La interfaz incluye **English, 简体中文 y Español**. **Usar el idioma de Obsidian** elige una de estas traducciones; los idiomas no admitidos usan inglés. Cambiar el idioma no traduce ni modifica las fórmulas. En 1.0.0 no se crean ni expanden palabras clave de fórmulas; los datos antiguos no se utilizan ni se borran. Conserva `data.json` al actualizar. Los borradores temporales deben guardarse antes de reiniciar o desactivar el complemento.
 
 ## Privacidad, licencia y contacto
 

@@ -1,22 +1,44 @@
 import type { PlotSpec } from './plot-engine';
+import type { GeometryModel } from './geometry-types';
 import { validateGraphSpec } from './graph-render';
 import { formatMath, isMathInsertionAllowed, type MathRange } from './math-ranges';
 import { DocumentChangedError, planWrite, type WriteTarget } from './write-plan';
 
 export interface PlotBlock { from: number; to: number; source: string; spec: PlotSpec }
 const FIELDS = ['expression', 'xMin', 'xMax', 'yMin', 'yMax'] as const;
-const EXTRA_FIELDS = ['thetaMin', 'thetaMax', 'calculus', 'integralMin', 'integralMax', 'zMin', 'zMax', 'azimuth', 'elevation'] as const;
+const EXTRA_FIELDS = ['thetaMin', 'thetaMax', 'calculus', 'integralMin', 'integralMax', 'zMin', 'zMax', 'azimuth', 'elevation', 'geometryZoom'] as const;
+const GEOMETRY_FIELDS = ['shape', 'radius', 'width', 'depth', 'height', 'sides', 'angle', 'offset', 'faces'] as const;
+const GEOMETRY_SHAPES = ['sphere', 'cylinder', 'cone', 'pyramid', 'prism', 'cuboid', 'plane', 'planes', 'line-plane', 'sphere-plane'] as const;
+
+function parseGeometryModel(value: unknown): GeometryModel {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Invalid geometry settings.');
+  const model = value as Record<string, unknown>;
+  if (Object.keys(model).some(key => !GEOMETRY_FIELDS.includes(key as typeof GEOMETRY_FIELDS[number]))
+    || typeof model.shape !== 'string' || !GEOMETRY_SHAPES.includes(model.shape as typeof GEOMETRY_SHAPES[number])
+    || (model.faces !== undefined && typeof model.faces !== 'boolean')
+    || GEOMETRY_FIELDS.slice(1, -1).some(key => model[key] !== undefined && (typeof model[key] !== 'number' || !Number.isFinite(model[key])))) {
+    throw new Error('Invalid geometry settings.');
+  }
+  // Return only owned, explicitly supported fields. Shape-specific dimensions and
+  // bounds are checked by the renderer, before any graph can be edited or saved.
+  return Object.fromEntries(GEOMETRY_FIELDS.filter(key => model[key] !== undefined).map(key => [key, model[key]])) as unknown as GeometryModel;
+}
 
 export function parsePlotSpec(source: string): PlotSpec {
   if (source.length > 4096) throw new Error('Graph settings are too long.');
   const data: unknown = JSON.parse(source);
   if (!data || typeof data !== 'object' || Array.isArray(data)) throw new Error('Invalid graph settings.');
   const record = data as Record<string, unknown>;
-  if (record.version !== 1 || Object.keys(record).some(key => key !== 'version' && key !== 'mode' && ![...FIELDS, ...EXTRA_FIELDS].includes(key as typeof FIELDS[number]))) throw new Error('Unsupported graph settings version.');
-  if (record.mode !== undefined && (typeof record.mode !== 'string' || !['function', 'complex', 'polar', 'surface'].includes(record.mode))) throw new Error('Unsupported graph mode.');
+  if (record.version !== 1 || Object.keys(record).some(key => key !== 'version' && key !== 'mode' && key !== 'geometry' && ![...FIELDS, ...EXTRA_FIELDS].includes(key as typeof FIELDS[number]))) throw new Error('Unsupported graph settings version.');
+  if (record.mode !== undefined && (typeof record.mode !== 'string' || !['function', 'complex', 'polar', 'surface', 'geometry'].includes(record.mode))) throw new Error('Unsupported graph mode.');
   if (typeof record.expression !== 'string' || !FIELDS.slice(1).every(key => typeof record[key] === 'number' && Number.isFinite(record[key]))) throw new Error('Invalid graph settings.');
   const spec = Object.fromEntries(FIELDS.map(key => [key, record[key]])) as unknown as PlotSpec;
   if (record.mode !== undefined) spec.mode = record.mode as PlotSpec['mode'];
+  if (spec.mode === 'geometry' && record.geometry === undefined) throw new Error('Missing geometry settings.');
+  if (record.geometry !== undefined) {
+    if (spec.mode !== 'geometry') throw new Error('Geometry settings do not match this graph type.');
+    spec.geometry = parseGeometryModel(record.geometry);
+  }
   for (const key of EXTRA_FIELDS) {
     if (record[key] === undefined) continue;
     if (key === 'calculus') {
@@ -27,7 +49,7 @@ export function parsePlotSpec(source: string): PlotSpec {
       spec[key] = record[key];
     }
   }
-  const allowed = spec.mode === 'surface' ? ['zMin', 'zMax', 'azimuth', 'elevation']
+  const allowed = spec.mode === 'geometry' ? ['azimuth', 'elevation', 'geometryZoom'] : spec.mode === 'surface' ? ['zMin', 'zMax', 'azimuth', 'elevation']
     : spec.mode === 'polar' ? ['thetaMin', 'thetaMax'] : spec.mode === 'complex' ? [] : ['calculus', 'integralMin', 'integralMax'];
   if (EXTRA_FIELDS.some(key => record[key] !== undefined && !allowed.includes(key))) throw new Error('Graph settings do not match this graph type.');
   const validated = validateGraphSpec(spec);
@@ -52,7 +74,9 @@ export function findPlotBlocks(markdown: string): PlotBlock[] {
     closing.lastIndex = contentFrom;
     const end = closing.exec(markdown);
     if (!end) continue;
-    const to = end.index + end[0].length;
+    // A block excludes its following line ending for both LF and CRLF. Retaining
+    // a trailing CR in the replacement range would silently convert CRLF to LF.
+    const to = end.index + end[0].replace(/\r$/, '').length;
     const source = markdown.slice(contentFrom, end.index).replace(/\r?\n$/, '');
     // Mask this candidate alone, retaining other fences, YAML and comments.
     const masked = markdown.slice(0, from) + markdown.slice(from, to).replace(/[^\r\n]/g, 'x') + markdown.slice(to);

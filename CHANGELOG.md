@@ -2,6 +2,19 @@
 
 This file records version changes. Builds before 0.6.2 were local MVP releases; 0.6.2 prepares the first public desktop beta. Publication status is shown on GitHub Releases. Neither a local package nor a public GitHub release implies Obsidian community-directory approval.
 
+## 1.0.0 — 2026-10-31 · Desktop release
+
+- Add a single-equation import review with exact original-input retention, conservative recognition of one complete outer math wrapper, separate candidate/preview, explicit apply/cancel and draft Undo/Redo. Invalid or unsupported input is not silently shortened or repaired; unknown-source preservation remains distinct from visual support.
+- Separate the 8,192 UTF-16 code unit original-input limit from a 4,096 UTF-16 code unit visual-rendering budget. Longer valid formulas retain exact source and syntax validation, skip visual preview and require explicit source-only Apply/Save. Shortening to within the visual budget restores supported visual editing; no source is truncated and budget compliance does not guarantee responsiveness.
+- Add a 1–6 row/column visual matrix editor and a 2–6 row single-column equation-system editor with automatic left brace, row/cell structure buttons, preview, whole insert/replace, cancellation and temporary drafts. Preserve note-write guards and structure/import/save locks.
+- Add nine editable advanced-math templates and 19 set/sequence tools, plus trigonometric, similarity, congruence, angle, triangle and editable 90° notation. These format notation without solving, evaluating or inferring conditions.
+- Add seven adjustable geometry models: sphere, cylinder, cone, regular pyramid, regular prism, cuboid and plane. Add three bounded spatial scenes: two planes, line–plane and sphere–plane, with supported intersection lines/circles or tangent points.
+- Store geometry dimensions, face visibility, rotation and zoom in compatible `vme-plot` blocks; retain existing graph formats. New geometry blocks require this version to render. Views change only when explicitly saved.
+- Extend English, Simplified Chinese and Spanish controls, validation and accessibility names. Retain temporary structure drafts through in-note viewport remounts and focus the editable row/cell when resuming a structure draft.
+- Remove custom formula keyword creation/expansion to simplify note taking. Keep already inserted formulas and existing settings; old keyword data is unused and is not actively deleted. Draft Undo/Redo and temporary recovery remain, without a persistent formula library/history.
+
+Requires Obsidian 1.14.4 or later in the desktop main window. Import budgets are not a guarantee of responsiveness for every complex expression. No general solver, matrix/set evaluation, arbitrary solid intersections, file/OCR/batch import or runtime network service is included. See [TEST-REPORT.md](TEST-REPORT.md) for exact checks, performance limits, untested platforms and separate release/review status.
+
 ## 0.8.2 — 2026-10-18 · Display metadata
 
 - Use **Visual Math / Oliver** consistently for the installed plugin and public developer bylines. The About dialog reads the display name and author from the manifest.

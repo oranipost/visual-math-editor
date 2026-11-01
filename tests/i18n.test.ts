@@ -40,7 +40,6 @@ test('Spanish covers every fixed English UI key, including action and error mess
   }
   assert.equal(translateUiText('保存修改', 'es'), 'Guardar cambios');
   assert.equal(translateUiText('绘制此公式', 'es'), 'Graficar esta ecuación');
-  assert.equal(translateUiText('我的公式快捷词', 'es'), 'Mis atajos de fórmulas');
 });
 
 test('Spanish science presets and conversion choices translate labels without changing symbols', () => {

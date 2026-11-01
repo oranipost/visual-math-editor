@@ -4,7 +4,6 @@ import { mountEditor, type EditorDraft } from "./editor-ui";
 import { resolveLanguage, translateUiText, type Language } from "./i18n";
 import type { PlotSpec } from "./plot-engine";
 import { createHtml } from "./dom";
-import type { FormulaShortcuts } from "./shortcuts";
 
 export type InlineDraft = EditorDraft;
 export interface InlineSession {
@@ -14,8 +13,6 @@ export interface InlineSession {
   graphOnly?: boolean;
   language: Language;
   systemLanguage?: string;
-  shortcuts?: FormulaShortcuts;
-  onShortcutsChange?: (shortcuts: FormulaShortcuts, baseline: FormulaShortcuts) => FormulaShortcuts | void | Promise<FormulaShortcuts | void>;
   onLanguageChange: (language: Language) => void | Promise<void>;
   onSave: (latex: string, display: boolean) => void;
   onSaveGraph: (spec: PlotSpec, latex: string, display: boolean) => void;
@@ -50,13 +47,12 @@ class EquationWidget extends WidgetType {
         initialMode: this.session.draft.mode,
         scienceDraft: this.session.draft.science,
         plotDraft: this.session.draft.plot,
+        formulaImportDraft: this.session.draft.formulaImport, matrixDraft: this.session.draft.matrix, systemDraft: this.session.draft.system,
         graphOnly: this.session.graphOnly,
         compact: true,
         editing: this.session.editing,
         language: this.session.language,
         systemLanguage: this.session.systemLanguage,
-        shortcuts: this.session.shortcuts,
-        onShortcutsChange: this.session.onShortcutsChange,
         onLanguageChange: language => {
           this.session.language = language;
           updateLabel();
@@ -118,12 +114,25 @@ export function focusInlineEditor(view: EditorView): void {
     const panel = view.dom.querySelector<HTMLElement>('[data-testid="inline-equation-editor"]');
     if (!panel?.isConnected) return;
     panel.scrollIntoView({ block: "center", inline: "nearest" });
+    const importPanel = panel.querySelector<HTMLElement>('[data-testid="formula-import-panel"]');
+    if (importPanel && !importPanel.hidden) {
+      importPanel.querySelector<HTMLTextAreaElement>('[data-testid="import-original"]')?.focus({ preventScroll: true });
+      return;
+    }
+    for (const [panelId, fieldPrefix] of [['system-panel', 'system-line-'], ['matrix-panel', 'matrix-cell-']] as const) {
+      const structurePanel = panel.querySelector<HTMLElement>(`[data-testid="${panelId}"]`);
+      if (structurePanel && !structurePanel.hidden) {
+        structurePanel.querySelector<HTMLElement>(`math-field[data-testid^="${fieldPrefix}"]`)?.focus({ preventScroll: true });
+        return;
+      }
+    }
     const source = panel.querySelector<HTMLTextAreaElement>('[data-testid="latex-source"]');
     const field = panel.querySelector<HTMLElement>('[data-testid="equation-field"]');
     const mode = panel.querySelector<HTMLElement>('[data-testid="visual-math-editor"]')?.dataset.mode;
     if (panel.querySelector<HTMLElement>('[data-testid="visual-math-editor"]')?.dataset.subject === 'graph') {
-      const complex = panel.querySelector<HTMLTextAreaElement>('[data-testid="complex-points"]');
-      (complex && !complex.hidden ? complex : panel.querySelector<HTMLInputElement>('[data-testid="plot-expression"]'))?.focus({ preventScroll: true }); return;
+      const kind = panel.querySelector<HTMLSelectElement>('[data-testid="plot-kind"]')?.value;
+      const focusId = kind === 'geometry' ? 'geometry-shape' : kind === 'complex' ? 'complex-points' : 'plot-expression';
+      panel.querySelector<HTMLElement>(`[data-testid="${focusId}"]`)?.focus({ preventScroll: true }); return;
     }
     if (mode === "latex" || field?.hidden) source?.focus({ preventScroll: true });
     else field?.focus({ preventScroll: true });

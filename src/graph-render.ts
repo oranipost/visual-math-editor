@@ -2,9 +2,13 @@ import { createPlot, validatePlotSpec, type PlotSpec } from './plot-engine';
 import { createComplexPlot, validateComplexSpec, type ComplexPlaneSpec } from './complex-plane';
 import { createPolarPlot, validatePolarSpec, createCalculusPlot, validateCalculusSpec } from './advanced-plots';
 import { createSurfacePlot, validateSurfaceSpec } from './surface-plot';
+import { createGeometryPlot, validateGeometrySpec } from './geometry-models';
+import { createSpatialRelationPlot } from './spatial-relations';
 
 export function validateGraphSpec(spec: PlotSpec) {
-  if (!spec || (spec.mode !== undefined && !['function','complex','polar','surface'].includes(spec.mode))) return { ok: false as const, error: 'Unsupported graph mode.' };
+  if (!spec || (spec.mode !== undefined && !['function','complex','polar','surface','geometry'].includes(spec.mode))) return { ok: false as const, error: 'Unsupported graph mode.' };
+  if (spec.mode === 'geometry') return validateGeometrySpec(spec);
+  if (spec.geometry !== undefined || spec.geometryZoom !== undefined) return { ok: false as const, error: 'Geometry settings do not match this graph type.' };
   if (spec?.mode === 'complex') return validateComplexSpec(spec as ComplexPlaneSpec);
   if (spec?.mode === 'polar') return validatePolarSpec(spec);
   if (spec?.mode === 'surface') return validateSurfaceSpec(spec);
@@ -18,6 +22,8 @@ export function validateGraphSpec(spec: PlotSpec) {
 export function createGraph(spec: PlotSpec) {
   const valid = validateGraphSpec(spec);
   if (!valid.ok) return valid;
+  if (spec?.mode === 'geometry') return ['planes', 'line-plane', 'sphere-plane'].includes(valid.spec.geometry?.shape ?? '')
+    ? createSpatialRelationPlot(valid.spec) : createGeometryPlot(valid.spec);
   if (spec?.mode === 'complex') return createComplexPlot(spec as ComplexPlaneSpec);
   if (spec?.mode === 'polar') return createPolarPlot(spec);
   if (spec?.mode === 'surface') return createSurfacePlot(spec);

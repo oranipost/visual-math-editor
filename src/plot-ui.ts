@@ -1,11 +1,21 @@
 import { DEFAULT_PLOT_SPEC, type PlotSpec } from './plot-engine';
 import { createGraph } from './graph-render';
-import { DEFAULT_SURFACE_SPEC, mountSurfaceInteraction, zoomSurfaceBounds, rotateSurfaceCamera } from './surface-plot';
+import { DEFAULT_SURFACE_SPEC, zoomSurfaceBounds, rotateSurfaceCamera } from './surface-plot';
+import { DEFAULT_GEOMETRY_SPEC, zoomGeometryView, rotateGeometryCamera } from './geometry-models';
+import type { GeometryModel, GeometryShape } from './geometry-types';
+import type { SpatialAnalysis } from './spatial-relations';
+import { mountOrbitInteraction } from './orbit-interaction';
 import { DEFAULT_COMPLEX_SPEC, fitComplexPoints, formatComplex, parseComplexNumbers } from './complex-plane';
 import { mountPlotInteraction, validPlotBounds, zoomPlotBounds, type PlotBounds } from './plot-interaction';
 import { controlIcon } from './ui-icons';
 import { createHtml } from './dom';
 
+/** Temporary form values only; no formula library or persistent history. */
+export interface GeometryViewDraft {
+  shape: GeometryShape;
+  radius?: string; width?: string; depth?: string; height?: string; sides?: string; angle?: string; offset?: string;
+  faces?: boolean;
+}
 export interface PlotViewDraft {
   expression: string;
   xMin: string;
@@ -15,6 +25,8 @@ export interface PlotViewDraft {
   thetaMin?: string; thetaMax?: string; integralMin?: string; integralMax?: string;
   zMin?: string; zMax?: string; azimuth?: string; elevation?: string;
   calculus?: PlotSpec['calculus'];
+  geometry?: GeometryViewDraft;
+  geometryZoom?: string;
   previewed?: boolean;
   rangeOpen?: boolean;
   home?: PlotBounds & Partial<PlotSpec>;
@@ -25,6 +37,7 @@ export interface PlotDraft extends PlotViewDraft {
   complexDraft?: PlotViewDraft;
   polarDraft?: PlotViewDraft;
   surfaceDraft?: PlotViewDraft;
+  geometryDraft?: PlotViewDraft;
   /** The graph lives below, and derives its expression from, the equation editor. */
   equationLinked?: boolean;
 }
@@ -39,11 +52,17 @@ interface PlotOptions {
 }
 
 type PlotMode = NonNullable<PlotSpec['mode']>;
+const GEOMETRY_VALUES = { radius: '1', width: '2', depth: '2', height: '2', sides: '4', angle: '45', offset: '0' } as const;
+type GeometryInputKey = keyof typeof GEOMETRY_VALUES;
 const EXTRA_KEYS = ['thetaMin', 'thetaMax', 'integralMin', 'integralMax', 'zMin', 'zMax', 'azimuth', 'elevation'] as const;
 type ExtraKey = typeof EXTRA_KEYS[number];
 const EXTRA_DEFAULTS: Record<ExtraKey, number> = { thetaMin: 0, thetaMax: 2 * Math.PI, integralMin: 0, integralMax: 1, zMin: -2, zMax: 2, azimuth: 45, elevation: 30 };
+/** createGraph supplies analysis only for these validated teaching scenes. */
+function hasSpatialAnalysis(result: { spec: PlotSpec }): result is { spec: PlotSpec; analysis: SpatialAnalysis } {
+  return result.spec.mode === 'geometry' && ['planes', 'line-plane', 'sphere-plane'].includes(result.spec.geometry?.shape ?? '') && 'analysis' in result;
+}
 function modeDefaults(mode: PlotMode): PlotSpec {
-  return mode === 'complex' ? DEFAULT_COMPLEX_SPEC : mode === 'surface' ? DEFAULT_SURFACE_SPEC
+  return mode === 'geometry' ? DEFAULT_GEOMETRY_SPEC : mode === 'complex' ? DEFAULT_COMPLEX_SPEC : mode === 'surface' ? DEFAULT_SURFACE_SPEC
     : mode === 'polar' ? { mode, expression: '2*sin(3*theta)', xMin: -3, xMax: 3, yMin: -3, yMax: 3, thetaMin: 0, thetaMax: 2*Math.PI } : DEFAULT_PLOT_SPEC;
 }
 
@@ -68,6 +87,18 @@ function button(action: string, chinese: string, english: string, callback: () =
 }
 
 const PLOT_ERROR_ZH: Readonly<Record<string, string>> = {
+  'Use a supported spatial-relation scene and its applicable settings.': '请选择受支持的空间关系及对应参数。',
+  'Use a finite signed offset between -4 and 4.': '偏移须为 −4 至 4 之间的有效数值。',
+  'Use a finite sphere radius between 0.1 and 4.': '此场景的球体半径须为 0.1 至 4 之间的有效数值。',
+  'Use a finite angle between 0 and 90 degrees.': '夹角须为 0 至 90 度之间的有效数值。',
+  'The spatial-relation scene could not be generated.': '暂时无法生成空间关系场景，请检查参数后重试。',
+  'Choose a supported geometric solid or plane.': '请选择受支持的几何体或平面。',
+  'Use only supported geometry settings and dimensions.': '请使用受支持的几何设置和尺寸。',
+  'Lengths must be finite numbers between 0.001 and 1000.': '尺寸须为 0.001 至 1000 之间的有效数值。',
+  'Use 3 to 12 whole sides for a regular pyramid or prism.': '正棱锥或正棱柱的底面边数须为 3 至 12 的整数。',
+  'Use a finite camera angle, elevation from 10 to 80 degrees, and zoom from 0.25 to 4.': '请使用有效视角；俯仰角为 10 至 80 度，缩放为 0.25 至 4。',
+  'Use an empty geometry expression and valid X/Y bounds.': '几何模型不使用函数表达式；请重新选择模型。',
+  'Dimension ratios above 1000:1 are not supported.': '暂不支持超过 1000:1 的尺寸比例。',
   'Numbers must be finite.': '数字超出支持范围，请缩小数值。',
   'Unsupported notation. Use numbers, x, arithmetic, and supported functions.': '暂不支持此写法。请使用数字、x、算术运算及支持的函数。',
   'The expression is too complex. Simplify it before plotting.': '函数过于复杂，请简化后再绘图。',
@@ -143,23 +174,86 @@ export function mountPlotTools(host: HTMLElement, options: PlotOptions = {}): {
   let equationLinked = Boolean(draft?.equationLinked && (options.getCurrentExpression || options.getCurrentGraph));
   let linkedExpression: string | undefined;
   let mode: PlotMode = draft?.mode ?? 'function';
-  const caches: Partial<Record<PlotMode, PlotViewDraft>> = { function: draft?.functionDraft, complex: draft?.complexDraft, polar: draft?.polarDraft, surface: draft?.surfaceDraft };
+  const caches: Partial<Record<PlotMode, PlotViewDraft>> = { function: draft?.functionDraft, complex: draft?.complexDraft, polar: draft?.polarDraft, surface: draft?.surfaceDraft, geometry: draft?.geometryDraft };
   const initial = draft ?? { ...DEFAULT_PLOT_SPEC, xMin: '-10', xMax: '10', yMin: '-10', yMax: '10' };
-  let home: PlotBounds & Partial<PlotSpec> = draft?.home ?? { ...modeDefaults(mode), ...Object.fromEntries(EXTRA_KEYS.map(key => [key, draft?.[key] !== undefined ? Number(draft[key]) : EXTRA_DEFAULTS[key]])), xMin: Number(initial.xMin), xMax: Number(initial.xMax), yMin: Number(initial.yMin), yMax: Number(initial.yMax) };
+  let home: PlotBounds & Partial<PlotSpec> = draft?.home ?? { ...modeDefaults(mode), ...Object.fromEntries(EXTRA_KEYS.map(key => [key, draft?.[key] !== undefined ? Number(draft[key]) : EXTRA_DEFAULTS[key]])), ...(mode === 'geometry' ? { geometryZoom: Number(draft?.geometryZoom ?? 1) } : {}), xMin: Number(initial.xMin), xMax: Number(initial.xMax), yMin: Number(initial.yMin), yMax: Number(initial.yMax) };
   if (!validPlotBounds(home)) home = mode === 'complex' ? { ...DEFAULT_COMPLEX_SPEC } : { ...DEFAULT_PLOT_SPEC };
   let interaction: ReturnType<typeof mountPlotInteraction> | undefined;
-  let surfaceInteraction: ReturnType<typeof mountSurfaceInteraction> | undefined;
+  let surfaceInteraction: ReturnType<typeof mountOrbitInteraction> | undefined;
 
   const kindLabel = el('label', 'vme-plot-kind-label');
   const kindCaption = el('span');
   text(kindCaption, '图像类型', 'Graph type');
   const kind = el('select', 'vme-conversion-select');
   kind.dataset.testid = 'plot-kind';
-  for (const [value, zh, en] of [['function', '函数图像', 'Function graph'], ['complex', '复平面', 'Complex plane'], ['polar', '极坐标', 'Polar graph'], ['surface', '三维曲面', '3D surface']]) {
+  for (const [value, zh, en] of [['function', '函数图像', 'Function graph'], ['complex', '复平面', 'Complex plane'], ['polar', '极坐标', 'Polar graph'], ['surface', '三维曲面', '3D surface'], ['geometry', '几何模型', 'Geometry models']]) {
     const option = el('option'); option.value = value; text(option, zh, en); kind.append(option);
   }
   kind.value = mode;
   kindLabel.append(kindCaption, kind);
+
+  const geometryControls = el('div', 'vme-geometry-controls');
+  geometryControls.dataset.testid = 'geometry-controls';
+  const shapeLabel = el('label', 'vme-plot-kind-label');
+  const shapeCaption = el('span'); text(shapeCaption, '形状', 'Shape');
+  const shape = el('select', 'vme-conversion-select'); shape.dataset.testid = 'geometry-shape';
+  for (const [value, zh, en] of [
+    ['sphere', '球体', 'Sphere'], ['cylinder', '圆柱体', 'Cylinder'], ['cone', '圆锥体', 'Cone'],
+    ['pyramid', '正棱锥', 'Regular pyramid'], ['prism', '正棱柱', 'Regular prism'],
+    ['cuboid', '长方体', 'Cuboid'], ['plane', '平面片', 'Plane'],
+    ['planes', '两个平面', 'Two planes'], ['line-plane', '直线与平面', 'Line and plane'], ['sphere-plane', '球体与平面', 'Sphere and plane'],
+  ] as const) {
+    const option = el('option'); option.value = value; text(option, zh, en); shape.append(option);
+  }
+  const initialGeometry = (mode === 'geometry' ? draft?.geometry : draft?.geometryDraft?.geometry);
+  shape.value = initialGeometry?.shape ?? 'sphere';
+  shapeLabel.append(shapeCaption, shape);
+  const geometryGrid = el('div', 'vme-plot-range-grid vme-geometry-dimensions');
+  const geometryInputs = {} as Record<GeometryInputKey, HTMLInputElement>;
+  const geometryWrappers = {} as Record<keyof typeof geometryInputs, HTMLLabelElement>;
+  const geometryCaptions = {} as Record<keyof typeof geometryInputs, HTMLElement>;
+  for (const [key, zh, en, fallback] of [
+    ['radius', '半径', 'Radius', '1'], ['width', '宽度', 'Width', '2'], ['depth', '深度', 'Depth', '2'],
+    ['height', '高度', 'Height', '2'], ['sides', '底面边数', 'Base sides', '4'],
+    ['angle', '夹角（度）', 'Angle (degrees)', '45'], ['offset', '有符号偏移', 'Signed offset', '0'],
+  ] as const) {
+    const control = el('label', 'vme-plot-range-control');
+    const caption = el('span'); text(caption, zh, en);
+    const input = el('input', 'vme-plot-range-input'); input.type = 'text';
+    input.inputMode = key === 'sides' ? 'numeric' : 'decimal'; input.spellcheck = false; input.autocomplete = 'off';
+    input.dataset.testid = `geometry-${key}`; input.value = initialGeometry?.[key] ?? fallback;
+    geometryInputs[key] = input; geometryWrappers[key] = control; geometryCaptions[key] = caption;
+    control.append(caption, input); geometryGrid.append(control);
+  }
+  const facesLabel = el('label', 'vme-plot-kind-label');
+  const facesCaption = el('span'); text(facesCaption, '显示方式', 'Appearance');
+  const faces = el('select', 'vme-conversion-select'); faces.dataset.testid = 'geometry-faces';
+  for (const [value, zh, en] of [['faces', '面与边', 'Faces and edges'], ['wireframe', '线框', 'Wireframe']]) {
+    const option = el('option'); option.value = value; text(option, zh, en); faces.append(option);
+  }
+  faces.value = initialGeometry?.faces === false ? 'wireframe' : 'faces';
+  facesLabel.append(facesCaption, faces);
+  const geometryHint = el('p', 'vme-plot-note');
+  text(geometryHint, '所有长度采用相同单位；底面半径指中心到顶点的距离。平面为有限的 XY 平面片。',
+    'Use the same unit for all lengths. Base radius means center to vertex. A plane is a finite patch in XY.');
+  geometryControls.append(shapeLabel, geometryGrid, facesLabel, geometryHint);
+  let geometryZoom = draft?.geometryZoom ?? '1';
+  // Only session form values are cached; this is not a stored model library.
+  const geometryShapeInputs = new Map<GeometryShape, Partial<Record<GeometryInputKey, string>>>();
+  let previousShape = shape.value as GeometryShape;
+  shape.addEventListener('change', () => {
+    geometryShapeInputs.set(previousShape, Object.fromEntries(Object.entries(geometryInputs).map(([key, input]) => [key, input.value])));
+    const selected = shape.value as GeometryShape, cached = geometryShapeInputs.get(selected);
+    if (cached) for (const key of Object.keys(geometryInputs) as GeometryInputKey[]) geometryInputs[key].value = cached[key] ?? GEOMETRY_VALUES[key];
+    else if (selected === 'planes' || selected === 'line-plane' || selected === 'sphere-plane') {
+      geometryInputs.angle.value = selected === 'line-plane' ? '30' : '45';
+      geometryInputs.offset.value = selected === 'sphere-plane' ? '0.5' : selected === 'line-plane' ? '1' : '0';
+      if (selected === 'sphere-plane') geometryInputs.radius.value = '1';
+    }
+    previousShape = selected;
+    updateGeometryUi(); invalidate(); previewGraph();
+  });
+  faces.addEventListener('change', () => { invalidate(); previewGraph(); });
 
   const label = el('label', 'vme-science-input-label');
   text(label, '函数 y = f(x)', 'Function y = f(x)');
@@ -311,6 +405,10 @@ export function mountPlotTools(host: HTMLElement, options: PlotOptions = {}): {
   status.setAttribute('role', 'status');
   status.setAttribute('aria-live', 'polite');
   text(status, '填写函数后点击预览图像。', 'Enter a function, then choose Preview graph.');
+  const relationStatus = el('p', 'vme-plot-note');
+  relationStatus.dataset.testid = 'geometry-relation-status'; relationStatus.hidden = true;
+  const relationWarnings = el('div', 'vme-geometry-warnings');
+  relationWarnings.dataset.testid = 'geometry-relation-warnings'; relationWarnings.hidden = true;
   const actions = el('div', 'vme-science-actions vme-plot-actions');
   const previewButton = button('plot-preview', '预览图像', 'Preview graph', previewGraph);
   const insertButton = button('plot-insert', options.editing ? '保存图像' : '插入图像', options.editing ? 'Save graph' : 'Insert graph', () => { void insertGraph(); });
@@ -319,9 +417,9 @@ export function mountPlotTools(host: HTMLElement, options: PlotOptions = {}): {
   insertButton.classList.add('vme-science-primary');
   actions.append(previewButton, insertButton);
   const navigation = el('div', 'vme-science-actions vme-plot-navigation');
-  const zoomIn = button('plot-zoom-in', '放大', 'Zoom in', () => { if (lastPlot) { interaction?.setDisabled(true); mode === 'surface' ? applySurface(zoomSurfaceBounds(lastPlot.spec, 0.8)) : applyBounds(zoomPlotBounds(lastPlot.spec, 0.8)); } });
-  const zoomOut = button('plot-zoom-out', '缩小', 'Zoom out', () => { if (lastPlot) { interaction?.setDisabled(true); mode === 'surface' ? applySurface(zoomSurfaceBounds(lastPlot.spec, 1.25)) : applyBounds(zoomPlotBounds(lastPlot.spec, 1.25)); } });
-  const reset = button('plot-reset-view', '重置视图', 'Reset view', () => { interaction?.setDisabled(true); surfaceInteraction?.setDisabled(true); if (mode === 'surface') { for (const key of ['zMin','zMax','azimuth','elevation'] as const) extraInputs[key].value = String(home[key] ?? EXTRA_DEFAULTS[key]); } applyBounds(home); });
+  const zoomIn = button('plot-zoom-in', '放大', 'Zoom in', () => { if (lastPlot) { interaction?.setDisabled(true); mode === 'geometry' ? applyGeometry(zoomGeometryView(lastPlot.spec, 0.8)) : mode === 'surface' ? applySurface(zoomSurfaceBounds(lastPlot.spec, 0.8)) : applyBounds(zoomPlotBounds(lastPlot.spec, 0.8)); } });
+  const zoomOut = button('plot-zoom-out', '缩小', 'Zoom out', () => { if (lastPlot) { interaction?.setDisabled(true); mode === 'geometry' ? applyGeometry(zoomGeometryView(lastPlot.spec, 1.25)) : mode === 'surface' ? applySurface(zoomSurfaceBounds(lastPlot.spec, 1.25)) : applyBounds(zoomPlotBounds(lastPlot.spec, 1.25)); } });
+  const reset = button('plot-reset-view', '重置视图', 'Reset view', () => { interaction?.setDisabled(true); surfaceInteraction?.setDisabled(true); if (mode === 'geometry') { applyGeometry({ ...buildSpec(), azimuth: home.azimuth ?? 45, elevation: home.elevation ?? 30, geometryZoom: home.geometryZoom ?? 1 }); return; } if (mode === 'surface') { for (const key of ['zMin','zMax','azimuth','elevation'] as const) extraInputs[key].value = String(home[key] ?? EXTRA_DEFAULTS[key]); } applyBounds(home); });
   const fit = button('complex-fit', '适应所有点', 'Fit all points', () => {
     if (externalDisabled || inserting) return;
     interaction?.setDisabled(true);
@@ -329,8 +427,8 @@ export function mountPlotTools(host: HTMLElement, options: PlotOptions = {}): {
     if (!parsed.ok) { showError(plotErrorZh(parsed.error), parsed.error); refreshDisabled(); return; }
     setBounds(fitComplexPoints(parsed.points)); previewGraph();
   });
-  const rotateLeft = button('plot-rotate-left', '向左旋转', 'Rotate left', () => { if (lastPlot) applySurface(rotateSurfaceCamera(lastPlot.spec, -15, 0)); });
-  const rotateRight = button('plot-rotate-right', '向右旋转', 'Rotate right', () => { if (lastPlot) applySurface(rotateSurfaceCamera(lastPlot.spec, 15, 0)); });
+  const rotateLeft = button('plot-rotate-left', '向左旋转', 'Rotate left', () => { if (lastPlot) mode === 'geometry' ? applyGeometry(rotateGeometryCamera(lastPlot.spec, -15, 0)) : applySurface(rotateSurfaceCamera(lastPlot.spec, -15, 0)); });
+  const rotateRight = button('plot-rotate-right', '向右旋转', 'Rotate right', () => { if (lastPlot) mode === 'geometry' ? applyGeometry(rotateGeometryCamera(lastPlot.spec, 15, 0)) : applySurface(rotateSurfaceCamera(lastPlot.spec, 15, 0)); });
   navigation.append(zoomIn, zoomOut, reset, fit, rotateLeft, rotateRight);
   zoomIn.prepend(controlIcon('zoom-in')); zoomOut.prepend(controlIcon('zoom-out'));
   reset.prepend(controlIcon('reset')); fit.prepend(controlIcon('fit'));
@@ -346,8 +444,8 @@ export function mountPlotTools(host: HTMLElement, options: PlotOptions = {}): {
   text(previewOnly, '此预览页面可以画图；在 Obsidian 中可将图像插入笔记。',
     'You can preview graphs here. Open the editor in Obsidian to insert a graph into a note.');
   previewOnly.hidden = Boolean(options.onInsertGraph);
-  body.append(linkedHint, kindLabel, label, expression, complexLabel, complexInput, examplesLabel, presets, symbolsLabel, symbols, complexPresets, syntaxHint, calculusLabel, extraGrid, range, actions, status, navigation, gestureHint, preview, pointList, note, previewOnly);
-  const inputs = [expression, complexInput, ...Object.values(rangeInputs), ...Object.values(extraInputs)];
+  body.append(linkedHint, kindLabel, geometryControls, label, expression, complexLabel, complexInput, examplesLabel, presets, symbolsLabel, symbols, complexPresets, syntaxHint, calculusLabel, extraGrid, range, actions, status, relationStatus, relationWarnings, navigation, gestureHint, preview, pointList, note, previewOnly);
+  const inputs = [expression, complexInput, ...Object.values(rangeInputs), ...Object.values(extraInputs), ...Object.values(geometryInputs)];
   for (const input of inputs) {
     input.addEventListener('input', () => { invalidate(); schedulePreview(); });
     input.addEventListener('keydown', (event) => {
@@ -368,6 +466,7 @@ export function mountPlotTools(host: HTMLElement, options: PlotOptions = {}): {
     preview.replaceChildren();
     preview.hidden = true;
     pointList.replaceChildren(); pointList.hidden = true;
+    relationStatus.hidden = relationWarnings.hidden = true;
     status.dataset.state = 'edited';
     text(status, '正在更新预览…也可直接点击插入或保存。', 'Updating preview… You can also insert or save directly.');
     refreshDisabled();
@@ -375,7 +474,7 @@ export function mountPlotTools(host: HTMLElement, options: PlotOptions = {}): {
   function refreshDisabled(): void {
     if (destroyed) return;
     const busy = externalDisabled || inserting;
-    kind.disabled = calculus.disabled = busy;
+    kind.disabled = calculus.disabled = shape.disabled = faces.disabled = busy;
     for (const input of inputs) input.disabled = busy;
     for (const preset of Array.from(root.querySelectorAll<HTMLButtonElement>('.vme-plot-presets button'))) preset.disabled = busy;
     for (const preset of Array.from(complexPresets.querySelectorAll<HTMLButtonElement>('button'))) preset.disabled = busy;
@@ -384,8 +483,8 @@ export function mountPlotTools(host: HTMLElement, options: PlotOptions = {}): {
     zoomIn.disabled = zoomOut.disabled = busy || !lastPlot;
     reset.disabled = fit.disabled = busy;
     rotateLeft.disabled = rotateRight.disabled = busy || !lastPlot;
-    interaction?.setDisabled(busy || !lastPlot || mode === 'surface');
-    surfaceInteraction?.setDisabled(busy || !lastPlot || mode !== 'surface');
+    interaction?.setDisabled(busy || !lastPlot || mode === 'surface' || mode === 'geometry');
+    surfaceInteraction?.setDisabled(busy || !lastPlot || (mode !== 'surface' && mode !== 'geometry'));
     preview.classList.toggle('vme-plot-enabled', !busy && Boolean(lastPlot));
   }
   function showError(chinese: string, english: string): void {
@@ -407,6 +506,13 @@ export function mountPlotTools(host: HTMLElement, options: PlotOptions = {}): {
   }
   function buildSpec(bounds?: PlotBounds): PlotSpec {
     const numeric = (input: HTMLInputElement): number => input.value.trim() ? Number(input.value) : NaN;
+    if (mode === 'geometry') {
+      const decimal = (input: HTMLInputElement): number => /^[+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?$/i.test(input.value.trim()) ? Number(input.value) : NaN;
+      const model: GeometryModel = { shape: shape.value as GeometryShape, faces: faces.value === 'faces' };
+      for (const key of geometryKeys(model.shape)) model[key] = decimal(geometryInputs[key]);
+      return { ...DEFAULT_GEOMETRY_SPEC, geometry: model, expression: '',
+        azimuth: numeric(extraInputs.azimuth), elevation: numeric(extraInputs.elevation), geometryZoom: Number(geometryZoom) };
+    }
     const xy = bounds ?? Object.fromEntries(Object.entries(rangeInputs).map(([key, input]) => [key, numeric(input)])) as unknown as PlotBounds;
     const spec: PlotSpec = { ...(mode === 'function' ? {} : { mode }), expression: mode === 'complex' ? complexInput.value : expression.value, ...xy };
     if (mode === 'polar') { spec.thetaMin = numeric(extraInputs.thetaMin); spec.thetaMax = numeric(extraInputs.thetaMax); }
@@ -416,6 +522,14 @@ export function mountPlotTools(host: HTMLElement, options: PlotOptions = {}): {
       if (calculus.value === 'integral') { spec.integralMin = numeric(extraInputs.integralMin); spec.integralMax = numeric(extraInputs.integralMax); }
     }
     return spec;
+  }
+  function applyGeometry(spec: PlotSpec | undefined, preserveGesture = false): void {
+    if (!spec || destroyed || externalDisabled || inserting) return;
+    if (!preserveGesture) surfaceInteraction?.setDisabled(true);
+    extraInputs.azimuth.value = String(spec.azimuth);
+    extraInputs.elevation.value = String(spec.elevation);
+    geometryZoom = String(spec.geometryZoom);
+    previewGraph(preserveGesture);
   }
   function applySurface(spec: PlotSpec | undefined, preserveGesture = false): void {
     if (!spec || destroyed || externalDisabled || inserting) return;
@@ -429,7 +543,7 @@ export function mountPlotTools(host: HTMLElement, options: PlotOptions = {}): {
     pendingInput = false;
     if (!preserveGesture) { interaction?.setDisabled(true); surfaceInteraction?.setDisabled(true); }
     lastPlot = undefined;
-    pointList.replaceChildren(); pointList.hidden = true;
+    pointList.replaceChildren(); pointList.hidden = true; relationStatus.hidden = relationWarnings.hidden = true; relationWarnings.replaceChildren();
     if (equationLinked && !readCurrentEquation()) return;
     const result = createGraph(buildSpec());
     preview.replaceChildren();
@@ -454,6 +568,32 @@ export function mountPlotTools(host: HTMLElement, options: PlotOptions = {}): {
         const item = el('li'); item.textContent = `${point.label} = ${formatComplex(point)} · Re = ${point.re}, Im = ${point.im}`; pointList.append(item);
       }
     }
+    if (hasSpatialAnalysis(result)) {
+      const labels = {
+        'planes-intersecting': ['两个平面相交', 'The planes intersect'],
+        'planes-parallel': ['两个平面平行', 'The planes are parallel'],
+        'planes-coincident': ['两个平面重合', 'The planes coincide'],
+        'line-intersecting': ['直线与平面相交', 'The line intersects the plane'],
+        'line-parallel': ['直线与平面平行', 'The line is parallel to the plane'],
+        'line-contained': ['直线在平面内', 'The line lies in the plane'],
+        'sphere-circle': ['球体与平面相交成圆', 'The sphere and plane intersect in a circle'],
+        'sphere-tangent': ['球体与平面相切', 'The sphere and plane are tangent'],
+        'sphere-disjoint': ['球体与平面不相交', 'The sphere and plane are disjoint'],
+      } as const;
+      const message = labels[result.analysis.relation];
+      text(relationStatus, message[0], message[1]); relationStatus.hidden = false;
+      if (result.analysis.approximate) {
+        const warning = el('p', 'vme-plot-note');
+        text(warning, '接近临界情况：显示关系为数值近似；输入数值未被吸附或改写。', 'Near a critical case: the displayed relation is a numerical approximation; inputs were not snapped.');
+        relationWarnings.append(warning);
+      }
+      if (result.analysis.outsideView) {
+        const warning = el('p', 'vme-plot-note');
+        text(warning, '交点或交线位于当前画面之外。', 'The intersection lies outside the shown view.');
+        relationWarnings.append(warning);
+      }
+      relationWarnings.hidden = !relationWarnings.childElementCount;
+    }
     status.dataset.state = 'ready';
     text(status, options.editing ? '图像已就绪。点击保存图像更新笔记。' : '图像已就绪。点击插入图像加入笔记。', options.editing ? 'The graph is ready. Choose Save graph to update the note.' : 'The graph is ready. Choose Insert graph to add it to the note.');
     if (equationLinked) text(status, '图像已就绪。点击插入公式与图像加入笔记。', 'The graph is ready. Choose Insert equation and graph to add both to the note.');
@@ -471,21 +611,52 @@ export function mountPlotTools(host: HTMLElement, options: PlotOptions = {}): {
     setBounds(bounds); previewGraph(true);
   }
   function viewDraft(): PlotViewDraft {
-    return { expression: mode === 'complex' ? complexInput.value : expression.value,
+    return { expression: mode === 'geometry' ? '' : mode === 'complex' ? complexInput.value : expression.value,
       xMin: rangeInputs.xMin.value, xMax: rangeInputs.xMax.value, yMin: rangeInputs.yMin.value, yMax: rangeInputs.yMax.value,
+      geometry: { shape: shape.value as GeometryShape, ...Object.fromEntries(Object.entries(geometryInputs).map(([key, input]) => [key, input.value])), faces: faces.value === 'faces' }, geometryZoom,
       ...Object.fromEntries(EXTRA_KEYS.map(key => [key, extraInputs[key].value])), calculus: calculus.value as PlotSpec['calculus'],
       previewed: Boolean(lastPlot), rangeOpen: range.open, home: { ...home } };
+  }
+  function geometryKeys(selected: GeometryShape): (keyof typeof geometryInputs)[] {
+    if (selected === 'sphere-plane') return ['radius', 'offset'];
+    if (selected === 'planes' || selected === 'line-plane') return ['angle', 'offset'];
+    if (selected === 'sphere') return ['radius'];
+    if (selected === 'cylinder' || selected === 'cone') return ['radius', 'height'];
+    if (selected === 'pyramid' || selected === 'prism') return ['radius', 'height', 'sides'];
+    if (selected === 'cuboid') return ['width', 'depth', 'height'];
+    return ['width', 'depth'];
+  }
+  function updateGeometryUi(): void {
+    const selected = shape.value as GeometryShape;
+    const visible = geometryKeys(selected);
+    for (const key of Object.keys(geometryInputs) as (keyof typeof geometryInputs)[]) geometryWrappers[key].hidden = !visible.includes(key);
+    if (selected === 'planes' || selected === 'line-plane' || selected === 'sphere-plane') {
+      if (selected === 'planes') text(geometryHint, '参考平面为 z=0；调整第二个平面的夹角（0–90°）和法向偏移（−4 至 4）。关系针对无限平面，画面只显示有限平面片。',
+        'The reference plane is z=0. Adjust the second plane’s angle (0–90°) and normal offset (−4 to 4). Relations use infinite planes; displayed patches are finite.');
+      if (selected === 'line-plane') text(geometryHint, '平面固定为 z=0；调整直线夹角（0–90°）和参考点高度（−4 至 4）。关系针对无限直线和平面，画面只显示有限片段。',
+        'The plane is fixed at z=0. Adjust the line’s angle (0–90°) and anchor height (−4 to 4). Relations use an infinite line and plane; only finite segments and patches are shown.');
+      if (selected === 'sphere-plane') text(geometryHint, '球心固定在原点；平面为 z=偏移。半径范围 0.1–4，偏移范围 −4 至 4。关系针对无限平面，画面只显示有限平面片。',
+        'The sphere is centered at the origin; the plane is z=offset. Radius ranges from 0.1–4 and offset from −4 to 4. The relation uses an infinite plane; the displayed patch is finite.');
+    } else text(geometryHint, '所有长度采用相同单位；底面半径指中心到顶点的距离。平面为有限的 XY 平面片。',
+      'Use the same unit for all lengths. Base radius means center to vertex. A plane is a finite patch in XY.');
+    text(geometryCaptions.offset,
+      selected === 'planes' ? '法向偏移' : selected === 'line-plane' ? '直线参考点高度 Z' : selected === 'sphere-plane' ? '平面高度 Z' : '有符号偏移',
+      selected === 'planes' ? 'Normal offset' : selected === 'line-plane' ? 'Line anchor Z' : selected === 'sphere-plane' ? 'Plane Z' : 'Signed offset');
+    text(geometryCaptions.radius, selected === 'pyramid' || selected === 'prism' ? '底面外接圆半径' : '半径', selected === 'pyramid' || selected === 'prism' ? 'Base circumradius' : 'Radius');
   }
   function updateModeUi(): void {
     root.dataset.equationLinked = String(equationLinked);
     kindLabel.hidden = equationLinked;
     linkedHint.hidden = !equationLinked;
-    label.hidden = expression.hidden = presets.hidden = equationLinked || mode === 'complex';
+    label.hidden = expression.hidden = presets.hidden = equationLinked || mode === 'complex' || mode === 'geometry';
+    geometryControls.hidden = mode !== 'geometry';
+    range.hidden = mode === 'geometry';
+    updateGeometryUi();
     complexLabel.hidden = complexInput.hidden = complexPresets.hidden = fit.hidden = mode !== 'complex';
-    syntaxHint.hidden = equationLinked;
-    examplesLabel.hidden = symbolsLabel.hidden = symbols.hidden = equationLinked || mode === 'complex';
+    syntaxHint.hidden = equationLinked || mode === 'geometry';
+    examplesLabel.hidden = symbolsLabel.hidden = symbols.hidden = equationLinked || mode === 'complex' || mode === 'geometry';
     calculusLabel.hidden = mode !== 'function';
-    rotateLeft.hidden = rotateRight.hidden = mode !== 'surface';
+    rotateLeft.hidden = rotateRight.hidden = mode !== 'surface' && mode !== 'geometry';
     for (const key of EXTRA_KEYS) extraWrappers[key].hidden = key.startsWith('theta') ? mode !== 'polar' : key.startsWith('integral') ? mode !== 'function' || calculus.value !== 'integral' : mode !== 'surface';
     for (const id of ['x','y','theta']) { const item = symbols.querySelector<HTMLButtonElement>(`[data-action="plot-symbol-${id}"]`)!; item.hidden = id === 'theta' ? mode !== 'polar' : id === 'y' ? mode !== 'surface' : mode === 'polar'; }
     for (const preset of Array.from(presets.querySelectorAll<HTMLButtonElement>('[data-modes]'))) preset.hidden = !preset.dataset.modes!.split(' ').includes(mode);
@@ -510,6 +681,10 @@ export function mountPlotTools(host: HTMLElement, options: PlotOptions = {}): {
       text(gestureHint, '在曲面内拖动旋转，滚轮缩放；插入或保存才写入笔记。', 'Drag the surface to rotate; scroll to zoom. Insert or save to update the note.');
       text(note, '三维曲面为有界网格数值近似；不支持隐式曲面或符号求解。', '3D surfaces use a bounded numerical mesh. Implicit surfaces and symbolic solving are not supported.');
     } else text(gestureHint, '输入后自动预览；在图内拖动或滚轮缩放。点击插入或保存才写入笔记，也可按 Ctrl+Enter。', 'Preview updates as you type. Drag or scroll inside the graph. Insert or save to update the note; Ctrl+Enter also works.');
+    if (mode === 'geometry') {
+      text(gestureHint, '拖动模型旋转，滚轮缩放；插入或保存后才保留尺寸与视图。', 'Drag the model to rotate; scroll to zoom. Insert or save to keep dimensions and view.');
+      text(note, '几何模型采用等比例正交视图；曲面为多边形近似，仅作几何示意。', 'Geometry models use an equal-scale orthographic view. Curved surfaces are polygonal approximations for geometric illustration.');
+    }
     if (mode === 'function' && calculus.value !== 'none') text(note, '导数和定积分采用数值近似，不是符号计算；间断点附近可能省略曲线。', 'Derivatives and definite integrals are numerical approximations, not symbolic calculations. Curves may be omitted near discontinuities.');
     for (const [key, suffix] of [['xMin','min'],['xMax','max'],['yMin','min'],['yMax','max']] as const) {
       const axis = mode === 'complex' ? key.startsWith('x') ? 'Re' : 'Im' : key.startsWith('x') ? 'X' : 'Y';
@@ -522,6 +697,13 @@ export function mountPlotTools(host: HTMLElement, options: PlotOptions = {}): {
     for (const key of ['xMin','xMax','yMin','yMax'] as const) rangeInputs[key].value = cached?.[key] ?? String(defaults[key]);
     for (const key of EXTRA_KEYS) extraInputs[key].value = cached?.[key] ?? String(defaults[key] ?? EXTRA_DEFAULTS[key]);
     calculus.value = cached?.calculus ?? 'none';
+    if (mode === 'geometry') {
+      const saved = cached?.geometry;
+      shape.value = saved?.shape ?? 'sphere'; faces.value = saved?.faces === false ? 'wireframe' : 'faces';
+      for (const key of Object.keys(geometryInputs) as GeometryInputKey[]) geometryInputs[key].value = saved?.[key] ?? GEOMETRY_VALUES[key];
+      previousShape = shape.value as GeometryShape;
+      geometryZoom = cached?.geometryZoom ?? '1';
+    }
     home = cached?.home ?? { ...defaults }; range.open = cached?.rangeOpen ?? false;
     updateModeUi();
   }
@@ -538,7 +720,7 @@ export function mountPlotTools(host: HTMLElement, options: PlotOptions = {}): {
     getBounds: () => lastPlot?.spec ?? home,
     onChange: bounds => applyBounds(bounds),
   });
-  surfaceInteraction = mountSurfaceInteraction(preview, { getSpec: () => lastPlot?.spec ?? buildSpec(), onChange: spec => applySurface(spec, true) });
+  surfaceInteraction = mountOrbitInteraction(preview, { getSpec: () => lastPlot?.spec ?? buildSpec(), onChange: spec => { if (mode === 'geometry') applyGeometry(spec, true); else applySurface(spec, true); } });
   async function insertGraph(): Promise<void> {
     if (destroyed || externalDisabled || inserting || !options.onInsertGraph) return;
     // Always validate the current fields. An explicit click may arrive before
@@ -636,6 +818,7 @@ export function mountPlotTools(host: HTMLElement, options: PlotOptions = {}): {
       complexDraft: mode === 'complex' ? viewDraft() : caches.complex,
       polarDraft: mode === 'polar' ? viewDraft() : caches.polar,
       surfaceDraft: mode === 'surface' ? viewDraft() : caches.surface,
+      geometryDraft: mode === 'geometry' ? viewDraft() : caches.geometry,
     }),
     setDisabled(value) { externalDisabled = value; if (value) cancelPreview(); refreshDisabled(); },
     setEquationLinked,

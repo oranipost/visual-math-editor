@@ -2,7 +2,7 @@
 
 This plugin runs locally with the permissions of Obsidian. It has no runtime accounts, telemetry or network service. Input parsers, SVG generation and guarded note writes still need careful review; offline operation does not eliminate software defects.
 
-Only the latest public beta release is actively maintained. This is an early desktop MVP, without a guaranteed response time or an independent security audit.
+Only the latest public release is actively maintained. Maintenance focuses on the documented desktop main-window workflows. A stable version number does not imply an independent security audit or defect-free operation; no response time is guaranteed.
 
 ## Reporting a vulnerability
 
@@ -18,4 +18,4 @@ Maintainer: [Oliver / oranipost](https://github.com/oranipost). Public bug repor
 
 疑似安全问题请私下发邮件至 [oranipost@outlook.com](mailto:oranipost@outlook.com)，或使用仓库提供的 **Security → Report a vulnerability**。请提供插件与 Obsidian 版本、操作系统、独立最小示例、重现步骤及预期和实际结果；不要发送私人笔记、完整笔记库、账号凭据或针对他人数据的利用内容。
 
-普通显示或使用问题请通过 [GitHub Issues](https://github.com/oranipost/visual-math-editor/issues) 反馈。开发者主页为 [oranipost](https://github.com/oranipost)；主页没有私信功能，私下联系请用邮箱。仅维护最新公开测试版，目前没有承诺的回复时限或独立安全审计。
+普通显示或使用问题请通过 [GitHub Issues](https://github.com/oranipost/visual-math-editor/issues) 反馈。开发者主页为 [oranipost](https://github.com/oranipost)；主页没有私信功能，私下联系请用邮箱。仅维护最新公开发行版，范围以已记录的桌面主窗口流程为准。正式版本号不表示完成独立安全审计或保证没有缺陷，目前没有承诺的回复时限。

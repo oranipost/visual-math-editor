@@ -1,6 +1,9 @@
+import type { GeometryModel } from './geometry-types';
 /** Bounded, dependency-free numerical graphs. This parser never evaluates JavaScript. */
 export interface PlotSpec {
-  mode?: 'function' | 'complex' | 'polar' | 'surface';
+  mode?: 'function' | 'complex' | 'polar' | 'surface' | 'geometry';
+  geometry?: GeometryModel;
+  geometryZoom?: number;
   thetaMin?: number;
   thetaMax?: number;
   calculus?: 'none' | 'derivative' | 'second-derivative' | 'integral';

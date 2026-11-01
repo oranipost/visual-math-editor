@@ -13,8 +13,8 @@ const hash = (text: string): string => createHash('sha256').update(text).digest(
 const sourceOf = (fence: string): string => fence.slice(fence.indexOf('\n') + 1, fence.lastIndexOf('\n'));
 
 test('old version 1 function graphs reopen and save without changing any Markdown bytes or SHA', () => {
-  const old = '~~~~vme-plot \r\n{ "yMax":5, "xMin":-5, "version":1, "expression":" y = 3 ", "yMin":-5, "xMax":5 }\r\n~~~~~~\r';
-  const current = '中文 🧮 header\r\n\r\n' + old + '\n\r\nUser footer 🚀\r\n';
+  const old = '~~~~vme-plot \r\n{ "yMax":5, "xMin":-5, "version":1, "expression":" y = 3 ", "yMin":-5, "xMax":5 }\r\n~~~~~~';
+  const current = '中文 🧮 header\r\n\r\n' + old + '\r\n\r\nUser footer 🚀\r\n';
   const before = hash(current);
   const blocks = findPlotBlocks(current);
   assert.equal(blocks.length, 1);
@@ -24,6 +24,11 @@ test('old version 1 function graphs reopen and save without changing any Markdow
   assert.equal(after, current);
   assert.equal(hash(after), before);
   assert.equal(after.slice(target.from, target.to), old);
+  // The closing line ending belongs to the surrounding Markdown, not the block.
+  assert.equal(current.slice(target.to), '\r\n\r\nUser footer 🚀\r\n');
+  const changedSpec = { ...functionSpec, expression: '4' };
+  const changed = replace(current, target, planGraphUpdate(current, target, changedSpec));
+  assert.equal(changed, '中文 🧮 header\r\n\r\n' + serializePlot(changedSpec) + '\r\n\r\nUser footer 🚀\r\n');
 });
 
 test('explicit function mode normalizes semantically while untouched source remains byte-identical', () => {

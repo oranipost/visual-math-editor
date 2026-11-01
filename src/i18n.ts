@@ -15,6 +15,235 @@ export function resolveLanguage(language: Language, systemLanguage = 'en'): Reso
 
 /** UI messages only. Formula source, note content and input values are never translated. */
 export const UI_TRANSLATIONS: Readonly<Record<string, string>> = {
+  '公式超过 4096 个 UTF-16 代码单元，暂用 LaTeX 或 Hybrid 源码编辑；原文完整保留，缩短后可恢复可视化。': 'This formula exceeds 4096 UTF-16 code units. Continue in LaTeX or Hybrid source editing; the full source is preserved. Shorten it to restore visual editing.',
+  '可视化预览已暂停，可继续编辑并保存源码。': 'Visual preview is paused. You can continue editing and saving the source.',
+  // Local-only set, sequence and equation-system notation tools.
+  "集合与数列": "Sets and sequences",
+  "选择结构后填写方框；这里只排版，不求解。集合的变量和条件由你填写。": "Choose a structure and fill its boxes. These tools format notation without solving. Enter set variables and conditions yourself.",
+  "集合与常用数集": "Sets and number sets",
+  "集合关系符号": "Set relation symbols",
+  "数列模板": "Sequence templates",
+  "数列默认用 a 表示，所有字符都能直接编辑。等差或等比通项依次填写首项与公差或公比。": "Sequences use a by default; every character is editable. For arithmetic or geometric terms, fill the first term and then the common difference or ratio.",
+  "列举集合": "Set by enumeration",
+  "插入集合大括号，可包裹选中内容": "Insert set braces; wrap selected content if present",
+  "集合描述": "Set-builder notation",
+  "插入集合描述，填写变量和条件": "Insert set-builder notation; fill the variable and condition",
+  "自然数集": "Natural numbers",
+  "插入自然数集符号": "Insert natural-number set symbol",
+  "整数集": "Integers",
+  "插入整数集符号": "Insert integer set symbol",
+  "有理数集": "Rational numbers",
+  "插入有理数集符号": "Insert rational-number set symbol",
+  "实数集": "Real numbers",
+  "插入实数集符号": "Insert real-number set symbol",
+  "复数集": "Complex numbers",
+  "插入复数集符号": "Insert complex-number set symbol",
+  "属于": "Member of",
+  "插入属于符号": "Insert membership symbol",
+  "不属于": "Not a member of",
+  "插入不属于符号": "Insert non-membership symbol",
+  "子集符号 ⊂": "Subset symbol ⊂",
+  "插入子集符号 ⊂": "Insert subset symbol ⊂",
+  "子集或相等": "Subset or equal",
+  "插入子集或相等符号": "Insert subset-or-equal symbol",
+  "并集": "Union",
+  "插入并集符号": "Insert union symbol",
+  "交集": "Intersection",
+  "插入交集符号": "Insert intersection symbol",
+  "空集": "Empty set",
+  "插入空集符号": "Insert empty-set symbol",
+  "数列项": "Sequence term",
+  "插入数列项，填写下标": "Insert a sequence term; fill the index",
+  "数列大括号": "Sequence braces",
+  "插入数列大括号，填写下标": "Insert sequence braces; fill the index",
+  "有限数列": "Finite sequence",
+  "插入有限数列，填写末项下标": "Insert a finite sequence; fill the final index",
+  "等差通项": "Arithmetic term",
+  "插入等差通项，填写首项与公差": "Insert an arithmetic term; fill the first term and common difference",
+  "等比通项": "Geometric term",
+  "插入等比通项，填写首项与公比": "Insert a geometric term; fill the first term and common ratio",
+  "方程组大括号": "System of equations",
+  "逐行填写方程或不等式，自动加左大括号；这里只编辑，不求解。": "Enter an equation or inequality on each row; a left brace is added automatically. This editor does not solve the system.",
+  "方程组行数": "System rows",
+  "载入当前方程组": "Load current system",
+  "减少行数会保留本次隐藏行；取消不会更改原公式。": "Reducing rows keeps hidden rows for this session. Cancel leaves the original equation unchanged.",
+  "未应用的方程组行原文": "Unapplied original system-row input",
+  "方程组预览": "System preview",
+  "预览方程组": "Preview system",
+  "插入方程组": "Insert system",
+  "替换当前方程组": "Replace current system",
+  "取消方程组编辑": "Cancel system editing",
+  "当前公式已更改，请重新载入方程组后再替换。": "The equation changed. Reload the system before replacing it.",
+  "方程组已加入公式草稿；保存后才更新笔记。": "The system was added to the equation draft. Save to update the note.",
+  "方程组未插入；请检查每行内容和当前公式。": "The system was not inserted. Check each row and the current equation.",
+  "输入已修改，请重新预览方程组。": "The input changed. Preview the system again.",
+  "方程行": "Equation row",
+  "这一行暂不支持这段内容；粘贴原文保留在下方，方程组未改动。": "This row does not support that input. The pasted original is preserved below; the system is unchanged.",
+  "请填写每一行；空行不会自动补零或删除。": "Fill every row. Empty rows are neither filled with zero nor removed automatically.",
+  "方程组包含暂不支持的内容；原公式未改动。": "The system contains unsupported input. The original equation is unchanged.",
+  "当前整条公式不是受支持的单列方程组，原公式未改动。": "The whole equation is not a supported single-column system. The original equation is unchanged.",
+
+  "请选择受支持的空间关系及对应参数。": "Use a supported spatial-relation scene and its applicable settings.",
+  "偏移须为 −4 至 4 之间的有效数值。": "Use a finite signed offset between -4 and 4.",
+  "此场景的球体半径须为 0.1 至 4 之间的有效数值。": "Use a finite sphere radius between 0.1 and 4.",
+  "夹角须为 0 至 90 度之间的有效数值。": "Use a finite angle between 0 and 90 degrees.",
+  "暂时无法生成空间关系场景，请检查参数后重试。": "The spatial-relation scene could not be generated.",
+  // Fixed local spatial-relation scenes.
+  "两个平面": "Two planes",
+  "直线与平面": "Line and plane",
+  "球体与平面": "Sphere and plane",
+  "夹角（度）": "Angle (degrees)",
+  "有符号偏移": "Signed offset",
+  "法向偏移": "Normal offset",
+  "直线参考点高度 Z": "Line anchor Z",
+  "平面高度 Z": "Plane Z",
+  "参考平面为 z=0；调整第二个平面的夹角（0–90°）和法向偏移（−4 至 4）。关系针对无限平面，画面只显示有限平面片。": "The reference plane is z=0. Adjust the second plane’s angle (0–90°) and normal offset (−4 to 4). Relations use infinite planes; displayed patches are finite.",
+  "平面固定为 z=0；调整直线夹角（0–90°）和参考点高度（−4 至 4）。关系针对无限直线和平面，画面只显示有限片段。": "The plane is fixed at z=0. Adjust the line’s angle (0–90°) and anchor height (−4 to 4). Relations use an infinite line and plane; only finite segments and patches are shown.",
+  "球心固定在原点；平面为 z=偏移。半径范围 0.1–4，偏移范围 −4 至 4。关系针对无限平面，画面只显示有限平面片。": "The sphere is centered at the origin; the plane is z=offset. Radius ranges from 0.1–4 and offset from −4 to 4. The relation uses an infinite plane; the displayed patch is finite.",
+  "两个平面相交": "The planes intersect",
+  "两个平面平行": "The planes are parallel",
+  "两个平面重合": "The planes coincide",
+  "直线与平面相交": "The line intersects the plane",
+  "直线与平面平行": "The line is parallel to the plane",
+  "直线在平面内": "The line lies in the plane",
+  "球体与平面相交成圆": "The sphere and plane intersect in a circle",
+  "球体与平面相切": "The sphere and plane are tangent",
+  "球体与平面不相交": "The sphere and plane are disjoint",
+  "接近临界情况：显示关系为数值近似；输入数值未被吸附或改写。": "Near a critical case: the displayed relation is a numerical approximation; inputs were not snapped.",
+  "交点或交线位于当前画面之外。": "The intersection lies outside the shown view.",
+  // Offline geometry controls.
+  "几何模型": "Geometry models",
+  "形状": "Shape",
+  "球体": "Sphere",
+  "圆柱体": "Cylinder",
+  "圆锥体": "Cone",
+  "正棱锥": "Regular pyramid",
+  "正棱柱": "Regular prism",
+  "长方体": "Cuboid",
+  "平面片": "Plane",
+  "半径": "Radius",
+  "宽度": "Width",
+  "深度": "Depth",
+  "高度": "Height",
+  "底面边数": "Base sides",
+  "底面外接圆半径": "Base circumradius",
+  "显示方式": "Appearance",
+  "面与边": "Faces and edges",
+  "线框": "Wireframe",
+  "所有长度采用相同单位；底面半径指中心到顶点的距离。平面为有限的 XY 平面片。": "Use the same unit for all lengths. Base radius means center to vertex. A plane is a finite patch in XY.",
+  "拖动模型旋转，滚轮缩放；插入或保存后才保留尺寸与视图。": "Drag the model to rotate; scroll to zoom. Insert or save to keep dimensions and view.",
+  "几何模型采用等比例正交视图；曲面为多边形近似，仅作几何示意。": "Geometry models use an equal-scale orthographic view. Curved surfaces are polygonal approximations for geometric illustration.",
+  "请选择受支持的几何体或平面。": "Choose a supported geometric solid or plane.",
+  "请使用受支持的几何设置和尺寸。": "Use only supported geometry settings and dimensions.",
+  "尺寸须为 0.001 至 1000 之间的有效数值。": "Lengths must be finite numbers between 0.001 and 1000.",
+  "正棱锥或正棱柱的底面边数须为 3 至 12 的整数。": "Use 3 to 12 whole sides for a regular pyramid or prism.",
+  "请使用有效视角；俯仰角为 10 至 80 度，缩放为 0.25 至 4。": "Use a finite camera angle, elevation from 10 to 80 degrees, and zoom from 0.25 to 4.",
+  "几何模型不使用函数表达式；请重新选择模型。": "Use an empty geometry expression and valid X/Y bounds.",
+  "暂不支持超过 1000:1 的尺寸比例。": "Dimension ratios above 1000:1 are not supported.",
+  // Fixed trigonometry and geometry notation tools.
+  "三角函数与几何符号": "Trigonometry and geometry symbols",
+  "函数可填写方框或套用选中内容。相似 ∼、全等 ≅、角 ∠、三角形 △ 和直角 90° 含义不同。": "Fill a function box or wrap selected content. Similarity ∼, congruence ≅, angle ∠, triangle △ and right angle 90° have different meanings.",
+  "正弦": "Sine",
+  "余弦": "Cosine",
+  "正切": "Tangent",
+  "相似": "Similarity",
+  "全等": "Congruence",
+  "角": "Angle",
+  "三角形": "Triangle",
+  "直角": "Right angle",
+  "插入正弦函数": "Insert sine function",
+  "插入余弦函数": "Insert cosine function",
+  "插入正切函数": "Insert tangent function",
+  "插入相似符号": "Insert similarity symbol",
+  "插入全等符号": "Insert congruence symbol",
+  "插入角符号": "Insert angle symbol",
+  "插入三角形符号": "Insert triangle symbol",
+  "插入直角 90°": "Insert right angle 90°",
+  // Offline matrix structure editor.
+  "矩阵编辑器": "Matrix editor",
+  "行数": "Rows",
+  "列数": "Columns",
+  "矩阵括号": "Matrix delimiters",
+  "圆括号": "Parentheses",
+  "方括号": "Square brackets",
+  "无括号": "No delimiters",
+  "花括号": "Braces",
+  "行列式竖线": "Determinant bars",
+  "双竖线": "Double bars",
+  "单元格": "Cell",
+  "矩阵预览": "Matrix preview",
+  "载入当前矩阵": "Load current matrix",
+  "预览矩阵": "Preview matrix",
+  "插入矩阵": "Insert matrix",
+  "替换当前矩阵": "Replace current matrix",
+  "空白单元格填0": "Fill empty cells with 0",
+  "取消矩阵编辑": "Cancel matrix editing",
+  "选择行列数并填写每一格；这里只编辑矩阵，不计算矩阵运算。": "Choose the number of rows and columns, then fill each cell. This editor creates notation; it does not calculate matrix operations.",
+  "所有单元格都需要填写；也可明确选择填0。": "Fill every cell, or explicitly choose to fill empty cells with 0.",
+  "当前整条公式不是受支持的单个矩阵，原公式未改动。": "The entire current equation is not a supported single matrix. The original equation is unchanged.",
+  "当前公式已更改，请重新载入矩阵后再替换。": "The current equation has changed. Load the matrix again before replacing it.",
+  "单元格暂不支持这段内容；原始粘贴内容保留在下方，当前矩阵未改动。": "This content is not supported in a cell. The original pasted text is preserved below; the current matrix is unchanged.",
+  "未应用的单元格原文": "Unapplied original cell input",
+  "请先完成或取消公式导入，再编辑矩阵。": "Complete or cancel equation import before editing a matrix.",
+  "矩阵未插入；请检查单元格和当前公式。": "The matrix was not inserted. Check the cells and the current equation.",
+  "预览不会更改公式；插入或替换后仍需保存笔记。": "Previewing does not change the equation. After inserting or replacing it, you still need to save the note.",
+  "矩阵已加入公式草稿；保存后才更新笔记。": "The matrix is in the equation draft. The note changes only when you save.",
+  "矩阵尺寸改变会保留已有单元格；超出当前范围的内容仍保留到本次关闭。": "Resizing preserves existing cells. Content outside the current dimensions is retained until this session closes.",
+  "当前矩阵包含暂不支持的单元格；原公式未改动。": "The current matrix contains unsupported cells. The original equation is unchanged.",
+  "输入已修改，请重新预览矩阵。": "The input has changed. Preview the matrix again.",
+  // Offline advanced-math structure insertion.
+  "高等数学模板": "Advanced math templates",
+  "点击插入数学结构，再填写方框。这里只编辑公式，不计算或求解。": "Insert a math structure, then fill the boxes. These tools edit notation; they do not calculate or solve.",
+  "极限": "Limit",
+  "普通导数": "Ordinary derivative",
+  "二阶导数": "Second derivative",
+  "二重积分": "Double integral",
+  "无穷级数": "Infinite series",
+  "连乘积": "Product",
+  "向量": "Vector",
+  "梯度": "Gradient",
+  "插入极限模板": "Insert limit template",
+  "插入普通导数模板": "Insert ordinary derivative template",
+  "插入二阶导数模板": "Insert second derivative template",
+  "插入偏导数模板": "Insert partial derivative template",
+  "插入二重积分模板": "Insert double integral template",
+  "插入无穷级数模板": "Insert infinite series template",
+  "插入连乘积模板": "Insert product template",
+  "插入向量模板": "Insert vector template",
+  "插入梯度模板": "Insert gradient template",
+  '较长或多行公式使用上下布局：上方源码与下方公式双向同步。': 'Long or multiline equations use a stacked layout: source above and visual editing below stay in sync.',
+  // Single-equation import staging and source-preservation messages.
+  '复制导入原文': 'Copy original input',
+  '导入原文已复制。': 'The original input was copied.',
+  '未能复制原文，请保留导入面板后重试。': 'Unable to copy the original input. Keep the import panel open and try again.',
+  '导入单条公式': 'Import one equation',
+  '先检查候选；应用会替换当前整条公式，保存后才更新笔记。': 'Review the candidate first. Applying replaces the entire current equation; the note changes only when you save.',
+  '载入当前源码': 'Load current source',
+  '导入原文': 'Original input',
+  '检查并预览': 'Check and preview',
+  '候选源码（不含外包装）': 'Candidate source (without outer delimiters)',
+  '应用并替换公式': 'Apply and replace equation',
+  '导入未应用；当前公式和导入原文仍保留，请检查后重试。': 'Import was not applied. The current equation and original input are preserved. Check the input and try again.',
+  '取消导入': 'Cancel import',
+  '候选排版：独立公式': 'Candidate layout: display equation',
+  '候选排版：行内公式（保存时换行会转换为空格）': 'Candidate layout: inline equation (line breaks become spaces when saved)',
+  '仅源码可用：部分命令无法可视化。应用后请在源码模式检查；笔记环境也可能不支持这些命令。': 'Source only: some commands cannot be edited visually. Review the source after applying; your note environment may not support these commands either.',
+  '可视化预览可用。请检查结构；应用前当前公式保持不变。': 'Visual preview is available. Check the structure; the current equation stays unchanged until you apply.',
+  '仅按源码应用并替换': 'Apply source only and replace',
+  '原文已修改，请重新检查并预览。': 'The original input changed. Check and preview it again.',
+  '这里只导入单条公式；请移除正文、多条公式或额外的数学分隔符。': 'Import one equation only. Remove surrounding prose, additional equations or extra math delimiters.',
+  '公式外层分隔符不匹配；请检查 $、$$、\\(…\\) 或 \\[...\\]。': 'The outer delimiters do not match. Check $, $$, \\(…\\) or \\[...\\].',
+  '这里只导入单条 LaTeX 公式，暂不支持完整文档、文件引用或宏定义。': 'Import one LaTeX equation only. Full documents, file references and macro definitions are not supported.',
+  '输入包含 MathLive 模板参数（#0、#1、#? 或 #@）；原文已保留，请改用普通公式源码。': 'The input contains MathLive template parameters (#0, #1, #? or #@). The original input is preserved. Use ordinary equation source instead.',
+  '公式结构过深，单条导入暂限 32 层；原文已保留。': 'The equation is nested too deeply. Imports currently allow up to 32 explicit levels. The original input is preserved.',
+  '公式命令过多，单条导入暂限 512 个命令；原文已保留。': 'The equation has too many commands. Imports currently allow up to 512 commands. The original input is preserved.',
+  '公式过长，单条导入暂限 8192 个字符；原文已保留。': 'The equation is too long. Imports currently allow up to 8192 UTF-16 code units. The original input is preserved.',
+  '请先粘贴或输入一条 LaTeX 公式。': 'Paste or enter one LaTeX equation first.',
+  '输入包含不可见的控制字符；原文已保留，请检查后重试。': 'The input contains invisible control characters. The original input is preserved. Check it and try again.',
+  '公式内容为空；请填写公式后再应用。': 'The equation is empty. Enter an equation before applying.',
+  '仅源码保存不会修复未知命令。行内保存会把换行转换为空格；需要保留多行请选独立公式。': 'Saving source does not repair unknown commands. Inline saving converts line breaks to spaces; choose a display equation to preserve multiple lines.',
+  '行内保存会把换行转换为空格；需要保留多行请选独立公式。': 'Inline saving converts line breaks to spaces; choose a display equation to preserve multiple lines.',
+  '只输入公式内容；带外包装的整式请用“导入单条公式”。': 'Enter only the equation contents. For an entire equation with outer delimiters, use Import one equation.',
   '界面语言 / Interface language': 'Interface language',
   '示例：x^2, sin(x), 1/x': 'Examples: x^2, sin(x), 1/x',
   '跟随 Obsidian': 'Follow Obsidian', '跟随 Obsidian / Follow Obsidian': 'Follow Obsidian',
@@ -197,17 +426,6 @@ export const UI_TRANSLATIONS: Readonly<Record<string, string>> = {
   '此公式暂不能绘图。支持 y=f(x)、仅含 x 的表达式和常数；不支持隐式方程或多变量。请在上方修改公式。': 'This equation cannot be graphed yet. Use y=f(x), an expression in x, or a constant. Implicit equations and multiple variables are not supported. Edit the equation above.',
   '图像尚未显示，请点击绘制此公式。': 'Choose Graph this equation to display a graph.',
   '公式已修改，请重新预览后插入。': 'The equation changed. Preview the graph again.',
-  '我的公式快捷词': 'My formula shortcuts',
-  '先可视化写好公式，再取一个 3–24 位英文字母或数字的快捷词（以字母开头）。可直接键入展开，或从列表插入；仅保存在当前库。': 'Compose an equation visually, then choose a shortcut of 3–24 English letters or digits starting with a letter. Type it to expand, or insert from the list. It is saved only in this vault.',
-  '例如 myfrac': 'For example, myfrac', '公式快捷词': 'Formula shortcut',
-  '保存当前公式为快捷词': 'Save current equation as shortcut', '删除快捷词': 'Delete shortcut', '快捷词已删除。': 'Shortcut deleted.',
-  '未能保存快捷词，请重试。原快捷词已保留。': 'Unable to save shortcuts. Try again. Your previous shortcuts are preserved.',
-  '快捷词需为 3–24 位英文字母或数字，并以字母开头。': 'Use 3–24 English letters or digits, starting with a letter.',
-  '快捷词与内置或已保存的快捷词冲突，请换一个名称。': 'This shortcut conflicts with a built-in or saved shortcut. Choose another name.',
-  '此快捷词已存在；请先删除，或使用新名称。': 'This shortcut already exists. Delete it first or choose another name.',
-  '最多保存 50 个公式快捷词。': 'You can save at most 50 formula shortcuts.',
-  '请先完成一个有效公式，再保存快捷词。': 'Complete a valid equation before saving a shortcut.',
-  '快捷词已保存。可在可视化区域键入，或点击列表插入。': 'Shortcut saved. Type it in the visual editor or click its entry to insert it.',
   '关于与许可': 'About and license',
   '本插件采用 GNU GPLv3 许可，不提供任何担保。你可按许可使用、修改与再分发。笔记内容不受此许可约束。': 'This plugin is licensed under GNU GPLv3, without any warranty. You may use, modify and redistribute it under that license. Your note content is not covered by this license.',
   '查看许可与第三方声明': 'View license and third-party notices',
@@ -314,6 +532,50 @@ export function translateUiText(text: string, language: ResolvedLanguage): strin
 export function translatePlotUiText(text: string, language: ResolvedLanguage): string {
   if (language === 'en') return text;
   const spanish = language === 'es';
+  const spatialNames: Readonly<Record<string, [string, string]>> = {
+    'Two planes': ['两个平面', 'Dos planos'], 'Line and plane': ['直线与平面', 'Recta y plano'], 'Sphere and plane': ['球体与平面', 'Esfera y plano'],
+  };
+  const spatialTitle = /^Spatial relations: (Two planes|Line and plane|Sphere and plane)$/.exec(text);
+  if (spatialTitle) return `${spanish ? 'Relaciones espaciales: ' : '空间关系：'}${spatialNames[spatialTitle[1]][spanish ? 1 : 0]}`;
+  const spatialFixed: Readonly<Record<string, [string, string]>> = {
+    'Fixed spatial-relation teaching scene. Conclusions describe infinite planes and lines; the displayed patches and line segments are finite. Equal-scale orthographic view. Curved surfaces are polygonal approximations.': ['固定的空间关系教学场景。关系结论针对无限平面和直线；画面中的平面片和线段为有限大小。采用等比例正交视图，曲面为多边形近似。', 'Escena didáctica fija de relaciones espaciales. Las conclusiones describen planos y rectas infinitos; las regiones y los segmentos mostrados son finitos. Vista ortográfica con escala uniforme. Las superficies curvas son aproximaciones poligonales.'],
+    'Planes intersect in a line.': ['两个平面相交于一条直线。', 'Los planos se intersectan en una recta.'],
+    'Planes are parallel and distinct.': ['两个平面平行且不重合。', 'Los planos son paralelos y distintos.'],
+    'Planes coincide.': ['两个平面重合。', 'Los planos coinciden.'],
+    'The line intersects the plane at one point.': ['直线与平面相交于一点。', 'La recta intersecta el plano en un punto.'],
+    'The line is parallel to and outside the plane.': ['直线与平面平行，且不在平面内。', 'La recta es paralela al plano y no está contenida en él.'],
+    'The line lies in the plane.': ['直线在平面内。', 'La recta está contenida en el plano.'],
+    'The plane cuts the sphere in a circle.': ['平面与球体相交成圆。', 'El plano corta la esfera en una circunferencia.'],
+    'The plane is tangent to the sphere at one point.': ['平面与球体相切于一点。', 'El plano es tangente a la esfera en un punto.'],
+    'The plane and sphere do not intersect.': ['平面与球体不相交。', 'El plano y la esfera no se intersectan.'],
+    'Near a critical case: the displayed relation is a numerical approximation; inputs were not snapped.': ['接近临界情况：显示关系为数值近似；输入数值未被吸附或改写。', 'Caso próximo a un límite: la relación mostrada es una aproximación numérica; los valores de entrada no se han ajustado.'],
+    'The intersection lies outside the shown view.': ['交点或交线位于当前画面之外。', 'La intersección está fuera de la vista mostrada.'],
+    'Infinite planes and lines; finite displayed patches.': ['无限平面与直线；画面只显示有限片段。', 'Planos y rectas infinitos; regiones mostradas finitas.'],
+  };
+  if (Object.hasOwn(spatialFixed, text)) return spatialFixed[text][spanish ? 1 : 0];
+  const geometryDescription = 'Orthographic view with equal scale on X, Y and Z. Regular bases use the center-to-vertex radius. Curved surfaces are polygonal approximations.';
+  if (text === geometryDescription) return spanish
+    ? 'Vista ortográfica con la misma escala en X, Y y Z. Las bases regulares usan el radio del centro al vértice. Las superficies curvas son aproximaciones poligonales.'
+    : 'X、Y、Z 采用相同比例的正交视图。正多边形底面采用中心到顶点的半径。曲面为多边形近似。';
+  const geometryNames: Readonly<Record<string, [string, string]>> = {
+    Sphere: ['球体', 'Esfera'], Cylinder: ['圆柱体', 'Cilindro'], Cone: ['圆锥体', 'Cono'],
+    'Regular pyramid': ['正棱锥', 'Pirámide regular'], 'Regular prism': ['正棱柱', 'Prisma regular'],
+    Cuboid: ['长方体', 'Ortoedro'], Plane: ['平面片', 'Plano'],
+  };
+  const geometryTitle = /^Geometry: (Sphere|Cylinder|Cone|Regular pyramid|Regular prism|Cuboid|Plane)$/.exec(text);
+  if (geometryTitle) return `${spanish ? 'Geometría: ' : '几何模型：'}${geometryNames[geometryTitle[1]][spanish ? 1 : 0]}`;
+  const geometryDimensions = text.split(' · ');
+  if (geometryDimensions.length && geometryDimensions.every(part => /^(Radius|Width|Depth|Height|Sides|Angle|Offset) = [+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?°?$/.test(part))) {
+    const labels: Readonly<Record<string, [string, string]>> = {
+      Radius: ['半径', 'Radio'], Width: ['宽度', 'Anchura'], Depth: ['深度', 'Profundidad'], Height: ['高度', 'Altura'], Sides: ['边数', 'Lados'], Angle: ['夹角', 'Ángulo'], Offset: ['偏移', 'Desplazamiento'],
+    };
+    return geometryDimensions.map(part => {
+      const [label, value] = part.split(' = ');
+      return `${labels[label][spanish ? 1 : 0]} = ${value}`;
+    }).join(' · ');
+  }
+  const geometryView = /^View ([+\-\d.eE]+)° \/ ([+\-\d.eE]+)° · ([+\-\d.eE]+)×$/.exec(text);
+  if (geometryView) return `${spanish ? 'Vista' : '视角'} ${geometryView[1]}° / ${geometryView[2]}° · ${geometryView[3]}×`;
   const description = 'Approximate numerical graph. The horizontal axis is X and the vertical axis is Y. Trigonometric arguments use radians. Domain gaps and unresolved discontinuities are omitted.';
   if (text === description) return spanish
     ? 'Gráfica numérica aproximada. El eje horizontal es X y el vertical es Y. Los argumentos trigonométricos usan radianes. Se omiten los huecos del dominio y las discontinuidades no resueltas.'
@@ -383,7 +645,7 @@ export function localizeEditor(root: HTMLElement, language: Language, systemLang
   const attributeMemory = new WeakMap<Element, Map<string, Remembered>>();
   const plotTextMemory = new WeakMap<Element, Remembered>();
   const attributeNames = ['title', 'aria-label', 'placeholder'] as const;
-  const plotSelector = ['function', 'complex', 'polar', 'surface', 'calculus', 'derivative', 'second-derivative', 'integral']
+  const plotSelector = ['function', 'complex', 'polar', 'surface', 'geometry', 'calculus', 'derivative', 'second-derivative', 'integral']
     .map(mode => `svg[data-vme-plot="${mode}"]`).join(',');
   let active = language;
   let destroyed = false;
@@ -443,6 +705,11 @@ export function localizeEditor(root: HTMLElement, language: Language, systemLang
     let entries = attributeMemory.get(element);
     if (!entries) { entries = new Map(); attributeMemory.set(element, entries); }
     for (const name of attributeNames) {
+      // This name is derived from translated label text below. Translating the
+      // previous derived value would briefly announce the wrong language.
+      if (name === 'aria-label' && element.localName === 'math-field' && element.hasAttribute('aria-labelledby')) {
+        entries.delete(name); continue;
+      }
       const value = element.getAttribute(name);
       if (value === null) { entries.delete(name); continue; }
       const entry = remember(value, entries.get(name));
@@ -462,6 +729,20 @@ export function localizeEditor(root: HTMLElement, language: Language, systemLang
     const currentLanguage = resolved();
     root.lang = currentLanguage;
     walk(root, currentLanguage);
+    // MathLive copies the accessible name to its keyboard sink when mounted,
+    // but does not observe later text changes in aria-labelledby targets.
+    // Updating this public attribute asks it to reread the translated label;
+    // no formula, focus or internal MathLive DOM is changed.
+    for (const field of root.querySelectorAll<HTMLElement>('math-field[aria-labelledby]')) {
+      const ids = (field.getAttribute('aria-labelledby') ?? '').split(/\s+/).filter(Boolean);
+      const name = ids.map(id => {
+        const label = field.ownerDocument.getElementById(id);
+        // Only our local UI labels qualify. A wrapping label could contain
+        // formula text, which must never become translated editor UI.
+        return label && root.contains(label) && !label.contains(field) ? label.textContent ?? '' : '';
+      }).join(' ').replace(/\s+/g, ' ').trim();
+      if (name && field.getAttribute('aria-label') !== name) field.setAttribute('aria-label', name);
+    }
     // A narrow exception for plugin-generated plots. Never walk generic SVGs,
     // axes, tick values, paths, point labels or formula text.
     for (const svg of Array.from(root.querySelectorAll(plotSelector))) {

@@ -2,15 +2,15 @@
 
 Documentation: [English](README.md) · [简体中文](README.zh-CN.md) · [Español](README.es.md). The Spanish README covers installation, editing, graphing, numerical limits and feedback; interface language selection remains separate.
 
-## 0.8.0 graph additions
+## 1.0.0 language coverage
 
-The 0.8.0 graph expansion keeps the same three languages: English, Simplified Chinese and Spanish. It adds translated polar/XYZ mode selectors, calculus controls, θ/integration/camera range labels, numerical-limit errors and scoped generated graph captions. It adds no additional language and does not claim fluent-speaker or every-platform validation; actual checks belong in [TEST-REPORT.md](TEST-REPORT.md).
+Visual Math continues to provide **English, Simplified Chinese and Spanish**. The single-formula import panel, matrices, equation systems, set/sequence tools, advanced notation, geometry controls, spatial-scene results, validation messages and accessibility labels follow the same choice. There is no new language in 1.0.0. Actual language-switch checks and remaining native/platform limits belong in [TEST-REPORT.md](TEST-REPORT.md); dictionary coverage does not establish fluent-speaker review.
 
-**中文：** 0.8.0 新增绘图功能继续提供英语、简体中文、西班牙语。极坐标、微积分和 XYZ 控件、错误与图形说明使用同一语言设置。GitHub 发行、目录审核与原生验证分别见测试报告；0.7.0 的历史验证见下文。
+**中文：** 1.0.0继续提供英语、简体中文和西班牙语。新增导入、矩阵、方程组、集合/数列、高等数学、几何和空间关系的固定界面、错误与无障碍名称使用同一语言设置。未新增其他语言，不把词典覆盖等同于全部原生流程或母语审校通过。
 
-**Español:** La versión 0.8.0 conserva el español, el inglés y el chino simplificado e incorpora controles y mensajes para gráficas polares, cálculo numérico y superficies XYZ. La publicación en GitHub, la revisión del directorio y las pruebas nativas se registran por separado.
+**Español:** La versión 1.0.0 mantiene español, inglés y chino simplificado para la importación, matrices, sistemas, conjuntos/sucesiones, notación avanzada, geometría y mensajes de accesibilidad. No incorpora otros idiomas. Las pruebas reales y sus límites se registran por separado.
 
-Technical input remains unchanged: `r=2*sin(3*theta)`, `y=x^2` and `z=(x^2-y^2)/10` use the same syntax in all languages. Symbols insert at the caret or wrap the selection; example buttons replace the graph expression. Changing language does not modify formulas, graph modes, integration bounds, θ bounds or camera state and is not a save. Reopening restores the saved graph parameters independently of a separate saved equation.
+Technical input remains unchanged across languages. Translation does not modify formula source, matrix cells, equation-system rows, graph dimensions, integration/θ bounds or camera state, and does not save a note. Custom formula keyword tools were removed in 1.0.0; older documentation/results referring to them are historical.
 
 ## Published 0.7.0 language support
 
@@ -22,7 +22,7 @@ This historical section documents the published 0.7.0 implementation. Earlier 0.
 
 Follow Obsidian selects one of the plugin's **three available translations**; it does not supply every language supported by the host.
 
-| Obsidian interface language | 0.7.0 / 0.8.0 interface |
+| Obsidian interface language | Current interface |
 | --- | --- |
 | English (`en`, `en-US`, etc.) | English |
 | Chinese (`zh`, `zh-CN`, `zh-TW`, etc.) | Simplified Chinese |
@@ -53,11 +53,12 @@ These examples support maintaining a small, tested language set first. They do n
 
 ## Current implementation rules
 
-- `src/i18n.ts` owns locale resolution, English messages, dynamic labels and scoped DOM localization; `src/i18n-es.ts` bundles `SPANISH_TRANSLATIONS` and `SPANISH_ELEMENT_NAMES`. New messages must provide English and Spanish wording for their Chinese source message, including explicit-label paths such as `data-i18n-en`. Maintain all three languages together, including graph controls, saved keyword tools, errors and accessibility labels.
+- `src/i18n.ts` owns locale resolution, English messages, dynamic labels and scoped DOM localization; `src/i18n-es.ts` bundles `SPANISH_TRANSLATIONS` and `SPANISH_ELEMENT_NAMES`. New messages must provide English and Spanish wording for their Chinese source message, including explicit-label paths such as `data-i18n-en`. Maintain all three languages together, including import/structure tools, geometry controls, errors and accessibility labels.
 - Host code supplies Obsidian's public [`getLanguage()`](https://docs.obsidian.md/Reference/TypeScript%2BAPI/getLanguage) result. The installed API declaration marks it available since Obsidian 1.8.7; older supported hosts fall back to their browser locale. Obsidian's official [lint guidance](https://github.com/obsidianmd/eslint-plugin#rules) also prefers this API for language detection.
 - Locale fallback and message fallback are distinct. Unsupported locales resolve to English. An unrecognized message is preserved rather than guessed or passed to a translation service. UI coverage checks should catch missing known messages before release.
 - Localize plugin-owned DOM only. Do not walk note content, editable values, `math-field` source, generic SVGs, or elements marked `data-no-i18n` / `data-i18n-ignore`. Do not translate a `<select>` option without an explicit `value`. The controlled graph pass described below is the only exception for ignored SVG previews.
-- Plugin-generated SVGs marked `data-vme-plot="function"` or `data-vme-plot="complex"`, plus 0.8.0 `polar`, `surface`, `derivative`, `second-derivative` and `integral` graphs, localize only their fixed accessible prose in the root `aria-label`, direct `<title>` and `<desc>`, plus headings/footers explicitly marked `data-vme-plot-caption`. Their formula text, point labels, axis names, tick values, shapes and coordinates remain unchanged. Surrounding controls and status text are localized too. This narrow pass also handles newly rendered graphs inside an ignored preview; it does not walk arbitrary SVG content or rewrite an existing `vme-plot` block.
+- Plugin-generated SVGs marked `data-vme-plot="function"` or `data-vme-plot="complex"`, plus `polar`, `surface`, `geometry`, `derivative`, `second-derivative` and `integral` graphs, localize only their fixed accessible prose in the root `aria-label`, direct `<title>` and `<desc>`, plus headings/footers explicitly marked `data-vme-plot-caption`. Their formula text, point labels, axis names, tick values, shapes and coordinates remain unchanged. Surrounding controls and status text are localized too. This narrow pass also handles newly rendered graphs inside an ignored preview; it does not walk arbitrary SVG content or rewrite an existing `vme-plot` block.
+- After translating plugin-owned labels, linked matrix/system math fields synchronize their accessible name through the public `aria-label` attribute. This does not alter focus, formula values or MathLive internals.
 - MathLive's locale setter is static and affects all math fields on the page, as its [official guide](https://mathlive.io/mathfield/guides/customizing/#localization) explains. This plugin does not change that shared locale merely to change its own toolbar language.
 
 ## Contributing or extending translations

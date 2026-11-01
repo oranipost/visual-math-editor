@@ -1,8 +1,16 @@
 # GitHub and release preparation
 
-## 0.8.2 release target
+## 1.0.0 release target
 
-Display metadata update to **Visual Math / Oliver**. The plugin ID, storage, graph behavior and legal notices remain compatible. Release assets, native installed metadata and community search synchronization must be checked separately; do not overwrite earlier releases.
+Desktop **stable release** with single-formula import review, visual matrices/systems, advanced/set/sequence notation, geometry models and bounded spatial scenes. Custom formula keyword creation/expansion is removed; existing note formulas and other settings are retained. Do not delete user `data.json` or reinterpret old keyword data as an active feature. Keep the stable `visual-math-editor` ID and Visual Math / Oliver display metadata.
+
+Confirm the exact final scope, fresh checks and performance boundary in [TEST-REPORT.md](TEST-REPORT.md). Do not infer full visual support from unknown-macro source retention or advertise arbitrary-length responsive imports. Native save/close/reopen evidence must identify its actual build and test vault; historical screenshots remain marked by version. Geometry uses the new mode in `vme-plot`; earlier builds cannot render these new blocks, while this release retains earlier graph readers.
+
+After the final commit/tag and hosted checks, publish an ordinary GitHub release and mark it **latest**. Use a **Visual Math 1.0.0** release title without a beta label; do not set GitHub's **pre-release** flag for the community updater's latest-version path. Stable is the chosen release channel, not a claim of defect-free code or full-platform coverage. Download and verify all six assets, exact commit/tag provenance, installer/runtime bytes and source contents before reporting success. The directory's new scan and native availability require separate confirmation.
+
+## 0.8.2 historical metadata release
+
+0.8.2 unified **Visual Math / Oliver** without changing editing or saved graph behavior. Its release, native metadata and directory synchronization observations remain specific to that version in the test report. Do not move its tag or replace its assets.
 
 ## 0.8.1 release record
 
@@ -18,7 +26,7 @@ Repository: [oranipost/visual-math-editor](https://github.com/oranipost/visual-m
 
 The existing Personal vault was upgraded from the release ZIP with settings and existing demo-note bytes preserved. Native About displayed 0.7.0; Hybrid `y=x/2` and its linked graph were opened without saving a new graph during that upgrade check. This records a manual upgrade, not a native community-directory installation. Exact evidence and remaining platform limits are in [TEST-REPORT.md](TEST-REPORT.md).
 
-Earlier **0.6.2–0.6.5** releases are retained as recoverable drafts; the earlier check exposed 0.7.0 as the only public release. Their tags, history and pre-existing MIT rights remain. Historical verification observations below describe their original release checks; draft status does not revoke the original grants. Public betas use ordinary GitHub releases with the latest designation, while untested platforms remain outside verified scope.
+Earlier **0.6.2–0.6.5** releases are retained as recoverable drafts; the earlier check exposed 0.7.0 as the only public release. Their tags, history and pre-existing MIT rights remain. Historical verification observations below describe their original release checks; draft status does not revoke the original grants. Those historical public betas used ordinary GitHub releases with the latest designation; untested platforms remain outside verified scope.
 
 ## License transition in 0.7.0
 
@@ -44,8 +52,8 @@ The source ZIP excludes Git metadata/history, private vaults and application set
 2. Run `npm ci`, `npm run check`, browser component checks and the relevant native Obsidian flows in a disposable vault. Record actual results and untested platforms.
 3. Run `npm run package`. Check the installation/source archives and `release/SHA256SUMS.txt`. Both archives must retain `LICENSE` and `LICENSING.md`; the source archive must additionally retain all four verified archives and their manifest in `third-party-sources/`, while the installation ZIP excludes that source-only folder. Install from the generated archive and verify its three runtime files match the build.
 4. After reviewing and committing the source, create and push a tag that matches the manifest **exactly**, such as `0.7.0`, without a `v` prefix.
-5. Run **Prepare draft release** manually. Under **Use workflow from**, choose that existing version tag and enter the identical value in **tag**. For example, `gh workflow run draft-release.yml --ref 0.7.0 -f tag=0.7.0` runs the prepared `0.7.0` tag once it exists; use the actual reviewed version. The tag must contain this workflow. Branch runs are rejected so the signed provenance identifies the same commit that is checked out and built. The workflow rebuilds/tests/packages that exact commit, creates provenance for the three runtime files, both ZIPs and their checksum file, then creates a **draft release** titled **Public beta**. It does not set the pre-release flag and fails rather than updating an existing release.
-6. Review the draft assets, attestation result and release notes before explicitly publishing as an ordinary release and marking it **latest**. Keep **Public beta**, desktop MVP scope and untested-platform limits visible in the title/notes. Download the public assets, verify ZIP checksums and verify their provenance as described below. Publishing a GitHub release and joining the Obsidian community directory are separate steps.
+5. Run **Prepare draft release** manually. Under **Use workflow from**, choose that existing version tag and enter the identical value in **tag**. For example, `gh workflow run draft-release.yml --ref 0.7.0 -f tag=0.7.0` runs the prepared `0.7.0` tag once it exists; use the actual reviewed version. The tag must contain this workflow. Branch runs are rejected so the signed provenance identifies the same commit that is checked out and built. The workflow rebuilds/tests/packages that exact commit, creates provenance for the three runtime files, both ZIPs and their checksum file, then creates a **draft release** for the selected version. It does not set the pre-release flag and fails rather than updating an existing release.
+6. Review the draft assets, attestation result and release notes before explicitly publishing as an ordinary release and marking it **latest**. Keep the selected release channel, desktop scope and untested-platform limits accurate in the title/notes. Download the public assets, verify ZIP checksums and verify their provenance as described below. Publishing a GitHub release and joining the Obsidian community directory are separate steps.
 
 CI checks logic/types/build and verifies package inputs. It does not launch Obsidian, perform native integration tests, publish releases on push, or certify support for every version.
 

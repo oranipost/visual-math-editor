@@ -1,5 +1,50 @@
 # Test report / 测试记录
 
+## 1.0.0 — pre-publication validation (2026-10-31)
+
+**Prepared version: Visual Math 1.0.0 / Oliver, desktop release.** The plugin ID remains `visual-math-editor`. The following are current local observations; publication, hosted artifact verification, community review and native installation are separate steps. No hosted 1.0.0 release or directory result has been established at this checkpoint. All older sections below retain their original build identities and dates.
+
+### Completed local checks
+
+- **272 automated tests passed**, with TypeScript checks, the production build and the developer-preview build passing. Coverage includes formula/write protection, conservative import classification and limits, source preservation, matrix/system/set/sequence helpers, geometry/spatial serialization and existing graph/science regressions. A passing test count is not independent security certification or proof of all supported workflows.
+- The final preview build passed **181 single-formula import checks**, **256 system/set/sequence and structured-draft checks**, **258 geometry component checks**, and **114 matrix/advanced-notation checks**, **69 trigonometry/geometry-symbol checks**, and **358 existing editor/science/graph checks** (1,236 checks across six suites). These are separate suites, not unique-user counts or real-vault save results. They use test-memory callbacks and component remounts; the preview binds to localhost and does not write to a user's vault.
+- Import coverage includes matching outer wrappers, original/candidate separation, invalid and out-of-scope input, explicit Apply/Cancel, source-only unknown notation, draft Undo/Redo, three-mode changes, callback saves and remounts. New boundary cases distinguish 4,096 from 4,097 UTF-16 code units and retain the existing 5,130-unit Taylor256 sample across Visual, Hybrid and LaTeX paths. An initial run's shortening assertion read a detached validation node from a destroyed editor; the checker now reads the reopened component. The complete 181-check rerun passed; that test-harness correction did not change production behavior.
+- The notation suite covers 2–6-row single-column equation systems, 19 set/sequence tools, validation, draft locking, cancellation and restoration through actual inline-widget component remounts. The matrix suite covers 1–6-row/column visual cells and nine notation templates. The geometry suite covers seven fixed models, the three supported spatial scenes, bounded parameters, interaction, serialization and component reopening. These observations do not establish every native Obsidian flow or arbitrary geometry operations.
+
+### Import capacity and performance boundary
+
+One import accepts at most **8,192 UTF-16 code units of original input**, including any wrapper and outer whitespace. Command and structural budgets also apply: at most 512 backslash commands, 32 combined explicit group/environment/left-right levels, and bounded recognized unbraced argument chains. These conservative checks are not a complete TeX complexity calculation.
+
+Visual rendering has a separate **4,096 UTF-16 code unit budget for formula contents**. Longer valid input still receives syntax/structure checks and retains its complete source, but bypasses the visual preview and is not loaded into the visual math field. It requires explicit source-only Apply and **Save source** actions, with LaTeX/Hybrid source editing. The 181-check suite verified exact 5,130-unit source retention, no automatic write on import/input, one complete save callback after explicit Save, remount preservation, Undo/Redo and restoration of supported visual editing after shortening. This is **source-only support**, not complete visual support. Neither this path nor unknown-macro preservation guarantees that Obsidian/another renderer understands the notation. No source is truncated or mathematically repaired.
+
+Historical local testing of an earlier unguarded development build observed a 5,130-unit synchronous Apply taking up to **477.5 ms**. This release candidate routes that sample away from visual rendering; the earlier timing is not a measurement of the new source-only path. The final guarded audit recorded **156 observations, zero skipped levels, zero exceptions and zero note writes** in the local in-app Chromium 156 preview on macOS. For the same 5,130-unit sample: Visual paste staging took **10.1 ms** synchronously and explicit source-only Apply **14.1 ms**; Hybrid source input **5.8 ms** and LaTeX input **5.5 ms**. Settled task timings were 35.0, 23.5 and 19.2 ms respectively; these include a task yield and are not paint/frame latency. Earlier Chrome measurements and this preview run used different browser/application load, so they are not a controlled speedup ratio. Budget compliance does not guarantee smooth rendering for every expression, and elapsed browser task timing is not a native save/reopen measurement.
+
+### Current native acceptance
+
+The final runtime was loaded in the separate **Visual Math Import DEV** vault on **macOS / Obsidian 1.14.5**; Personal was not replaced during these checks. Runtime SHA-256: `main.js` **7ed9550ed905484aa04710805d391cbd2e7e35b26b1f5487a333cdf2ff8d93e1**, `styles.css` **29e3b0313a7290e43b64cf85ecbc805f7f7a5a42dde0f07455ec5bdf02204e80**. The DEV manifest uses an isolated ID/name; production metadata remains Visual Math / Oliver.
+
+- Created a two-row system through visual row fields (`x+y=3`, `x-y=1`), previewed and explicitly applied it, switched Visual/LaTeX/Hybrid, then saved to Markdown. Closed the note, reopened it and used **Choose equation to edit** to recover the system. In Hybrid, changed only 3 to 4, verified draft Undo/Redo and saved. Closed/reopened again: the rendered brace and both rows showed `x+y=4`, `x-y=1`; the front/back Chinese, Greek and emoji sentinel text remained intact.
+- Imported the constructed **5,130-unit Taylor256** formula through **Import one equation**. Preview explained the 4,096-unit visual budget and provided **Apply source only and replace**. Applying alone left the note unchanged. Switched LaTeX/Hybrid and explicitly **Save source**: disk Markdown contained the exact complete input and surrounding sentinels. Closed/reopened the note, selected the saved equation and confirmed that Visual remained guarded, while Hybrid exposed the full source and **Save source**. Unchanged re-edit/save preserved the entire note byte-for-byte (SHA-256 `a7e8e1b61ef65702279b94359a10e53ed15bee8e5c6584cc5711a8cfd86efdda`). This verifies source-only persistence, not visual editing of that long formula. Obsidian itself rendered the saved expression in the note.
+- During setup, a DEV window became blank after reload and file copies waited while iCloud marked source/build files as online-only. Downloading the files and reopening the DEV window restored operation, after which the final runtime loaded and these checks completed. This observation does not establish a single root cause. No Personal notes were edited to diagnose it.
+
+This is targeted current native acceptance for systems and long-source persistence, not an exhaustive native run of every matrix cell, template, geometry shape, scene or graph mode. Broader historical development observations remain separate from this final-runtime check.
+
+### Packaging and hosted release steps
+
+| Check | State at this checkpoint |
+| --- | --- |
+| Existing basic-editor and geometry/trigonometry symbol suites | Passed: 358 and 69 respectively |
+| Guarded import performance audit | Completed: 156 observations; measured boundaries stated above |
+| Current 1.0.0 native save, close, reopen and re-edit | Passed for the two targeted workflows above in isolated Obsidian 1.14.5 |
+| Installation/source ZIP precheck | Passed: 31 installer files and 138 source files matched the checkout/build; private-file boundaries and pinned dependency archives verified. Final report changes require rebuilding archives before upload |
+| Hosted CI, exact tag/source match, downloaded-asset checksums and provenance | Not run for 1.0.0 |
+| Public GitHub release and Obsidian new-version scan | Not submitted/published for 1.0.0 |
+| User's Personal-vault update and marketplace installation | Not established for 1.0.0 |
+
+Earlier development-build macOS save/close/reopen observations do not replace current 1.0.0 native acceptance. The local runtime and font resources remain bundled and the tested tools run without an online service; browser-memory tests are not a comprehensive network/security audit. **Windows, Linux, mobile, detached windows, arbitrary themes/plugin combinations and every possible TeX structure remain unverified.** Full documents, macro definitions, mixed prose, files, OCR/batch import, general symbolic solving and arbitrary solid intersections are outside this release's scope.
+
+1.0.0发布前：272项自动测试、六套共1236项组件检查通过；原生Obsidian1.14.5实际完成方程组创建/局部编辑/撤销重做/保存重开，以及5130字符完整源码保存重开与无改动回写。性能156个观察无异常或笔记写入，具体范围见上文。打包预检通过；托管发行与社区扫描结果尚未在该发布前检查点建立。8192是原始输入总预算，4096是独立可视化预算；未知宏或超可视化预算源码保留不计作完整可视化支持。以下旧版本记录不改写为1.0.0结果。
+
 ## 0.8.2 — display metadata verification (2026-10-18)
 
 The prepared manifest uses **Visual Math / Oliver**, and public developer bylines match. About reads the name and author from this manifest. The stable plugin ID and original legal notices are retained. This patch does not change graph logic or note formats.

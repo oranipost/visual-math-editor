@@ -11,16 +11,30 @@ import { focusInlineEditor, hideInlineEditor, inlineEditorField, showInlineEdito
 import { localizeEditor, resolveLanguage, translateUiText, type Language } from "./i18n";
 import type { PlotSpec } from "./plot-engine";
 import { createGraph } from "./graph-render";
-import { mountSurfaceInteraction, zoomSurfaceBounds } from "./surface-plot";
+import { mountOrbitInteraction, zoomOrbitView } from "./orbit-interaction";
 import { controlIcon, type ControlIcon } from "./ui-icons";
 import { formatComplex, parseComplexNumbers } from "./complex-plane";
 import { mountPlotInteraction, zoomPlotBounds, type PlotBounds } from "./plot-interaction";
 import { canAppendAfterGraph, findPlotBlocks, parsePlotSpec, planGraphInsert, planGraphUpdate, type PlotBlock } from "./plot-markdown";
 import type { PlotDraft } from "./plot-ui";
-import { mergeShortcutChanges, normalizeShortcuts, type FormulaShortcuts } from "./shortcuts";
 
 function graphDraft(spec: PlotSpec): PlotDraft {
-  return { mode: spec.mode ?? 'function', expression: spec.expression, xMin: String(spec.xMin), xMax: String(spec.xMax), yMin: String(spec.yMin), yMax: String(spec.yMax), ...Object.fromEntries(['thetaMin', 'thetaMax', 'integralMin', 'integralMax', 'zMin', 'zMax', 'azimuth', 'elevation'].filter(key => spec[key as keyof PlotSpec] !== undefined).map(key => [key, String(spec[key as keyof PlotSpec])])), calculus: spec.calculus, previewed: true };
+  const draft: PlotDraft = {
+    mode: spec.mode ?? 'function', expression: spec.expression,
+    xMin: String(spec.xMin), xMax: String(spec.xMax),
+    yMin: String(spec.yMin), yMax: String(spec.yMax),
+    calculus: spec.calculus, previewed: true,
+  };
+  for (const key of ['thetaMin', 'thetaMax', 'integralMin', 'integralMax', 'zMin', 'zMax', 'azimuth', 'elevation', 'geometryZoom'] as const) {
+    if (spec[key] !== undefined) draft[key] = String(spec[key]);
+  }
+  if (spec.geometry) {
+    draft.geometry = { shape: spec.geometry.shape, faces: spec.geometry.faces };
+    for (const key of ['radius', 'width', 'depth', 'height', 'sides', 'angle', 'offset'] as const) {
+      if (spec.geometry[key] !== undefined) draft.geometry[key] = String(spec.geometry[key]);
+    }
+  }
+  return draft;
 }
 
 class AboutVisualMath extends Modal {
@@ -44,7 +58,7 @@ class AboutVisualMath extends Modal {
 class EquationModal extends Modal {
   private cleanup?: () => void;
   private pluginPath: string | undefined;
-  constructor(private plugin: VisualMathEditor, private view: MarkdownView, private target: WriteTarget, private range?: MathRange) {
+  constructor(private plugin: VisualMathEditor, private view: MarkdownView, private target: WriteTarget, private range?: MathRange, private draft?: InlineDraft) {
     super(plugin.app);
     this.pluginPath = view.file?.path;
   }
@@ -52,13 +66,15 @@ class EquationModal extends Modal {
     this.modalEl.addClass("vme-modal");
     this.setTitle(this.plugin.text(this.range ? "编辑公式" : "插入公式"));
     this.cleanup = mountEditor(this.contentEl, {
-      latex: this.range?.latex,
-      display: this.range?.display ?? true,
+      latex: this.draft?.latex ?? this.range?.latex,
+      display: this.draft?.display ?? this.range?.display ?? true,
+      initialMode: this.draft?.mode,
+      scienceDraft: this.draft?.science,
+      plotDraft: this.draft?.plot,
+      formulaImportDraft: this.draft?.formulaImport, matrixDraft: this.draft?.matrix, systemDraft: this.draft?.system,
       editing: !!this.range,
       language: this.plugin.language,
       systemLanguage: this.plugin.systemLanguage(),
-      shortcuts: this.plugin.shortcuts,
-      onShortcutsChange: (shortcuts, baseline) => this.plugin.setShortcuts(shortcuts, baseline),
       onLanguageChange: language => {
         const saved = this.plugin.setLanguage(language);
         this.setTitle(this.plugin.text(this.range ? "编辑公式" : "插入公式"));
@@ -158,7 +174,6 @@ export default class VisualMathEditor extends Plugin {
   modals = new Set<Modal>();
   isLoaded = false;
   language: Language = "system";
-  shortcuts: FormulaShortcuts = {};
   private settingsQueue: Promise<void> = Promise.resolve();
   private pluginSettings: Record<string, unknown> = {};
   private inline?: EditorView;
@@ -176,7 +191,6 @@ export default class VisualMathEditor extends Plugin {
     const data: unknown = await this.loadData();
     if (data && typeof data === "object" && !Array.isArray(data)) this.pluginSettings = data as Record<string, unknown>;
     if (["system", "zh", "en", "es"].includes(String(this.pluginSettings.language))) this.language = this.pluginSettings.language as Language;
-    this.shortcuts = normalizeShortcuts(this.pluginSettings.shortcuts);
     try { configureMathLive(); } catch (error) { this.notify(String(error)); throw error; }
     this.isLoaded = true;
     this.ribbonAction = this.addRibbonIcon("sigma", this.text("Visual Math：插入或编辑公式"), () => {
@@ -311,22 +325,6 @@ export default class VisualMathEditor extends Plugin {
     return operation;
   }
 
-  async setShortcuts(shortcuts: FormulaShortcuts, baseline: FormulaShortcuts = this.shortcuts): Promise<FormulaShortcuts> {
-    let committed: FormulaShortcuts = {};
-    const operation = this.settingsQueue.catch(() => undefined).then(async () => {
-      const normalized = mergeShortcutChanges(this.shortcuts, baseline, normalizeShortcuts(shortcuts));
-      const next = { ...this.pluginSettings, shortcuts: normalized };
-      await this.saveData(next);
-      this.pluginSettings = next;
-      this.shortcuts = normalized;
-      if (this.inlineSession) this.inlineSession.shortcuts = normalized;
-      committed = normalized;
-    });
-    this.settingsQueue = operation;
-    await operation;
-    return committed;
-  }
-
   private present(modal: Modal): void { this.modals.add(modal); modal.open(); }
 
   private activate(view: MarkdownView): void {
@@ -345,7 +343,7 @@ export default class VisualMathEditor extends Plugin {
       this.inline = undefined;
       this.inlineView = undefined;
       this.inlineSession = undefined;
-      if (this.recoveredDraft && (this.recoveredDraft.latex.trim() || this.recoveredDraft.science?.chemistry.trim() || this.recoveredDraft.science?.units.trim())) this.notify("公式草稿已暂存。可用“恢复公式草稿”命令在新位置继续编辑；重启前请保存。");
+      if (this.recoveredDraft && (this.recoveredDraft.latex.trim() || this.recoveredDraft.science?.chemistry.trim() || this.recoveredDraft.science?.units.trim() || this.recoveredDraft.formulaImport?.original.trim() || this.recoveredDraft.system?.lines.some(line => line.trim()) || this.recoveredDraft.matrix?.cells.some(row => row.some(cell => cell.trim())))) this.notify("公式草稿已暂存。可用“恢复公式草稿”命令在新位置继续编辑；重启前请保存。");
       return false;
     }
     if (this.inlineView) this.app.workspace.setActiveLeaf(this.inlineView.leaf, { focus: false });
@@ -438,7 +436,7 @@ export default class VisualMathEditor extends Plugin {
     if (this.inline && this.resumeInline()) return;
     if (dialog || !cm || !cm.state.field(inlineEditorField, false)) {
       if (plot) { this.notify('请在主窗口的笔记编辑模式中重新打开图像。'); return; }
-      this.present(new EquationModal(this, view, target, range)); return;
+      this.present(new EquationModal(this, view, target, range, draft)); return;
     }
     const path = view.file?.path;
     if (range) view.editor.setCursor(view.editor.offsetToPos(range.from > 0 ? range.from - 1 : range.to));
@@ -449,8 +447,6 @@ export default class VisualMathEditor extends Plugin {
       id: this.nextSessionId++, editing: !!range, graphOnly: Boolean(plot),
       language: this.language,
       systemLanguage: this.systemLanguage(),
-      shortcuts: this.shortcuts,
-      onShortcutsChange: (shortcuts, baseline) => this.setShortcuts(shortcuts, baseline),
       onLanguageChange: language => this.setLanguage(language),
       draft: draft ? { ...draft } : { latex: range?.latex ?? "", display: range?.display ?? true, mode: "visual" },
       onCancel: () => { hideInlineEditor(cm); this.inline = undefined; this.inlineView = undefined; this.inlineSession = undefined; cm.focus(); },
@@ -516,7 +512,7 @@ export default class VisualMathEditor extends Plugin {
       status.dataset.testid = 'saved-plot-status';
       status.setAttribute('role', 'status');
       status.setAttribute('aria-live', 'polite');
-      const boundsChanged = (): boolean => ['xMin', 'xMax', 'yMin', 'yMax', 'zMin', 'zMax', 'azimuth', 'elevation'].some(key => viewSpec[key as keyof PlotSpec] !== original[key as keyof PlotSpec]);
+      const boundsChanged = (): boolean => ['xMin', 'xMax', 'yMin', 'yMax', 'zMin', 'zMax', 'azimuth', 'elevation', 'geometryZoom'].some(key => viewSpec[key as keyof PlotSpec] !== original[key as keyof PlotSpec]);
       const controls: HTMLButtonElement[] = [];
       const makeButton = (label: string, testid: string, action: () => void): HTMLButtonElement => {
         const node = toolbar.createEl('button', { text: label, cls: 'vme-science-button' });
@@ -556,7 +552,7 @@ export default class VisualMathEditor extends Plugin {
         viewSpec = { ...result.spec };
         status.textContent = boundsChanged()
           ? '视图已调整，尚未保存。点击“保存视图”更新笔记。'
-          : viewSpec.mode === 'surface' ? '拖动旋转，滚轮缩放。调整后点击“保存视图”。' : '拖动移动，滚动或双指缩放。调整后点击“保存视图”。';
+          : (viewSpec.mode === 'surface' || viewSpec.mode === 'geometry') ? '拖动旋转，滚轮缩放。调整后点击“保存视图”。' : '拖动移动，滚动或双指缩放。调整后点击“保存视图”。';
         refresh();
         return true;
       };
@@ -572,8 +568,8 @@ export default class VisualMathEditor extends Plugin {
           refresh();
         }
       };
-      makeButton('放大', 'saved-plot-zoom-in', () => { interaction?.setDisabled(true); changeView(viewSpec.mode === 'surface' ? zoomSurfaceBounds(viewSpec, 0.8) : zoomPlotBounds(viewSpec, 0.8)); refresh(); });
-      makeButton('缩小', 'saved-plot-zoom-out', () => { interaction?.setDisabled(true); changeView(viewSpec.mode === 'surface' ? zoomSurfaceBounds(viewSpec, 1.25) : zoomPlotBounds(viewSpec, 1.25)); refresh(); });
+      makeButton('放大', 'saved-plot-zoom-in', () => { interaction?.setDisabled(true); changeView((viewSpec.mode === 'surface' || viewSpec.mode === 'geometry') ? zoomOrbitView(viewSpec, 0.8) : zoomPlotBounds(viewSpec, 0.8)); refresh(); });
+      makeButton('缩小', 'saved-plot-zoom-out', () => { interaction?.setDisabled(true); changeView((viewSpec.mode === 'surface' || viewSpec.mode === 'geometry') ? zoomOrbitView(viewSpec, 1.25) : zoomPlotBounds(viewSpec, 1.25)); refresh(); });
       const reset = makeButton('重置视图', 'saved-plot-reset', () => {
         // Reset deliberately discards a queued gesture so it cannot undo the explicit button action.
         interaction?.setDisabled(true);
@@ -593,8 +589,8 @@ export default class VisualMathEditor extends Plugin {
           for (const point of parsed.points) legend.createEl('li', { text: `${point.label} = ${formatComplex(point)} · Re = ${point.re} · Im = ${point.im}` });
         }
       }
-      interaction = original.mode === 'surface'
-        ? mountSurfaceInteraction(viewport, { getSpec: () => viewSpec, onChange: changeView })
+      interaction = original.mode === 'surface' || original.mode === 'geometry'
+        ? mountOrbitInteraction(viewport, { getSpec: () => viewSpec, onChange: changeView })
         : mountPlotInteraction(viewport, { getBounds: () => viewSpec, onChange: changeView });
       refresh();
 

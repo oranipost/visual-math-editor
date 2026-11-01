@@ -119,7 +119,7 @@
 }
 .vme-mathfield::part(menu-toggle), .vme-mathfield::part(virtual-keyboard-toggle) { display: none; }
 .vme-mathfield::part(container) { border: none; outline: none; background: transparent; box-shadow: none; }
-.vme-field-box[data-display="true"] .vme-mathfield::part(content) { justify-content: center; }
+.vme-field-box[data-display="true"] .vme-mathfield::part(content) { justify-content: flex-start; justify-content: safe center; }
 .vme-navigation { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 8px 0 0; }
 .vme-editor .vme-hint { margin: 0; color: var(--vme-muted); font-size: 10px; }
 .vme-hole-navigation { display: flex; flex-shrink: 0; gap: 6px; }
@@ -273,13 +273,6 @@
 .vme-equation-graph-toggle { min-height: 34px; }
 .vme-equation-graph-content .vme-plot-tools { margin-top: 9px; }
 .vme-editor .vme-plot-linked-hint { font-size: 12px; }
-.vme-shortcuts { margin: 0 0 16px; padding: 9px 11px; border: 1px solid var(--vme-line); border-radius: 8px; background: var(--vme-surface); }
-.vme-shortcuts > summary { cursor: pointer; color: var(--vme-muted); font-size: 12px; }
-.vme-shortcuts > summary:focus-visible { outline: 2px solid var(--vme-accent); outline-offset: 2px; }
-.vme-shortcut-row { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
-.vme-shortcut-row input { flex: 1 1 120px; min-width: 90px; width: 100%; }
-.vme-shortcut-row button { min-height: 30px; white-space: normal; }
-.vme-shortcut-list { display: grid; gap: 6px; margin-top: 10px; }
 .vme-plot-range > summary:focus-visible { outline: 2px solid var(--vme-accent); outline-offset: 2px; }
 .vme-plot-body { padding: 10px 11px 11px; }
 .vme-plot-presets:where(:not([hidden])) { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
@@ -330,3 +323,55 @@
   .vme-editor .vme-field-box,
   .vme-editor .vme-element-button { transition: none; }
 }
+
+/* Single-formula staging keeps source/candidate/preview separate from the draft. */
+.vme-editor .vme-import-open { align-self: flex-start; margin: 0 0 12px; }
+.vme-editor .vme-formula-import { border: 1px solid var(--interactive-accent, #8b5cf6); border-radius: 10px; padding: 14px; margin-bottom: 16px; }
+.vme-editor .vme-formula-import[hidden] { display: none; }
+.vme-editor .vme-formula-import h3 { margin: 0 0 8px; }
+.vme-editor .vme-formula-import label { display: block; margin: 8px 0; }
+.vme-editor .vme-formula-import textarea { display: block; box-sizing: border-box; width: 100%; margin-top: 5px; }
+.vme-editor .vme-import-preview { overflow: auto; max-height: 280px; }
+.vme-editor .vme-import-preview math-field { min-width: max-content; }
+.vme-editor .vme-import-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.vme-editor [data-testid="import-status"][data-state="error"] { color: var(--text-error, #f87171); }
+
+.vme-editor[data-mode="hybrid"][data-wide-equation="true"] .vme-workspace { grid-template-columns: minmax(0, 1fr); }
+
+/* Local matrix and higher-mathematics tools. No global note selectors. */
+.vme-matrix-tools, .vme-advanced-math { margin: 12px 0; border: 1px solid var(--background-modifier-border); border-radius: 8px; padding: 10px; }
+.vme-matrix-toggle, .vme-advanced-math summary { font-weight: 600; cursor: pointer; }
+.vme-matrix-panel { margin-top: 10px; }
+.vme-matrix-controls, .vme-matrix-cell-tools { display: flex; flex-wrap: wrap; align-items: end; gap: 8px; margin: 8px 0; }
+.vme-matrix-controls label { display: grid; gap: 5px; }
+.vme-matrix-grid { overflow-x: auto; padding: 5px; margin: 8px 0; }
+.vme-matrix-grid-row { display: flex; width: max-content; gap: 8px; margin-bottom: 8px; }
+.vme-matrix-cell { display: grid; gap: 4px; width: 116px; font-size: 11px; color: var(--text-muted); }
+.vme-matrix-cell-field { display: block; width: 116px; box-sizing: border-box; min-height: 52px; font-size: 21px; color: var(--text-normal); background: var(--background-primary); border: 1px solid var(--background-modifier-border); border-radius: 5px; }
+.vme-matrix-cell-field:focus-within { outline: 2px solid var(--interactive-accent); }
+.vme-matrix-preview { overflow: auto; max-height: 300px; }
+.vme-advanced-math-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(115px, 1fr)); gap: 7px; }
+.vme-advanced-math-button { display: grid; justify-items: center; gap: 6px; min-height: 65px; padding: 8px; }
+.vme-advanced-math-glyph { font-family: var(--font-math, serif); font-size: 22px; line-height: 1.2; }
+.vme-advanced-math-label { font-size: 12px; white-space: normal; }
+.vme-visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+
+.vme-matrix-cell-field::part(menu-toggle), .vme-matrix-cell-field::part(virtual-keyboard-toggle) { display: none; }
+.vme-matrix-cell-field::part(container) { border: none; outline: none; background: transparent; box-shadow: none; }
+.vme-matrix-preview .vme-picker-preview::part(menu-toggle), .vme-matrix-preview .vme-picker-preview::part(virtual-keyboard-toggle) { display: none; }
+
+/* Geometry shows only the dimensions used by the selected teaching shape. */
+.vme-geometry-controls { margin: 8px 0; }
+.vme-geometry-dimensions { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: 10px; }
+.vme-geometry-dimensions .vme-plot-range-control { font-size: 11px; }
+@media (max-width: 420px) { .vme-geometry-dimensions { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* A system row is a whole equation, so it uses the available note width. */
+.vme-system-lines { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; min-width: 0; }
+.vme-system-line { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.vme-system-line > label { color: var(--text-muted, #64748b); font-size: 12px; }
+.vme-system-line-field { display: block; width: 100%; min-width: 0; min-height: 52px; padding: 8px 10px; border: 1px solid var(--background-modifier-border, #dddde7); border-radius: 8px; background: var(--background-primary, #fff); color: var(--text-normal, #172033); font-size: 21px; box-sizing: border-box; }
+.vme-system-line-field::part(menu-toggle), .vme-system-line-field::part(virtual-keyboard-toggle) { display: none; }
+
+.vme-system-line-field:focus-within { outline: 2px solid var(--interactive-accent, #7756ca); }
+.vme-system-line-field::part(container) { border: none; outline: none; background: transparent; box-shadow: none; }

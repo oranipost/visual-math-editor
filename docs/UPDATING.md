@@ -1,14 +1,10 @@
 # Updates / 更新机制
 
-**0.8.1:** removes the unnecessary assertion and unused import, adds explicit string validation and complete Spanish documentation in both downloads. Save drafts, back up the plugin folder, keep `data.json`, replace program files and restart. Focused polar/XYZ save/reopen checks passed on macOS with Obsidian 1.14.4; other workflows/platforms and app-catalog installation retain their limits.
+**1.0.0:** adds reviewed single-formula import, matrix/system editors, set/sequence and advanced notation, and geometry models/spatial scenes. It removes custom formula keyword creation and expansion. Save drafts, back up the plugin folder, retain `data.json`, replace only program files and restart. Existing notes remain intact; old keyword data is unused and not actively deleted. There is no persistent formula library/history. Exact validation is in [TEST-REPORT.md](../TEST-REPORT.md).
 
-**0.8.1：** 清理多余类型声明与未使用导入，明确检查字符串参数，两种下载包均包含完整西班牙语文档。先保存草稿、备份插件目录，保留 `data.json` 并重启应用。macOS Obsidian 1.14.4 已通过极坐标/XYZ 保存与重开实测；不扩展为其他功能、平台或商城安装验证。
+**1.0.0：** 新增单式导入检查、矩阵/方程组、集合/数列、高等数学记号与几何/空间场景，移除自定义公式快捷词创建和展开。先保存草稿、备份插件目录，保留`data.json`，只替换程序文件并重启。已有笔记保留，旧关键词数据不再使用且不主动删除，不提供持久公式库/历史。准确验收范围见 [TEST-REPORT.md](../TEST-REPORT.md)。
 
-Historical 0.8.0 compatibility notes / 0.8.0 历史兼容性说明：
-
-**0.8.0:** back up the plugin folder and retain `data.json`. Earlier function and complex-plane blocks remain supported. New polar/XYZ/calculus settings require 0.8.0 to render/edit; downgrading leaves their original definitions in the note but an older build may report unsupported settings. Save drafts before updating and restart Obsidian. Native 0.8.0 save/reopen still needs verification; use a disposable note/vault first.
-
-**0.8.0：** 更新前备份插件目录并保留 `data.json`。旧函数与复平面区块继续支持；新增极坐标、XYZ 和微积分参数需要 0.8.0，降级后原始定义仍留在笔记里，但旧版可能提示不支持。先保存草稿，更新后重启 Obsidian。原生 0.8.0 保存重开仍待验证，请先用独立测试笔记或笔记库。
+New geometry blocks require 1.0.0; downgrading retains their definitions in notes but an older build cannot render/edit that mode. Existing function, complex, polar, XYZ and calculus blocks remain supported. / 新增几何区块需要1.0.0，降级后定义仍在笔记中，但旧版本无法渲染/编辑该模式。本版继续支持旧函数、复平面、极坐标、XYZ和数值微积分区块。
 
 [English](#english) · [简体中文](#简体中文) · [Installation](INSTALLATION.md)
 
@@ -16,9 +12,7 @@ Historical 0.8.0 compatibility notes / 0.8.0 历史兼容性说明：
 
 ### Updating the plugin
 
-Visual Math (formerly Visual Math Editor) is distributed as a GitHub public beta. Community-directory submission and approval are separate steps; these instructions do not claim that it is listed.
-
-Once it is approved and available in the community directory:
+Visual Math (formerly Visual Math Editor) provides an ordinary GitHub release. Community review and app-index synchronization apply to each release separately. When Obsidian offers the new version:
 
 1. Save or cancel open equation and graph drafts. Draft recovery is temporary memory and does not survive a restart.
 2. Open **Settings → Community plugins → Check for updates**.
@@ -31,7 +25,7 @@ For a manual GitHub installation, download the new **installation ZIP** from [Re
 
 ### Updating from Visual Math Editor to Visual Math
 
-The 0.7.0 rename changes the display name while keeping plugin ID and directory `visual-math-editor`, the repository URL, existing settings and `vme-plot` identifiers. Update the existing plugin rather than installing a second folder. The new Spanish selection and custom equation keywords use the same local settings file. Back up and retain `data.json` as for any normal update. An older public release can still display the former name.
+The 0.7.0 rename changes the display name while keeping plugin ID and directory `visual-math-editor`, the repository URL, existing settings and `vme-plot` identifiers. Update the existing plugin rather than installing a second folder. The language selection uses the same local settings file. Formula keywords introduced in earlier versions are removed in 1.0.0; their saved data is unused and is not actively deleted. Back up and retain `data.json` as for any normal update. An older public release can still display the former name.
 
 ### How maintainers publish updates
 
@@ -49,9 +43,7 @@ Developer: [Oliver / oranipost](https://github.com/oranipost). Public feedback: 
 
 ### 用户怎样更新
 
-Visual Math（原 Visual Math Editor）通过 GitHub 分发公开测试版。目录提交、审核通过和上架是独立步骤，本说明不代表已经收录。
-
-社区目录审核通过、可在目录内安装后：
+Visual Math（原 Visual Math Editor）通过 GitHub 普通Release分发正式版。社区审核与应用索引同步按具体版本分别记录。当Obsidian提供新版本时：
 
 1. 保存或取消尚未提交的公式和图像草稿；草稿恢复只使用临时内存，不会跨重启保留。
 2. 进入 **设置 → 第三方插件 → 检查更新（Settings → Community plugins → Check for updates）**。
@@ -64,7 +56,7 @@ Visual Math（原 Visual Math Editor）通过 GitHub 分发公开测试版。目
 
 ### 从 Visual Math Editor 更新为 Visual Math
 
-0.7.0 更改显示名称，继续保留插件 ID 与目录 `visual-math-editor`、仓库地址、既有设置和 `vme-plot` 标识。更新现有插件即可，不另建第二个文件夹。新增西班牙语选择与自定义公式关键词使用同一个本地设置文件；像正常更新一样备份并保留 `data.json`。旧的公开发行版仍可能显示旧名称。
+0.7.0 更改显示名称，继续保留插件 ID 与目录 `visual-math-editor`、仓库地址、既有设置和 `vme-plot` 标识。更新现有插件即可，不另建第二个文件夹。语言选择使用同一个本地设置文件；1.0.0已移除早期的公式关键词功能，旧数据不再使用且不主动删除。像正常更新一样备份并保留 `data.json`。旧的公开发行版仍可能显示旧名称。
 
 ### 开发者怎样发布新版
 

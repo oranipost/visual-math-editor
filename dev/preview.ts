@@ -1,6 +1,13 @@
+import { checkStructuredDrafts } from './structured-draft-check';
+import { checkEquationSystems } from './equation-system-check';
+import { checkSetSequenceTools } from './set-sequence-check';
+import { checkMathSymbols } from './math-symbols-check';
+import { checkGeometryTools } from './geometry-check';
+import { checkMatrixAdvanced } from './matrix-advanced-check';
+import { checkFormulaImport } from './formula-import-check';
+import { runFormulaImportAudit } from './formula-import-audit';
 import { checkAdvancedGraphs } from './advanced-graph-check';
 import { checkSpanishLocalization } from './spanish-check';
-import { checkFormulaShortcuts } from './shortcuts-check';
 import { checkInlineEquationGraph } from './inline-graph-check';
 import { mountEditor, type EditorMode, type EditorDraft } from "../src/editor-ui";
 import { configureMathLive, createPreview } from "../src/math-runtime";
@@ -522,6 +529,92 @@ async function checkIntegratedPlot(check: (condition: boolean, message: string) 
 }
 document.getElementById("theme")!.onclick = () => { document.body.classList.toggle("dark"); };
 document.getElementById("reset")!.onclick = () => { result.textContent = ""; open(); };
+const importAuditButton = document.createElement('button');
+importAuditButton.textContent = 'Audit formula import (development only)';
+importAuditButton.dataset.testid = 'formula-import-audit';
+document.getElementById('selftest')!.after(importAuditButton);
+importAuditButton.onclick = async () => {
+  importAuditButton.disabled = true;
+  result.textContent = 'Running bounded formula import audit…';
+  try { result.textContent = await runFormulaImportAudit(); }
+  catch (error) { result.textContent = String(error); }
+  finally { importAuditButton.disabled = false; }
+};
+const importCheckButton = document.createElement('button');
+importCheckButton.textContent = 'Check formula import (development only)';
+importCheckButton.dataset.testid = 'formula-import-check';
+importAuditButton.after(importCheckButton);
+importCheckButton.onclick = async () => {
+  importCheckButton.disabled = true;
+  const reports: string[] = [];
+  result.textContent = 'Running formula import regressions…';
+  try {
+    await checkFormulaImport((condition, message) => {
+      if (!condition) throw new Error(message);
+      reports.push('PASS · ' + message);
+    });
+    result.textContent = reports.join('\n') + `\n${reports.length} import checks passed.`;
+  } catch (error) { result.textContent = reports.join('\n') + '\nFAIL · ' + String(error); }
+  finally { importCheckButton.disabled = false; }
+};
+const matrixCheckButton = document.createElement('button');
+matrixCheckButton.textContent = 'Check matrix and advanced math (development only)';
+matrixCheckButton.dataset.testid = 'matrix-advanced-check';
+importCheckButton.after(matrixCheckButton);
+matrixCheckButton.onclick = async () => {
+  matrixCheckButton.disabled = true; const reports: string[] = [];
+  result.textContent = 'Running matrix and advanced math checks…';
+  try {
+    await checkMatrixAdvanced((condition, message) => {
+      if (!condition) throw new Error(message); reports.push('PASS · ' + message);
+    });
+    result.textContent = reports.join('\n') + `\n${reports.length} matrix/advanced checks passed.`;
+  } catch (error) { result.textContent = reports.join('\n') + '\nFAIL · ' + String(error); }
+  finally { matrixCheckButton.disabled = false; }
+};
+const geometryCheckButton = document.createElement('button');
+geometryCheckButton.id = 'geometry-check';
+geometryCheckButton.textContent = '几何模型组件检查';
+document.getElementById('selftest')!.after(geometryCheckButton);
+geometryCheckButton.onclick = async () => {
+  geometryCheckButton.disabled = true;
+  const reports: string[] = [];
+  const check = (condition: boolean, message: string) => {
+    if (!condition) throw new Error(message);
+    reports.push('PASS · ' + message);
+  };
+  result.textContent = '正在检查本地几何模型组件…';
+  try { await checkGeometryTools(check); result.textContent = reports.join('\n') + `\n\n${reports.length} 项几何模型组件测试通过。`; }
+  catch (error) { result.textContent = reports.join('\n') + '\n失败 · ' + String(error); }
+  finally { geometryCheckButton.disabled = false; }
+};
+
+const symbolsCheckButton = document.createElement('button');
+symbolsCheckButton.dataset.testid = 'math-symbols-check';
+symbolsCheckButton.textContent = '三角函数与几何符号检查';
+geometryCheckButton.after(symbolsCheckButton);
+symbolsCheckButton.onclick = async () => {
+  symbolsCheckButton.disabled = true; const reports: string[] = [];
+  const check = (condition: boolean, message: string) => { if (!condition) throw new Error(message); reports.push('PASS · ' + message); };
+  result.textContent = '正在检查三角函数与几何符号…';
+  try { await checkMathSymbols(check); result.textContent = reports.join('\n') + `\n\n${reports.length} 项三角函数与几何符号测试通过。`; }
+  catch (error) { result.textContent = reports.join('\n') + '\n失败 · ' + String(error); }
+  finally { symbolsCheckButton.disabled = false; }
+};
+
+const notationCheckButton = document.createElement('button');
+notationCheckButton.dataset.testid = 'system-set-sequence-check';
+notationCheckButton.textContent = '方程组、集合与数列检查';
+symbolsCheckButton.after(notationCheckButton);
+notationCheckButton.onclick = async () => {
+  notationCheckButton.disabled = true; const reports: string[] = [];
+  const check = (condition: boolean, message: string) => { if (!condition) throw new Error(message); reports.push('PASS · ' + message); };
+  result.textContent = '正在检查方程组、集合与数列…';
+  try { await checkEquationSystems(check); await checkSetSequenceTools(check); await checkStructuredDrafts(check); result.textContent = reports.join('\n') + `\n\n${reports.length} 项方程组、集合与数列测试通过。`; }
+  catch (error) { result.textContent = reports.join('\n') + '\n失败 · ' + String(error); }
+  finally { notationCheckButton.disabled = false; }
+};
+
 document.getElementById("selftest")!.onclick = async () => {
   const reports: string[] = [];
   const check = (condition: boolean, message: string) => { if (!condition) throw new Error(message); reports.push("通过 · " + message); };
@@ -800,6 +893,28 @@ document.getElementById("selftest")!.onclick = async () => {
       // A queued scroll can schedule the focus reconciliation after this RAF.
       // Observe the settled tooltip rather than that transient hidden frame.
       await settleElementLayout();
+      // Only element buttons own a tooltip. Bound the wait without refocusing or
+      // changing production state; the following assertions still fail if the
+      // requested element never receives its visible, correctly linked card.
+      if (control.matches('.vme-element-button')) {
+        for (let frame = 0; frame < 12; frame++) {
+          if (document.activeElement === control && !details.hidden
+            && control.getAttribute('aria-describedby') === details.id) break;
+          await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+        }
+        // Scroll/focus callbacks can arrive in later macrotasks even after the
+        // current RAF is visible. Require the same real focus/link to remain
+        // visible on two observations, while retaining a 200ms upper bound.
+        const deadline = performance.now() + 200;
+        let stableObservations = 0;
+        while (performance.now() < deadline) {
+          await new Promise<void>(resolve => setTimeout(resolve, 10));
+          const visibleForControl = document.activeElement === control && !details.hidden
+            && control.getAttribute('aria-describedby') === details.id;
+          stableObservations = visibleForControl ? stableObservations + 1 : 0;
+          if (stableObservations >= 2) break;
+        }
+      }
     };
     await settleElementLayout();
     check(details.hidden && details.getAttribute('role') === 'tooltip', "元素详情初始隐藏，并声明辅助技术可识别的 tooltip");
@@ -825,7 +940,13 @@ document.getElementById("selftest")!.onclick = async () => {
     window.scrollTo(beforeViewportTest.x, beforeViewportTest.y);
     await settleElementLayout();
     await focusVisibleElementControl(elementCell(6));
-    check(document.activeElement === elementCell(6) && !details.hidden && detailValue('mass') === '[12.0096, 12.0116]' && detailValue('shells') === '2, 4', "键盘聚焦碳显示标准原子量区间和各层电子数");
+    check(document.activeElement === elementCell(6) && !details.hidden && detailValue('mass') === '[12.0096, 12.0116]' && detailValue('shells') === '2, 4', `键盘聚焦碳显示标准原子量区间和各层电子数；诊断=${JSON.stringify({
+      activeLocalName: document.activeElement?.localName,
+      activeAction: (document.activeElement as HTMLElement | null)?.dataset.action,
+      detailsHidden: details.hidden, linked: elementCell(6).getAttribute('aria-describedby'), detailsId: details.id,
+      mass: detailValue('mass'), shells: detailValue('shells'),
+      documentFocused: document.hasFocus(), visibility: document.visibilityState,
+    })}`);
     check(detailValue('mass-label') === '标准原子量' && detailValue('configuration-label') === '电子排布' && detailValue('shells-label') === '各电子层电子数', "中文元素详情使用中文字段标签");
     await focusVisibleElementControl(elementCell(26));
     document.dispatchEvent(new Event('scroll'));
@@ -976,7 +1097,6 @@ document.getElementById("selftest")!.onclick = async () => {
     await checkIntegratedPlot(check);
     await checkInlineEquationGraph(check);
     await checkAdvancedGraphs(check);
-    await checkFormulaShortcuts(check);
     await checkSpanishLocalization(check);
     await checkComplexTools(check);
     await checkComplexRenderer(check);
