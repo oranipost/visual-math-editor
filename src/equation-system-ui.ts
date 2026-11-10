@@ -38,22 +38,21 @@ export function mountEquationSystemTools(container: HTMLElement, options: {
     const button = node('button', text); button.type = 'button'; button.dataset.action = id;
     button.addEventListener('click', () => { if (!disabled && !destroyed) run(); }); return button;
   };
-  const toggle = action('方程组大括号', 'system-toggle', () => setOpen(!open));
+  const toggle = action('方程组', 'system-toggle', () => setOpen(!open));
   toggle.className = 'vme-matrix-toggle';
   const panel = node('div'); panel.className = 'vme-matrix-panel'; panel.hidden = !open; panel.dataset.testid = 'system-panel';
-  const hint = node('p', '逐行填写方程或不等式，自动加左大括号；这里只编辑，不求解。'); hint.className = 'vme-hint';
+  const hint = node('p', '逐行填写方程或不等式，自动加左大括号。'); hint.className = 'vme-hint';
   const controls = node('div'); controls.className = 'vme-matrix-controls';
   const rowsLabel = node('label', '方程组行数'); const rowInput = node('select'); rowInput.dataset.testid = 'system-rows'; rowInput.setAttribute('aria-label', '方程组行数');
   for (let value = 2; value <= MAX_SYSTEM_ROWS; value++) { const choice = node('option', String(value)); choice.value = String(value); rowInput.append(choice); }
   rowInput.value = String(rows); rowsLabel.append(rowInput);
   const load = action('载入当前方程组', 'system-load', () => loadCurrent(true)); controls.append(rowsLabel, load);
-  const retained = node('p', '减少行数会保留本次隐藏行；取消不会更改原公式。'); retained.className = 'vme-hint';
   const lineTools = node('div'); lineTools.className = 'vme-matrix-cell-tools';
   for (const [label, id, template] of [['插入分数', 'system-line-fraction', '\\frac{#?}{#?}'], ['插入平方根', 'system-line-root', '\\sqrt{#?}']] as const) {
     const tool = action(label, id, () => {
       const target = activeLine ?? fields[0]?.field; if (!target) return;
       target.insert(template, { format: 'latex', mode: 'math', selectionMode: 'placeholder', focus: true, feedback: false });
-      syncLines(); invalidate();
+      syncLines(); autoInspect();
     });
     tool.addEventListener('pointerdown', event => event.preventDefault()); lineTools.append(tool);
   }
@@ -70,17 +69,18 @@ export function mountEquationSystemTools(container: HTMLElement, options: {
     if (!candidate) return;
     try {
       syncLines(); const latest = buildSystem({ rows, lines: lines.slice(0, rows) });
-      if (latest !== candidate) { invalidate(); return; }
+      if (latest !== candidate) { autoInspect(); return; }
       if (loadedSource !== undefined && options.getLatex() !== loadedSource) { status.textContent = '当前公式已更改，请重新载入方程组后再替换。'; status.dataset.state = 'error'; return; }
       options.onApply(candidate, loadedSource);
       loadedSource = loadedSource === undefined ? undefined : candidate;
       setOpen(false); status.textContent = '方程组已加入公式草稿；保存后才更新笔记。';
     } catch { status.textContent = '方程组未插入；请检查每行内容和当前公式。'; status.dataset.state = 'error'; }
   });
-  const cancel = action('取消方程组编辑', 'system-cancel', () => setOpen(false));
+  const cancel = action('取消', 'system-cancel', () => setOpen(false));
   const actions = node('div'); actions.className = 'vme-import-actions'; actions.append(review, apply, cancel);
-  const commitHint = node('p', '预览不会更改公式；插入或替换后仍需保存笔记。'); commitHint.className = 'vme-hint';
-  panel.append(hint, controls, retained, lineTools, grid, rejectedLabel, copy, preview, status, actions, commitHint);
+  cancel.title = '取消不会更改原公式';
+  review.title = '刷新方程组预览';
+  panel.append(hint, controls, lineTools, grid, rejectedLabel, copy, preview, status, actions);
   root.append(toggle, panel); container.append(root);
 
   function syncLines(): void {
@@ -92,6 +92,21 @@ export function mountEquationSystemTools(container: HTMLElement, options: {
   function invalidate(): void {
     candidate = undefined; preview.replaceChildren(); apply.disabled = true;
     status.textContent = '输入已修改，请重新预览方程组。'; status.dataset.state = 'stale';
+  }
+  function autoInspect(): void {
+    syncLines(); candidate = undefined; preview.replaceChildren(); apply.disabled = true;
+    apply.textContent = loadedSource === undefined ? '插入方程组' : '替换当前方程组';
+    if (lines.slice(0, rows).some(line => !line.trim())) {
+      status.textContent = ''; delete status.dataset.state;
+      return;
+    }
+    try {
+      const source = buildSystem({ rows, lines: lines.slice(0, rows) });
+      createPreview(source, preview); candidate = source; apply.disabled = disabled;
+      status.textContent = '预览已就绪，可直接插入。'; status.dataset.state = 'ready';
+    } catch {
+      status.textContent = ''; delete status.dataset.state;
+    }
   }
   function renderLines(): void {
     grid.replaceChildren(); fields.length = 0; activeLine = undefined;
@@ -106,7 +121,7 @@ export function mountEquationSystemTools(container: HTMLElement, options: {
       field.setValue(lines[row], { silenceNotifications: true });
       fields.push({ field, row, serialized: field.getValue('latex') });
       field.addEventListener('pointerdown', () => { activeLine = field; }); field.addEventListener('focusin', () => { activeLine = field; });
-      field.addEventListener('input', () => { syncLines(); invalidate(); });
+      field.addEventListener('input', () => { syncLines(); autoInspect(); });
       field.addEventListener('paste', (event: ClipboardEvent) => {
         event.preventDefault(); event.stopImmediatePropagation(); if (disabled || destroyed) return;
         const original = event.clipboardData?.getData('text/plain'); if (!original) return;
@@ -114,14 +129,14 @@ export function mountEquationSystemTools(container: HTMLElement, options: {
           const checked = analyzeFormulaImport(original);
           if (checked.issue || checked.wrapper !== 'bare') throw new Error('Unsupported line');
           const validated = validateSystemLine(checked.candidate);
-          lines[row] = validated; renderLines(); invalidate();
+          lines[row] = validated; renderLines(); autoInspect();
         } catch {
           invalidate(); rejectedOriginal = original; rejected.value = original; rejectedLabel.hidden = copy.hidden = false;
           status.textContent = '这一行暂不支持这段内容；粘贴原文保留在下方，方程组未改动。'; status.dataset.state = 'error';
         }
       }, true);
       field.addEventListener('keydown', event => { if (event.key === '\\') { event.preventDefault(); event.stopImmediatePropagation(); } }, true);
-      field.addEventListener('beforeinput', event => { if ((event as InputEvent).data === '\\') { event.preventDefault(); event.stopImmediatePropagation(); } }, true);
+      field.addEventListener('beforeinput', event => { if (event.data === '\\') { event.preventDefault(); event.stopImmediatePropagation(); } }, true);
     }
   }
   function inspect(): void {
@@ -131,13 +146,13 @@ export function mountEquationSystemTools(container: HTMLElement, options: {
       const source = buildSystem({ rows, lines: lines.slice(0, rows) });
       createPreview(source, preview); candidate = source; apply.disabled = disabled;
       apply.textContent = loadedSource === undefined ? '插入方程组' : '替换当前方程组';
-      status.textContent = '预览不会更改公式；插入或替换后仍需保存笔记。'; status.dataset.state = 'ready';
+      status.textContent = '预览已就绪，可直接插入。'; status.dataset.state = 'ready';
     } catch { status.textContent = '方程组包含暂不支持的内容；原公式未改动。'; status.dataset.state = 'error'; }
   }
   function useData(parsed: SystemData, original: string): void {
     rows = parsed.rows; loadedSource = original;
     for (let row = 0; row < MAX_SYSTEM_ROWS; row++) lines[row] = parsed.lines[row] ?? '';
-    rowInput.value = String(rows); renderLines(); invalidate(); apply.textContent = '替换当前方程组';
+    rowInput.value = String(rows); renderLines(); autoInspect(); apply.textContent = '替换当前方程组';
   }
   function loadCurrent(showError: boolean): void {
     const original = options.getLatex(); const parsed = parseSystem(original);
@@ -149,15 +164,16 @@ export function mountEquationSystemTools(container: HTMLElement, options: {
     open = value; panel.hidden = !open; toggle.setAttribute('aria-expanded', String(open));
     if (open) {
       if (autoLoadPending) { autoLoadPending = false; loadCurrent(false); }
-      renderLines(); invalidate();
+      renderLines(); autoInspect();
     } else { fields.length = 0; grid.replaceChildren(); }
     options.onOpenChange(open);
   }
-  rowInput.addEventListener('change', () => { syncLines(); rows = Number(rowInput.value); renderLines(); invalidate(); });
+  rowInput.addEventListener('change', () => { syncLines(); rows = Number(rowInput.value); renderLines(); autoInspect(); });
   toggle.setAttribute('aria-expanded', String(open));
-  if (open) renderLines(); apply.disabled = true;
+  if (open) { renderLines(); autoInspect(); } else apply.disabled = true;
   return {
     isOpen: () => open,
+    close: () => { if (open) setOpen(false); },
     getDraft: (): SystemDraft => { syncLines(); return { open, rows, lines: [...lines], loadedSource, rejectedOriginal }; },
     setDisabled(value: boolean) {
       disabled = value;

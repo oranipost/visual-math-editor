@@ -44,11 +44,11 @@ const failure = (error: string): PlotFailure => ({ ok: false, error });
 /** Inspect data descriptors without invoking getters or accepting prototype-bearing custom objects. */
 function plainData(value: unknown, allowed: readonly string[]): Record<string, unknown> | undefined {
   if (!value || typeof value !== 'object') return undefined;
-  const prototype = Object.getPrototypeOf(value);
+  const prototype: unknown = Object.getPrototypeOf(value);
   if (prototype !== null && prototype !== Object.prototype) return undefined;
   const keys = Reflect.ownKeys(value);
   if (keys.length > allowed.length || keys.some(key => typeof key !== 'string' || !allowed.includes(key))) return undefined;
-  const result: Record<string, unknown> = Object.create(null);
+  const result = Object.create(null) as Record<string, unknown>;
   for (const key of keys as string[]) {
     const descriptor = Object.getOwnPropertyDescriptor(value, key);
     if (!descriptor || !Object.hasOwn(descriptor, 'value')) return undefined;
@@ -94,7 +94,7 @@ export function validateGeometrySpec(input: PlotSpec): { ok: true; spec: Geometr
     const geometryZoom = value.geometryZoom === undefined ? DEFAULT_GEOMETRY_SPEC.geometryZoom : value.geometryZoom;
     if (typeof azimuth !== 'number' || !Number.isFinite(azimuth) || typeof elevation !== 'number' || !Number.isFinite(elevation) || elevation < 10 || elevation > 80
       || typeof geometryZoom !== 'number' || !Number.isFinite(geometryZoom) || geometryZoom < GEOMETRY_LIMITS.minimumZoom || geometryZoom > GEOMETRY_LIMITS.maximumZoom) return failure('Use a finite camera angle, elevation from 10 to 80 degrees, and zoom from 0.25 to 4.');
-    return { ok: true, spec: { mode: 'geometry', expression: '', xMin: value.xMin as number, xMax: value.xMax as number, yMin: value.yMin as number, yMax: value.yMax as number, geometry, azimuth: wrapAngle(azimuth), elevation, geometryZoom } };
+    return { ok: true, spec: { mode: 'geometry', expression: '', xMin: value.xMin, xMax: value.xMax, yMin: value.yMin, yMax: value.yMax, geometry, azimuth: wrapAngle(azimuth), elevation, geometryZoom } };
   } catch {
     return failure('Use only supported geometry settings and dimensions.');
   }
@@ -215,7 +215,7 @@ function renderGeometrySvg(spec: GeometrySpec, mesh: GeometryMesh, override: Par
   const clipId = `vme-geometry-frame-${(++geometryRenderSequence).toString(36)}`;
   const labels = { ...DEFAULT_LABELS };
   // Ignore unknown/non-text presentation fields; never interpolate markup from labels.
-  for (const key of Object.keys(labels) as (keyof GeometryLabels)[]) if (typeof override[key] === 'string') labels[key] = override[key]!.slice(0, 600);
+  for (const key of Object.keys(labels) as (keyof GeometryLabels)[]) if (typeof override[key] === 'string') labels[key] = override[key].slice(0, 600);
   const model = spec.geometry, camera = (point: GeometryPoint): GeometryPoint => projectGeometryPoint(point, spec.azimuth, spec.elevation);
   const radius = Math.max(...mesh.vertices.map(point => Math.hypot(point.x, point.y, point.z)));
   const scale = 148 / radius * spec.geometryZoom;

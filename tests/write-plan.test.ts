@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { findMathRanges } from "../src/math-ranges";
 import { DocumentChangedError, planWrite, type WriteTarget } from "../src/write-plan";
 
 function apply(snapshot: string, from: number, to: number, latex: string, display: boolean): string {
@@ -125,4 +126,28 @@ test("a blank paragraph after a list or quote permits a new display equation", (
 		const snapshot = before + "here";
 		assert.equal(planWrite(snapshot, { snapshot, from: before.length, to: before.length }, "x", true), "$$\nx\n$$\n\n");
 	}
+});
+
+test("in-box multiline displaylines round-trips through planWrite and findMathRanges in both display and inline notes", () => {
+	const initialNote = "# Multiline Note\n\nDerivation:\n\n";
+	const twoLineLatex = String.raw`\displaylines{x+1=2\\ y=\frac{x+1}{\sqrt{x^2+1}}}`;
+	const afterSave1 = apply(initialNote, initialNote.length, initialNote.length, twoLineLatex, true);
+	const ranges1 = findMathRanges(afterSave1);
+	assert.equal(ranges1.length, 1);
+	assert.equal(ranges1[0]!.display, true);
+	assert.equal(ranges1[0]!.latex.trim(), twoLineLatex);
+
+	const threeLineLatex = String.raw`\displaylines{x+1=2\\ y=\frac{x+1}{\sqrt{x^2+1}}\\ z=3}`;
+	const afterSave2 = apply(afterSave1, ranges1[0]!.from, ranges1[0]!.to, threeLineLatex, true);
+	const ranges2 = findMathRanges(afterSave2);
+	assert.equal(ranges2.length, 1);
+	assert.equal(ranges2[0]!.latex.trim(), threeLineLatex);
+
+	const inlineNote = "Inline derivation:  end.";
+	const insertAt = inlineNote.indexOf("  ") + 1;
+	const afterInlineSave = apply(inlineNote, insertAt, insertAt, "\\displaylines{a=1\\\\\nb=2}", false);
+	const inlineRanges = findMathRanges(afterInlineSave);
+	assert.equal(inlineRanges.length, 1);
+	assert.equal(inlineRanges[0]!.display, false);
+	assert.equal(inlineRanges[0]!.latex, String.raw`\displaylines{a=1\\ b=2}`);
 });

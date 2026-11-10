@@ -102,13 +102,15 @@ export async function checkMatrixAdvanced(check: (condition: boolean, message: s
       && previewData?.cells[0][0] === '1' && previewData.cells[1][1] === '4', '矩阵：完整2×2提供真实只读MathLive预览并允许明确应用');
     check(mounted!.getDraft().latex === 'x+1' && writes.length === initialWrites && button('save').disabled, '矩阵：预览不改变主公式且不能绕过应用直接保存');
     await enterCell(2, 2, '5');
-    check(button('matrix-apply').disabled && node('matrix-status').dataset.state === 'stale', '矩阵：预览后修改单元格使旧候选失效');
+    check(!button('matrix-apply').disabled && node('matrix-status').dataset.state === 'ready', '矩阵：修改单元格实时更新预览并允许直接应用');
+    await enterCell(2, 2, '');
+    check(button('matrix-apply').disabled, '矩阵：清空单元格后阻止应用');
     await enterCell(2, 2, '4'); await act('matrix-preview');
     await act('matrix-cancel');
     check(node('matrix-panel').hidden && mounted!.getDraft().latex === 'x+1' && writes.length === initialWrites && outerCancels === 0, '矩阵：取消只关闭矩阵草稿，不关闭主编辑器或写笔记');
     check(!mounted!.field.readOnly && !button('save').disabled, '矩阵：取消后恢复主公式编辑和保存');
     await act('matrix-toggle');
-    check(cell(2, 2).getValue('latex') === '4' && button('matrix-apply').disabled, '矩阵：本次会话重开保留单元格，但必须重新预览');
+    check(cell(2, 2).getValue('latex') === '4' && !button('matrix-apply').disabled, '矩阵：本次会话重开保留单元格并自动实时预览');
     await act('matrix-preview'); mounted!.field.position = -1;
     await act('matrix-apply'); const appended = mounted!.getDraft().latex;
     check(node('matrix-panel').hidden && appended.includes('x+1') && appended.includes('\\begin{bmatrix}') && writes.length === initialWrites, '矩阵：明确插入追加到当前公式草稿，仍未写笔记');
@@ -182,11 +184,11 @@ export async function checkMatrixAdvanced(check: (condition: boolean, message: s
       const matrixText = node('matrix-tools').textContent ?? '';
       const advancedText = node('advanced-math-tools').textContent ?? '';
       if (language === 'zh') {
-        check(matrixText.includes('矩阵编辑器') && matrixText.includes('所有单元格都需要填写'), '语言：中文矩阵工具和错误提示可用');
-        check(advancedText.includes('高等数学模板') && advancedText.includes('不计算或求解'), '语言：中文高等数学标签明确表示只编辑结构');
+        check(matrixText.includes('矩阵') && matrixText.includes('所有单元格都需要填写'), '语言：中文矩阵工具和错误提示可用');
+        check(advancedText.includes('高等数学模板') && advancedText.includes('填写方框'), '语言：中文高等数学标签说明可用');
       } else {
-        check(!/[\u4e00-\u9fff]/.test(matrixText) && matrixText.includes(language === 'en' ? 'Matrix editor' : 'Editor de matrices'), `语言：${language}矩阵工具及动态错误提示无残留中文`);
-        check(!/[\u4e00-\u9fff]/.test(advancedText) && advancedText.includes(language === 'en' ? 'Advanced math templates' : 'Plantillas de matemáticas avanzadas'), `语言：${language}高等数学标签和说明完整翻译`);
+        check(!/[\u4e00-\u9fff]/.test(matrixText) && matrixText.includes(language === 'en' ? 'Matrix' : 'Matriz'), `语言：${language}矩阵工具及动态错误提示无残留中文`);
+        check(!/[\u4e00-\u9fff]/.test(advancedText) && advancedText.includes(language === 'en' ? 'Advanced math' : 'Matemáticas avanzadas'), `语言：${language}高等数学标签和说明完整翻译`);
       }
       await act('matrix-cancel');
     }

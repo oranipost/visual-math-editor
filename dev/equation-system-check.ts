@@ -80,11 +80,14 @@ export async function checkEquationSystems(check: (condition: boolean, message: 
     check(Boolean(preview?.readOnly) && preview?.errors.length === 0 && previewData?.rows === 2 && previewData.lines[0] === 'x+y=3' && previewData.lines[1] === 'x-y=1', '方程组：真实MathLive预览是单列两行左括号，序列化不补第二列');
     check(!button('system-apply').disabled && draft().latex === 'x+1' && writes.length === startWrites, '方程组：预览保留主公式且不写笔记');
     await enter(2, 'x-y=2');
-    check(button('system-apply').disabled && node('system-status').dataset.state === 'stale', '方程组：预览后修改行内容使旧候选失效');
+    check(!button('system-apply').disabled && node('system-status').dataset.state === 'ready', '方程组：修改行内容实时更新预览并允许直接应用');
+    await enter(2, '');
+    check(button('system-apply').disabled, '方程组：清空行后阻止应用');
+    await enter(2, 'x-y=2');
     await act('system-preview'); await act('system-cancel');
     check(node('system-panel').hidden && draft().latex === 'x+1' && writes.length === startWrites && cancels === 0, '方程组：取消只关闭结构草稿，原公式及笔记未改');
     check(!mounted!.field.readOnly && !button('save').disabled && !button('matrix-toggle').disabled, '方程组：取消恢复主编辑器和其他结构工具');
-    await act('system-toggle'); check(line(2).getValue('latex') === 'x-y=2' && button('system-apply').disabled, '方程组：本次会话重开保留行草稿但必须重新预览');
+    await act('system-toggle'); check(line(2).getValue('latex') === 'x-y=2' && !button('system-apply').disabled, '方程组：本次会话重开保留行草稿并自动实时预览');
     await act('system-preview'); mounted!.field.position = -1; await act('system-apply');
     const appended = draft().latex;
     check(node('system-panel').hidden && appended.includes('x+1') && appended.includes('\\begin{cases}') && writes.length === startWrites, '方程组：明确插入只追加公式草稿，不写笔记');
@@ -99,7 +102,7 @@ export async function checkEquationSystems(check: (condition: boolean, message: 
     check(draft().system?.loadedSource === original && line(2).getValue('latex').includes('sqrt'), '方程组：未打开工具即getDraft重挂载后，首次打开仍自动载入系统');
 
     check(draft().system?.loadedSource === original && line(1).getValue('latex').includes('frac') && line(2).getValue('latex').includes('sqrt'), '方程组：首次打开整条单列系统自动载入，不额外点Load');
-    check(button('system-apply').disabled && draft().latex === original, '方程组：自动载入不改变精确原源码');
+    check(!button('system-apply').disabled && draft().latex === original, '方程组：自动载入不改变精确原源码且实时预览可用');
     line(2).position = -1; line(2).insert('+1', { format: 'latex', mode: 'math', selectionMode: 'after', feedback: false });
     line(2).dispatchEvent(new Event('input', { bubbles: true })); await settle(); await act('system-preview');
     const expectedSecond = draft().system!.lines[1];

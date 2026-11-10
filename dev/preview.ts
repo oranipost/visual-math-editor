@@ -1103,8 +1103,83 @@ document.getElementById("selftest")!.onclick = async () => {
     await checkPlotGestures(check);
     await checkAutomaticPlotPreview(check);
     await checkSavedPlotLocalization(check);
+    await checkMultilineEditing(check);
     open("\\frac{-b\\pm\\sqrt{b^2-4ac}}{2a}", "hybrid", true, true);
     result.textContent = reports.join("\n") + `\n\n${reports.length} 项组件测试通过。`;
   } catch (error) { result.textContent = reports.join("\n") + "\n失败 · " + String(error); }
 };
+
+async function checkMultilineEditing(check: (condition: boolean, message: string) => void): Promise<void> {
+  const fixture = document.createElement("div");
+  document.body.append(fixture);
+  let instance: ReturnType<typeof mountEditor> | undefined;
+  let savedValue = "";
+  const mount = (latex?: string, initialMode: EditorMode = "hybrid", display = true) => {
+    instance?.destroy();
+    instance = mountEditor(fixture, {
+      latex, editing: latex !== undefined, display, initialMode, language: "zh",
+      onSave: value => { savedValue = value; mount(value, initialMode, display); },
+      onCancel: () => instance?.destroy(),
+    });
+  };
+  const click = (action: string) => fixture.querySelector<HTMLButtonElement>(`[data-action="${action}"]`)!.click();
+  const inputSource = (value: string) => {
+    const source = fixture.querySelector<HTMLTextAreaElement>('[data-testid="latex-source"]')!;
+    source.value = value;
+    source.dispatchEvent(new Event("input", { bubbles: true }));
+    return source;
+  };
+  try {
+    mount("\\left(x+1\\right)=2", "hybrid");
+    const parenField = instance!.field;
+    parenField.position = 2;
+    click("operator-newline");
+    await new Promise(resolve => setTimeout(resolve, 0));
+    check(parenField.getValue("latex-expanded").startsWith("\\displaylines{") && !parenField.getValue("latex-expanded").includes("pmatrix"), "单行带括号公式内点击换行不会误转为矩阵，而是整行转为多行公式第一行");
+    click("save");
+    check(!fixture.querySelector<HTMLElement>(".vme-error")!.hidden, "多行公式存在空行时阻止保存并提示补全");
+    click("superscript");
+    await new Promise(resolve => setTimeout(resolve, 0));
+    check(parenField.getValue("latex-expanded").includes("\\placeholder{}^{"), "多行公式新空行句首点击上标可正常生成底数与指数占位方框");
+
+    mount("x+1=2", "hybrid");
+    const mlField = instance!.field;
+    click("operator-newline");
+    await new Promise(resolve => setTimeout(resolve, 0));
+    check(mlField.getValue("latex-expanded") === "\\displaylines{x+1=2\\\\ }", "单行公式点击换行按钮转为 displaylines 多行结构并定位到第二行");
+    check(fixture.querySelector<HTMLElement>(".vme-editor")?.dataset.wideEquation === "true", "多行公式在 Hybrid 模式下自动启用上下宽公式布局");
+    click("undo");
+    await new Promise(resolve => setTimeout(resolve, 0));
+    check(mlField.getValue("latex-expanded") === "x+1=2", "撤销操作可将换行还原为单行公式");
+    click("redo");
+    await new Promise(resolve => setTimeout(resolve, 0));
+    check(mlField.getValue("latex-expanded") === "\\displaylines{x+1=2\\\\ }", "重做操作可恢复同框多行换行状态");
+    mlField.insert("y=", { format: "latex", mode: "math" });
+    click("fraction");
+    mlField.insert("x+1", { format: "latex", mode: "math" });
+    mlField.executeCommand("moveToNextPlaceholder");
+    click("sqrt");
+    mlField.insert("x^2+1", { format: "latex", mode: "math" });
+    await new Promise(resolve => setTimeout(resolve, 0));
+    check(mlField.getValue("latex-expanded").replace(/\s/g, "") === "\\displaylines{x+1=2\\\\y=\\frac{x+1}{\\sqrt{x^2+1}}}", "第二行内可连续使用分数与根号工具栏按钮");
+    const shiftEnter = new KeyboardEvent("keydown", { key: "Enter", shiftKey: true, bubbles: true, cancelable: true });
+    mlField.dispatchEvent(shiftEnter);
+    await new Promise(resolve => setTimeout(resolve, 0));
+    mlField.insert("z=3", { format: "latex", mode: "math" });
+    await new Promise(resolve => setTimeout(resolve, 0));
+    check(shiftEnter.defaultPrevented && mlField.getValue("latex-expanded").replace(/\s/g, "") === "\\displaylines{x+1=2\\\\y=\\frac{x+1}{\\sqrt{x^2+1}}\\\\z=3}", "在嵌套分母根号内按 Shift+Enter 可跳出嵌套结构并直接新增第三行");
+    inputSource("\\displaylines{x+1=2\\\\ y=\\frac{x+1}{\\sqrt{x^2+1}}\\\\ z=4}");
+    await new Promise(resolve => setTimeout(resolve, 0));
+    check(!mlField.hidden && mlField.getValue("latex-expanded").replace(/\s/g, "").includes("z=4"), "Hybrid 模式下修改多行公式源码实时同步至同一个可视化框且不阻塞");
+    const cmdEnter = new KeyboardEvent("keydown", { key: "Enter", metaKey: true, bubbles: true, cancelable: true });
+    mlField.dispatchEvent(cmdEnter);
+    await Promise.resolve();
+    check(savedValue.includes("\\displaylines") && savedValue.includes("z=4") && !savedValue.endsWith("\\\\ }"), "Cmd+Enter 直接保存多行公式而不额外插入空行");
+    check(instance!.field.getValue("latex-expanded").replace(/\s/g, "").includes("z=4"), "保存后的多行公式重开仍在同一个可视化框内可继续逐行编辑");
+  } finally {
+    instance?.destroy();
+    fixture.remove();
+  }
+}
+
 open();

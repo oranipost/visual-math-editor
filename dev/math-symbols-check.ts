@@ -69,7 +69,7 @@ export async function checkMathSymbols(check: (condition: boolean, message: stri
     await act('matrix-cancel'); check(MATH_SYMBOL_TOOLS.every(tool => !button(`math-${tool.id}`).disabled), '取消矩阵草稿恢复全部新符号按钮');
     for (const language of ['en', 'zh', 'es'] as const) {
       await open('', 'hybrid', language); const text = panel().textContent ?? '';
-      check(text.includes(language === 'en' ? 'Trigonometry and geometry symbols' : language === 'es' ? 'Trigonometría y símbolos geométricos' : '三角函数与几何符号'), `符号面板：${language}分组标题可用`);
+      check(text.includes(language === 'en' ? 'Trig & geometry' : language === 'es' ? 'Trigonometría y geometría' : '三角函数与几何符号'), `符号面板：${language}分组标题可用`);
       if (language !== 'zh') check(!/[\u4e00-\u9fff]/.test(text) && MATH_SYMBOL_TOOLS.every(tool => !/[\u4e00-\u9fff]/.test(button(`math-${tool.id}`).getAttribute('aria-label') ?? '')), `符号面板：${language}说明、可见标签与无障碍名称无残留中文`);
       check(MATH_SYMBOL_TOOLS.every(tool => fixture.querySelectorAll(`[data-action="math-${tool.id}"]`).length === 1), `符号面板：${language}每种函数与几何符号只有一个主Math按钮`);
     }

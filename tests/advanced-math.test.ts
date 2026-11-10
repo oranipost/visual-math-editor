@@ -16,7 +16,7 @@ test('advanced templates cover the requested notation without a solver path', ()
     'double-integral', 'infinite-series', 'product', 'vector', 'gradient',
   ]);
   assert.equal(new Set(ADVANCED_MATH_TEMPLATES.map(item => item.id)).size, ADVANCED_MATH_TEMPLATES.length);
-  assert.match(ADVANCED_MATH_HINT, /不计算或求解/);
+  assert.match(ADVANCED_MATH_HINT, /填写方框/);
   for (const item of ADVANCED_MATH_TEMPLATES) {
     assert.match(item.latex, /#\?/, item.id);
     assert.doesNotMatch(item.latex, /#[0-9@]/, item.id);

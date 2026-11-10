@@ -72,6 +72,35 @@ function isEmptyMathBody(body: string): boolean {
   return true;
 }
 
+function hasEmptyMultilineRow(body: string): boolean {
+  let braces = 0;
+  let environments = 0;
+  let rowStart = 0;
+  for (let index = 0; index < body.length;) {
+    if (body[index] === '%') { index = skipTrivia(body, index); continue; }
+    if (body[index] === '{') { braces++; index++; continue; }
+    if (body[index] === '}') { braces = Math.max(0, braces - 1); index++; continue; }
+    if (body[index] !== '\\') { index++; continue; }
+    const start = index;
+    const command = commandAt(body, index);
+    index = command.end;
+    if (command.name === '\\' && braces === 0 && environments === 0) {
+      if (isEmptyMathBody(body.slice(rowStart, start))) return true;
+      rowStart = index;
+      continue;
+    }
+    if (command.name === 'begin' || command.name === 'end') {
+      const envGroup = readGroup(body, skipTrivia(body, index));
+      if (envGroup) {
+        index = envGroup.end;
+        if (command.name === 'begin') environments++;
+        else environments = Math.max(0, environments - 1);
+      }
+    }
+  }
+  return isEmptyMathBody(body.slice(rowStart));
+}
+
 /** Detects unfilled editor slots, including empty structured arguments after deletion. */
 export function hasIncompleteSlots(latex: string): boolean {
   for (let index = 0; index < latex.length;) {
@@ -88,6 +117,11 @@ export function hasIncompleteSlots(latex: string): boolean {
     const command = commandAt(latex, index);
     index = command.end;
     if (command.name === 'placeholder') return true;
+    if (command.name === 'displaylines') {
+      const group = readGroup(latex, skipTrivia(latex, index));
+      if (!group || hasEmptyMultilineRow(group.body)) return true;
+      continue;
+    }
     // mhchem has its own notation: a standalone ^ marks released gas. Do not
     // mistake that marker (or unit exponents) for incomplete math-field slots.
     if (command.name === 'ce' || command.name === 'pu') {

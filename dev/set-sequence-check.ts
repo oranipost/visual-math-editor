@@ -115,7 +115,7 @@ export async function checkSetSequenceTools(check: (condition: boolean, message:
     check(cancels > 0 && writes.length === beforeCancelWrites, '集合数列：主编辑器取消不写笔记');
     for (const language of ['en', 'zh', 'es'] as const) {
       await open('', 'hybrid', language); panel().open = true; const text = panel().textContent ?? '';
-      check(text.includes(language === 'en' ? 'Sets and sequences' : language === 'es' ? 'Conjuntos y sucesiones' : '集合与数列'), '集合数列：' + language + '标题可用');
+      check(text.includes(language === 'en' ? 'Sets & sequences' : language === 'es' ? 'Conjuntos y sucesiones' : '集合与数列'), '集合数列：' + language + '标题可用');
       if (language !== 'zh') check(!/[\u4e00-\u9fff]/.test(text) && SET_SEQUENCE_TOOLS.every(tool =>
         !/[\u4e00-\u9fff]/.test(button('set-sequence-' + tool.id).getAttribute('aria-label') ?? '')), '集合数列：' + language + '可见文案与无障碍名称无中文残留');
       check(SET_SEQUENCE_TOOLS.every(tool => fixture.querySelectorAll('[data-action="set-sequence-' + tool.id + '"]').length === 1),

@@ -7,7 +7,7 @@ export const MAX_FORMULA_IMPORT_COMMANDS = 512;
 
 /** A separate visual-rendering budget; larger valid input may still be saved as source. */
 export const MAX_FORMULA_VISUAL_CHARS = 4096;
-export const FORMULA_VISUAL_LIMIT_MESSAGE = '公式超过 4096 个 UTF-16 代码单元，暂用 LaTeX 或 Hybrid 源码编辑；原文完整保留，缩短后可恢复可视化。';
+export const FORMULA_VISUAL_LIMIT_MESSAGE = '公式超过 4096 字符，已切换为源码编辑（缩短后恢复可视化）。';
 
 /** UTF-16 code units, as measured by String.length. Never truncates or rewrites source. */
 export function formulaVisualBudgetIssue(source: string): string | null {

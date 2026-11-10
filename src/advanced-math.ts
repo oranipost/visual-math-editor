@@ -11,7 +11,7 @@ export interface AdvancedMathTemplate {
 }
 
 export const ADVANCED_MATH_HEADING = '高等数学模板';
-export const ADVANCED_MATH_HINT = '点击插入数学结构，再填写方框。这里只编辑公式，不计算或求解。';
+export const ADVANCED_MATH_HINT = '点击插入结构并填写方框。';
 
 export const ADVANCED_MATH_TEMPLATES: readonly AdvancedMathTemplate[] = [
   {

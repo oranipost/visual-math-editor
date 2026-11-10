@@ -176,7 +176,6 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
     language.append(option);
   }
   language.value = options.language ?? 'system';
-  heading.append(headingCopy, localBadge, language);
 
   const modeTabs = el('div', 'vme-mode-tabs');
   modeTabs.setAttribute('role', 'tablist');
@@ -284,9 +283,59 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
     }
   }
 
+  function hasPreviousInGroup(): boolean {
+    if (!field.selectionIsCollapsed) return true;
+    const current = field.position;
+    if (current <= 0) return false;
+    field.executeCommand('moveToGroupStart');
+    const groupStart = field.position;
+    field.position = current;
+    return current > groupStart;
+  }
+
+  function insertNewline(): void {
+    if (saving || visualBlocked || importTools.isOpen() || structureEditing()) return;
+    syncFromVisual();
+    if (visualBlocked) return;
+    const current = field.getValue('latex-expanded').trim();
+    if (!current) {
+      field.setValue(String.raw`\displaylines{\\ }`, { silenceNotifications: true });
+      field.executeCommand('moveToMathfieldEnd');
+    } else {
+      const isEnvMultiline = /^\\begin\s*\{\s*(?:gathered|aligned|align\*?|cases|[pbBvV]?matrix)\s*\}[\s\S]*\\end\s*\{/.test(current);
+      const isDisplaylines = /^\\displaylines\s*\{/.test(current);
+      if (!isEnvMultiline && !isDisplaylines) {
+        field.executeCommand('moveToMathfieldEnd');
+        field.executeCommand('addRowAfter');
+      } else {
+        if (isEnvMultiline) {
+          if (field.position === 0 && field.lastOffset > 0) field.position = 1;
+          else if (field.position === field.lastOffset && field.lastOffset > 0) field.position = field.lastOffset - 1;
+        }
+        for (let step = 0; step < 12; step++) {
+          field.executeCommand('moveToGroupEnd');
+          const before = field.getValue('latex-expanded');
+          field.executeCommand('addRowAfter');
+          const after = field.getValue('latex-expanded');
+          if (after !== before) break;
+          const previousPosition = field.position;
+          field.executeCommand('moveAfterParent');
+          if (field.position === previousPosition) {
+            field.executeCommand('moveToMathfieldEnd');
+          }
+        }
+      }
+    }
+    parserIssue = null;
+    markupUnsupported = false;
+    initialSourceUntouched = false;
+    syncFromVisual();
+    field.focus();
+  }
+
   for (const structure of structures) {
     const tool = button('', 'vme-structure-button', structure.id, () => {
-      insert(structure.template(!field.selectionIsCollapsed, field.position > 0));
+      insert(structure.template(!field.selectionIsCollapsed, hasPreviousInGroup()));
     });
     tool.setAttribute('aria-label', `插入${structure.label}`);
     tool.title = `插入${structure.label}；选中内容后可套用结构`;
@@ -370,6 +419,13 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
     operatorButtons.push(tool);
     quickOperators.append(tool);
   }
+  const newlineButton = button('↵ 换行', 'vme-operator-button vme-newline-button', 'operator-newline', insertNewline);
+  newlineButton.dataset.testid = 'operator-newline';
+  newlineButton.title = '换行继续输入（Shift+Enter）';
+  newlineButton.setAttribute('aria-label', '换行继续输入');
+  newlineButton.addEventListener('pointerdown', (event) => event.preventDefault());
+  operatorButtons.push(newlineButton);
+  quickOperators.append(newlineButton);
   canvasTop.insertBefore(quickOperators, history);
 
   const navigation = el('div', 'vme-navigation');
@@ -438,6 +494,7 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
   const displayButton = button('独立一行', 'vme-layout-button', 'display', () => setDisplay(true));
   layoutOptions.append(inlineButton, displayButton);
   layout.append(layoutLabel, layoutOptions);
+  navigation.append(layout);
 
   function setDisplay(value: boolean, render = true): void {
     display = value;
@@ -456,18 +513,26 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
   actions.append(cancel, save);
   footer.append(footerNote, actions);
   const subjectTools = el('div', 'vme-subject-tools');
-  const matrixHost = el('div');
-  const systemHost = el('div');
-  const setSequenceHost = el('div');
-  const advancedMathHost = el('div');
-  const mathSymbolHost = el('div');
-  const importHost = el('div');
-  const importOpen = button('导入单条公式', 'vme-import-open', 'import-open', () => {
+  const matrixHost = el('div', 'vme-secondary-slot');
+  const systemHost = el('div', 'vme-secondary-slot');
+  const setSequenceHost = el('div', 'vme-secondary-slot');
+  const advancedMathHost = el('div', 'vme-secondary-slot');
+  const mathSymbolHost = el('div', 'vme-secondary-slot');
+  const importHost = el('div', 'vme-import-host');
+  const importOpen = button('导入公式', 'vme-import-open', 'import-open', () => {
     if (saving || structureEditing()) return;
     if (mode !== 'latex' && !visualBlocked) syncFromVisual();
+    closeDetailsDrawers();
     importTools.open();
   });
-  root.append(heading, modeTabs, modeDescription, importOpen, importHost, subjectTools, workspace, equationGraph, status, layout);
+  importOpen.title = '粘贴带 $、$$ 或环境的单条公式';
+  importOpen.setAttribute('aria-expanded', 'false');
+  const secondaryTools = el('div', 'vme-secondary-tools');
+  secondaryTools.setAttribute('role', 'group');
+  secondaryTools.setAttribute('aria-label', '扩展数学工具');
+  secondaryTools.append(mathSymbolHost, setSequenceHost, matrixHost, systemHost, advancedMathHost, importOpen);
+  heading.append(headingCopy, modeTabs, localBadge, language);
+  root.append(heading, modeDescription, subjectTools, importHost, workspace, equationGraph, status);
   if (options.compact) heading.append(footer);
   else root.append(footer);
   container.append(root);
@@ -522,7 +587,7 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
       }
       status.hidden = graphSelected || !status.textContent;
     },
-    mathTools: [toolbar, symbolBar, mathSymbolHost, setSequenceHost, matrixHost, systemHost, advancedMathHost],
+    mathTools: [toolbar, symbolBar, secondaryTools],
     initialLatex: rawSource,
     getCurrentLatex: () => rawSource,
     onInsertLatex: insert,
@@ -554,7 +619,8 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
   field.menuItems = [];
   field.keybindings = field.keybindings.filter((binding) => {
     const command = Array.isArray(binding.command) ? binding.command[0] : binding.command;
-    return command !== 'switchMode' && command !== 'switch-mode';
+    if (command === 'switchMode' || command === 'switch-mode') return false;
+    return !/^(?:ctrl|cmd)\+\[(?:Enter|Return)\]$/i.test(binding.key);
   });
   loadVisualSource();
   const initialSerialized = field.getValue('latex');
@@ -565,6 +631,8 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
     getDisplay: () => display,
     getLatex: () => rawSource,
     onOpenChange: open => {
+      importOpen.setAttribute('aria-expanded', String(open));
+      if (open) closeDetailsDrawers();
       updateControls();
       if (!open && !destroyed) {
         if (mode === 'latex' || visualBlocked) source.focus();
@@ -602,18 +670,36 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
   const advancedMathTools = mountAdvancedMathTools(advancedMathHost, { onInsert: insert });
   const mathSymbolTools = mountMathSymbolTools(mathSymbolHost, { hasSelection: () => !field.selectionIsCollapsed, onInsert: insert });
   const setSequenceTools = mountSetSequenceTools(setSequenceHost, { hasSelection: () => !field.selectionIsCollapsed, onInsert: insert });
+  const detailsDrawers = [mathSymbolHost, setSequenceHost, advancedMathHost]
+    .map(hostNode => hostNode.querySelector('details'))
+    .filter((item): item is HTMLDetailsElement => item !== null);
+  function closeDetailsDrawers(except?: HTMLDetailsElement): void {
+    for (const drawer of detailsDrawers) {
+      if (drawer !== except && drawer.open) drawer.open = false;
+    }
+  }
   const matrixTools = mountMatrixTools(matrixHost, {
     initialDraft: initialMatrixDraft,
     getLatex: () => rawSource,
-    onOpenChange: open => { matrixEditing = open; updateControls(); },
+    onOpenChange: open => { if (open) closeDetailsDrawers(); matrixEditing = open; updateControls(); },
     onApply: applyStructuredDraft,
   });
   const systemTools = mountEquationSystemTools(systemHost, {
     initialDraft: options.systemDraft,
     getLatex: () => rawSource,
-    onOpenChange: open => { systemEditing = open; updateControls(); },
+    onOpenChange: open => { if (open) closeDetailsDrawers(); systemEditing = open; updateControls(); },
     onApply: applyStructuredDraft,
   });
+  for (const drawer of detailsDrawers) {
+    drawer.addEventListener('toggle', () => {
+      if (drawer.open) {
+        closeDetailsDrawers(drawer);
+        matrixTools.close();
+        systemTools.close();
+        if (importTools.isOpen()) importTools.close();
+      }
+    });
+  }
 
   function applyStructuredDraft(latex: string, replaceSource?: string): void {
     if (saving || importTools.isOpen() || visualBlocked) throw new Error('Equation is locked');
@@ -727,7 +813,7 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
   function renderSourceState(): void {
     // Complex/long formulas need the full note width. A viewport media query
     // misses narrow inline panels beside the vault sidebar.
-    const wideEquation = rawSource.length > 240 || /\\begin\s*\{\s*(?:aligned|align\*?|cases|[pbBvV]?matrix)\s*\}/.test(rawSource);
+    const wideEquation = rawSource.length > 240 || /\\displaylines\s*\{|\\begin\s*\{\s*(?:gathered|aligned|align\*?|cases|[pbBvV]?matrix)\s*\}/.test(rawSource);
     root.dataset.wideEquation = String(wideEquation);
     sourceIssue = sourceGuard() ?? parserIssue;
     const visualIssue = sourceIssue ? null : formulaVisualBudgetIssue(rawSource);
@@ -795,6 +881,8 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
     sourcePane.hidden = mode === 'visual';
     visualPane.hidden = mode === 'latex';
     subjectTools.hidden = mode === 'latex';
+    if (mode === 'latex') sourcePane.append(layout);
+    else navigation.append(layout);
     workspace.setAttribute('aria-labelledby', `${instanceId}-tab-${mode}`);
     for (const [key, tab] of modeButtons) {
       tab.setAttribute('aria-selected', String(mode === key));
@@ -827,8 +915,10 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
       showError('还有方框没有填写，请补全后再保存。');
       if (mode === 'latex') source.focus();
       else if (!visualBlocked) {
-        field.executeCommand('moveToMathfieldStart');
-        field.executeCommand('moveToNextPlaceholder');
+        if (rawSource.includes('\\placeholder')) {
+          field.executeCommand('moveToMathfieldStart');
+          field.executeCommand('moveToNextPlaceholder');
+        }
         field.focus();
       }
       return;
@@ -856,6 +946,12 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
     if (event.key === '\\') {
       event.preventDefault();
       event.stopImmediatePropagation();
+      return;
+    }
+    if (event.key === 'Enter' && !event.ctrlKey && !event.metaKey && !event.altKey && !event.isComposing) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      insertNewline();
     }
   };
   const onRootKeydown = (event: KeyboardEvent): void => {

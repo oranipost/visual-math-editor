@@ -1,12 +1,12 @@
 # 提交到 Obsidian 社区插件目录
 
-## 1.0.0 正式版与当前目录资料
+## 1.1.0 正式版与当前目录资料
 
-当前发行目标为 **Visual Math 1.0.0 正式版**，名称/作者 **Visual Math / Oliver**，保留插件 ID、目录条目和仓库 `visual-math-editor`。不要新建重复条目，也不改写旧版标签或程序附件。发布为普通 GitHub Release 并设为 latest，不勾选 pre-release。
+当前发行目标为 **Visual Math 1.1.0 正式版**，名称/作者 **Visual Math / Oliver**，保留插件 ID、目录条目和仓库 `visual-math-editor`。不要新建重复条目，也不改写旧版标签或程序附件。发布为普通 GitHub Release 并设为 latest，不勾选 pre-release。
 
-当前范围：三模式正文编辑、保留原文的单式导入检查、1–6行/列矩阵编辑器、2–6行单列方程组大括号、9个高等数学记号模板、19个集合/数列工具、三角与几何符号，以及7种几何模型和3种基础空间关系场景。保留化学/物理、单位、元素及已有函数/极坐标/XYZ/复平面功能；移除自定义公式快捷词，不提供持久公式库或历史列表。已有笔记和设置保留，导入预算不保证任意复杂长公式流畅。
+当前范围：三模式正文编辑、框内多行公式换行（`↵ New line` / `Shift+Enter`）、单行紧凑二级工具栏、实时预览的 1–6 行/列矩阵编辑器与 2–6 行单列方程组大括号、保留原文的单式导入、9 个高等数学记号模板、19 个集合/数列工具、三角与几何符号，以及 7 种几何模型和 3 种基础空间关系场景。保留化学/物理、单位、元素及已有函数/极坐标/XYZ/复平面功能。已有笔记和设置保留，导入预算不保证任意复杂长公式流畅。
 
-**1.0.0 的托管发行、附件来源证明、目录扫描和应用内更新结果必须分别实测。** 本文中的旧版 Review Passed 不代表本版已通过；准确结果统一见 [TEST-REPORT.md](../TEST-REPORT.md)。1.0.0 使用既有条目的 Check for new releases / Request review 等实际入口，按页面显示处理，不重复首次提交。
+**1.1.0 的托管发行、附件来源证明、目录扫描和应用内更新结果必须分别实测。** 本文中的旧版 Review Passed 不代表本版已通过；准确结果统一见 [TEST-REPORT.md](../TEST-REPORT.md)。1.1.0 使用既有条目的 Check for new releases / Request review 等实际入口，按页面显示处理，不重复首次提交。
 
 ## 0.8.0 历史检查
 
@@ -78,7 +78,7 @@ Obsidian 当前的[官方提交指南](https://docs.obsidian.md/Plugins/Releasin
 流程如下：
 
 1. 在 GitHub 公开源代码，仓库根目录放好 `README.md`、`LICENSE`、`manifest.json`。
-2. 发布与 manifest 版本号完全一致的 GitHub Release。1.0.0 使用 tag **`1.0.0`**，不要加 `v`；不得改写旧标签或替换旧版程序附件；0.6.2–0.6.5 当前保留为可恢复草稿，旧 MIT 授权不变。
+2. 发布与 manifest 版本号完全一致的 GitHub Release。1.1.0 使用 tag **`1.1.0`**，不要加 `v`；不得改写旧标签或替换旧版程序附件；0.6.2–0.6.5 当前保留为可恢复草稿，旧 MIT 授权不变。
 3. Release 附件单独上传 **`main.js`、`manifest.json`、`styles.css`**；安装 ZIP 和源码 ZIP 是额外的便利下载，不能替代这三个单独附件。
 4. 在社区网站登录 Obsidian 账号，在个人资料的 **GitHub → Connect** 关联 `oranipost`。这是网站用来验证仓库所有权的步骤。
 5. 进入侧栏 **Plugins → New plugin**，填入仓库 URL，Owner 选择自己，阅读开发者政策与维护承诺后提交。
@@ -95,27 +95,35 @@ Obsidian 当前的[官方提交指南](https://docs.obsidian.md/Plugins/Releasin
 | ID | `visual-math-editor` |
 | Author | `Oliver` |
 | Author URL | `https://github.com/oranipost` |
-| Version / release tag | `1.0.0`（正式版；GitHub、目录审核与原生验证分别核实，详见 TEST-REPORT） |
+| Version / release tag | `1.1.0`（正式版；GitHub、目录审核与原生验证分别核实，详见 TEST-REPORT） |
 | Minimum Obsidian version | `1.14.4` |
 | Platforms | Desktop only；目前实际验证 macOS，Windows / Linux 尚未做原生应用测试 |
 | License | 0.7.0 新代码／本版整体：GPLv3 加 Obsidian 链接例外；0.6.5 及此前 MIT 授权保持有效，第三方 MIT／Apache 2.0 不变，见 [Third-party notices](../THIRD-PARTY-NOTICES.md) |
 | Payment | Free |
+| Website | `https://oranipost.github.io/visual-math/` |
+| YouTube Channel | `https://www.youtube.com/@VisualMathForObsidian` |
 | Support | `https://github.com/oranipost/visual-math-editor/issues` |
 | Contact email | `oranipost@outlook.com`（私下联系；放在 README 与详细介绍中） |
 
 英文短描述与 `manifest.json` 保持一致：
 
-> Write math, chemistry and physics notes visually without learning LaTeX. Plot functions, polar curves and 3D surfaces. Explore calculus and convert units offline.
+> Write math, chemistry, and physics notes visually or in LaTeX. Build matrices, equation systems, 2D/3D graphs, and geometry scenes offline.
 
-中文详细介绍可用（1.0.0）：
+中文详细介绍可用（1.1.0）：
 
-> Visual Math（原 Visual Math Editor）帮助你直接在 Obsidian 正文中记录数学、化学与物理内容；Visual 模式可零 LaTeX 基础开始，也可使用源码与双向同步的 Hybrid 模式。导入单条公式时保留原文，检查候选并明确应用；可按格填写矩阵、按行编辑带左大括号的方程组，使用高等数学、集合、数列和三角/几何记号模板。图像工具包含受支持公式下方的直接预览、函数、极坐标、XYZ、复平面，以及七种固定几何模型和三种基础空间场景；尺寸、视角和缩放需要明确保存。保存后的公式与图像为独立区块。另有化学式与可选配平建议、物理模板、元素信息及离线单位换算。界面提供英语、简体中文和西班牙语，运行时无需账号或网络。公式保存为LaTeX/Markdown，图像以可再次编辑的定义保存。不包含通用方程求解、矩阵/集合计算、任意立体相交或文件/OCR/批量导入；未知宏保留源码不算可视化支持。开发者：[Oliver / oranipost](https://github.com/oranipost)。反馈请用[GitHub Issues](https://github.com/oranipost/visual-math-editor/issues)或[oranipost@outlook.com](mailto:oranipost@outlook.com)。
-
-英文详细介绍可用（1.0.0）：
-
-> Visual Math (formerly Visual Math Editor) helps you take math, chemistry and physics notes directly inside Obsidian. Start with Word-like visual structures without learning LaTeX, or use LaTeX and synchronized Hybrid editing. Review a single formula import while retaining its original input; fill matrix cells and left-braced equation-system rows; insert advanced-math, set, sequence, trigonometric and geometry notation. Preview supported formulas without retyping them. Graph tools include functions, polar curves, XYZ surfaces, complex points, seven fixed geometry models and three basic spatial scenes; explicitly save dimensions, rotation and zoom to retain them. Saved equations and graphs are independent blocks. Chemistry notation, optional balancing suggestions, physics templates, element details and preset unit conversion work offline. Choose English, Simplified Chinese or Spanish. No runtime account or network connection is required. Formulas remain LaTeX/Markdown; editable graphs use vme-plot blocks. These are notation and bounded drawing tools, not a general solver, matrix/set calculator, arbitrary solid-intersection system or file/OCR/batch importer. Retaining an unknown macro as source does not establish visual support. The desktop main window is the supported target; consult the test report for exact environments and checks.
+> 我做 Visual Math 是为了让在 Obsidian 里写数学、化学和物理笔记更省力，不用每次都纯手敲生硬的 LaTeX 代码。打开笔记里的编辑器后，可以直接点分数、根号、积分、求和、1–6 阶矩阵或带左大括号的 2–6 行方程组并填空；熟悉 LaTeX 的用户也可以切换到 LaTeX 或 Hybrid 模式，左边改源码、右边看公式。需要多行推导时，按 `↵ 换行`（`Shift+Enter`）就能在同一个公式块里直接换行。
 >
-> Developer: [Oliver / oranipost](https://github.com/oranipost). Report public issues on [GitHub Issues](https://github.com/oranipost/visual-math-editor/issues), or email [oranipost@outlook.com](mailto:oranipost@outlook.com) for private contact.
+> 图像工具支持在公式下方直接绘制 `y=f(x)` 函数（含一阶/二阶数值导数与定积分阴影）、极坐标 `r=f(theta)`、三维曲面 `z=f(x,y)` 和复平面 `Re/Im` 点，还内置了 7 种可旋转缩放的三维几何立体与 3 种空间相交场景。科学面板包含化学方程式（`\ce`）与配平检查、物理常用公式、11 类 63 种单位离线换算（`\pu`）和 118 号元素周期表。所有公式都保存为标准 `$…$` 或 `$$…$$` Markdown，字体、单位表与绘图引擎全部本地离线运行，支持英文、简体中文和西班牙语。
+>
+> 官方网站与功能指南：[oranipost.github.io/visual-math](https://oranipost.github.io/visual-math/) · 视频教程频道：[@VisualMathForObsidian](https://www.youtube.com/@VisualMathForObsidian) · 开发者：[Oliver / oranipost](https://github.com/oranipost) · 问题反馈：[GitHub Issues](https://github.com/oranipost/visual-math-editor/issues) 或 [oranipost@outlook.com](mailto:oranipost@outlook.com)。
+
+英文详细介绍可用（1.1.0）：
+
+> I built Visual Math so you can write math, chemistry, and physics notes in Obsidian without typing raw LaTeX by hand every time. Click fractions, roots, integrals, sums, 1×1 to 6×6 matrices, or 2–6 row equation systems and fill in the boxes directly, or switch to LaTeX and Hybrid mode to edit source code and rendered formulas side by side. Press `↵ New line` (`Shift+Enter`) whenever you need multiple lines inside the same equation block.
+>
+> Graph tools let you plot 2D functions `y = f(x)` (with numerical derivatives and definite integral shading), polar curves `r = f(theta)`, 3D surfaces `z = f(x, y)`, complex plane points, 7 adjustable 3D geometry solids, and 3 spatial intersection scenes. Science panels include chemical reactions (`\ce`) with balance checks, physics templates, offline conversion across 63 units in 11 categories (`\pu`), and a 118-element periodic table. Everything saves as standard `$…$` or `$$…$$` Markdown and `vme-plot` blocks, and runs locally offline in English, Simplified Chinese, and Spanish.
+>
+> Official Website: [oranipost.github.io/visual-math](https://oranipost.github.io/visual-math/) · YouTube Tutorials: [@VisualMathForObsidian](https://www.youtube.com/@VisualMathForObsidian) · Developer: [Oliver / oranipost](https://github.com/oranipost) · Feedback: [GitHub Issues](https://github.com/oranipost/visual-math-editor/issues) or [oranipost@outlook.com](mailto:oranipost@outlook.com).
 
 普通 GitHub 个人主页没有私信功能。Manifest 的 `authorUrl` 指向 GitHub；不要添加未定义的 email 字段，也不要将 `fundingUrl` 用作支持或联系链接。社区 Profile 可配置 Website 与 Social accounts；邮箱作为 README 和目录长介绍中的联系链接。
 
@@ -128,7 +136,7 @@ Obsidian 当前的[官方提交指南](https://docs.obsidian.md/Plugins/Releasin
   "id": "visual-math-editor",
   "name": "Visual Math",
   "author": "Oliver",
-  "description": "Write math, chemistry and physics notes visually without learning LaTeX. Plot functions, polar curves and 3D surfaces. Explore calculus and convert units offline.",
+  "description": "Write math, chemistry, and physics notes visually or in LaTeX. Build matrices, equation systems, 2D/3D graphs, and geometry scenes offline.",
   "repo": "oranipost/visual-math-editor"
 }
 ```

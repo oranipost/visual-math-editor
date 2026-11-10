@@ -208,7 +208,7 @@ test('visual rendering has a separate UTF-16 budget without changing source impo
   assert.equal(formulaVisualBudgetIssue('x'.repeat(4096)), null);
   assert.equal(formulaVisualBudgetIssue('𝑥'.repeat(2048)), null);
   for (const original of ['x'.repeat(4097), '𝑥'.repeat(2049)]) {
-    assert.match(formulaVisualBudgetIssue(original) ?? '', /4096.*UTF-16/);
+    assert.match(formulaVisualBudgetIssue(original) ?? '', /4096/);
     const result = analyzeFormulaImport(original);
     assert.equal(result.issue, null);
     assert.equal(result.original, original);

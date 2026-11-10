@@ -273,4 +273,34 @@ test('insertion failures give actionable English messages instead of untranslate
     assert.notEqual(translated, zh, zh);
     assert.doesNotMatch(translated, /[\p{Script=Han}]/u, zh);
   }
+  for (const zh of [
+    '点击插入结构并填方框（仅排版，不计算或求解）。',
+    '点击插入结构并填写方框。',
+    '公式超过 4096 字符，已切换为源码编辑（缩短后恢复可视化）。',
+    '点击插入集合或数列记号，填完方框后保存。',
+    '点击插入符号或函数；选中内容后点击可自动包裹。',
+    '选择行列数并填写每一格。',
+    '预览已就绪，可直接插入。',
+    '预览已就绪，可直接应用。',
+    '矩阵',
+    '方程组',
+    '逐行填写方程或不等式，自动加左大括号。',
+    '粘贴带 $、$$ 或环境的公式，确认后替换当前公式。',
+    '导入公式',
+    '扩展数学工具',
+    '↵ 换行',
+    '换行',
+    '换行继续输入',
+    '换行继续输入（Shift+Enter）',
+  ]) {
+    for (const lang of ['en', 'es'] as const) {
+      const translated = translateUiText(zh, lang);
+      assert.notEqual(translated, zh, `${lang}: ${zh}`);
+      assert.doesNotMatch(translated, /[\p{Script=Han}]/u, `${lang}: ${zh}`);
+    }
+  }
+  assert.equal(translateUiText('↵ 换行', 'en'), '↵ New line');
+  assert.equal(translateUiText('↵ 换行', 'es'), '↵ Nueva línea');
+  assert.equal(translateUiText('换行继续输入（Shift+Enter）', 'en'), 'New line (Shift+Enter)');
+  assert.equal(translateUiText('换行继续输入（Shift+Enter）', 'es'), 'Nueva línea (Shift+Enter)');
 });

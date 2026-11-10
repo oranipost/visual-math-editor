@@ -36,11 +36,11 @@ export function mountMatrixTools(container: HTMLElement, options: {
     const item = node('button', text); item.type = 'button'; item.dataset.action = id;
     item.addEventListener('click', () => { if (!disabled) run(); }); return item;
   };
-  const toggle = action('矩阵编辑器', 'matrix-toggle', () => setOpen(!open));
+  const toggle = action('矩阵', 'matrix-toggle', () => setOpen(!open));
   toggle.className = 'vme-matrix-toggle';
   const panel = node('div'); panel.className = 'vme-matrix-panel'; panel.hidden = !open;
   panel.dataset.testid = 'matrix-panel';
-  const hint = node('p', '选择行列数并填写每一格；这里只编辑矩阵，不计算矩阵运算。'); hint.className = 'vme-hint';
+  const hint = node('p', '选择行列数并填写每一格。'); hint.className = 'vme-hint';
   const controls = node('div'); controls.className = 'vme-matrix-controls';
   function dimension(label: string, id: string, value: number): HTMLSelectElement {
     const wrapper = node('label', label); const input = node('select'); input.dataset.testid = id;
@@ -58,7 +58,7 @@ export function mountMatrixTools(container: HTMLElement, options: {
   const load = action('载入当前矩阵', 'matrix-load', loadCurrent);
   const zero = action('空白单元格填0', 'matrix-fill-zero', () => {
     syncCells(); for (let r = 0; r < rows; r++) for (let c = 0; c < columns; c++) if (!cells[r][c].trim()) cells[r][c] = '0';
-    renderGrid(); invalidate();
+    renderGrid(); autoInspect();
   });
   controls.append(load, zero);
   const cellTools = node('div'); cellTools.className = 'vme-matrix-cell-tools';
@@ -66,11 +66,10 @@ export function mountMatrixTools(container: HTMLElement, options: {
     const tool = action(label, id, () => {
       const target = activeCell ?? fields[0]?.field; if (!target) return;
       target.insert(template, { format: 'latex', mode: 'math', selectionMode: 'placeholder', focus: true, feedback: false });
-      syncCells(); invalidate();
+      syncCells(); autoInspect();
     });
     tool.addEventListener('pointerdown', event => event.preventDefault()); cellTools.append(tool);
   }
-  const retained = node('p', '矩阵尺寸改变会保留已有单元格；超出当前范围的内容仍保留到本次关闭。'); retained.className = 'vme-hint';
   const grid = node('div'); grid.className = 'vme-matrix-grid'; grid.dataset.testid = 'matrix-grid';
   const rejectedLabel = node('label', '未应用的单元格原文'); rejectedLabel.hidden = !rejectedOriginal;
   const rejected = node('textarea'); rejected.readOnly = true; rejected.value = rejectedOriginal; rejected.className = 'vme-source';
@@ -85,17 +84,18 @@ export function mountMatrixTools(container: HTMLElement, options: {
     if (!candidate) return;
     try {
       syncCells(); const latest = buildMatrix({ kind, rows, columns, cells: visibleCells() });
-      if (latest !== candidate) { invalidate(); return; }
+      if (latest !== candidate) { autoInspect(); return; }
       if (loadedSource !== undefined && options.getLatex() !== loadedSource) { status.textContent = '当前公式已更改，请重新载入矩阵后再替换。'; status.dataset.state = 'error'; return; }
       options.onApply(candidate, loadedSource);
       loadedSource = loadedSource === undefined ? undefined : candidate;
       setOpen(false); status.textContent = '矩阵已加入公式草稿；保存后才更新笔记。';
     } catch { status.textContent = '矩阵未插入；请检查单元格和当前公式。'; status.dataset.state = 'error'; }
   });
-  const cancel = action('取消矩阵编辑', 'matrix-cancel', () => setOpen(false));
+  const cancel = action('取消', 'matrix-cancel', () => setOpen(false));
   const actions = node('div'); actions.className = 'vme-import-actions'; actions.append(review, apply, cancel);
-  const commitHint = node('p', '预览不会更改公式；插入或替换后仍需保存笔记。'); commitHint.className = 'vme-hint';
-  panel.append(hint, controls, retained, cellTools, grid, rejectedLabel, copy, preview, status, actions, commitHint);
+  cancel.title = '取消不会修改当前公式';
+  review.title = '刷新矩阵预览';
+  panel.append(hint, controls, cellTools, grid, rejectedLabel, copy, preview, status, actions);
   root.append(toggle, panel); container.append(root);
 
   function visibleCells(): string[][] { return Array.from({ length: rows }, (_, r) => cells[r].slice(0, columns)); }
@@ -108,6 +108,23 @@ export function mountMatrixTools(container: HTMLElement, options: {
   function invalidate(): void {
     candidate = undefined; preview.replaceChildren(); apply.disabled = true;
     status.textContent = '输入已修改，请重新预览矩阵。'; status.dataset.state = 'stale';
+  }
+  function autoInspect(): void {
+    syncCells(); candidate = undefined; preview.replaceChildren(); apply.disabled = true;
+    apply.textContent = loadedSource === undefined ? '插入矩阵' : '替换当前矩阵';
+    const data = { kind, rows, columns, cells: visibleCells() };
+    if (data.cells.some(row => row.some(cell => !cell.trim()))) {
+      status.textContent = ''; delete status.dataset.state;
+      return;
+    }
+    try {
+      const latex = buildMatrix(data);
+      if (!validCell(latex)) throw new Error('Unsupported matrix');
+      createPreview(latex, preview); candidate = latex; apply.disabled = disabled;
+      status.textContent = '预览已就绪，可直接插入。'; status.dataset.state = 'ready';
+    } catch {
+      status.textContent = ''; delete status.dataset.state;
+    }
   }
   function validCell(text: string): boolean {
     const analysis = analyzeFormulaImport(text);
@@ -136,7 +153,7 @@ export function mountMatrixTools(container: HTMLElement, options: {
         // selection must target this cell before the shared toolbar is pressed.
         field.addEventListener('pointerdown', () => { activeCell = field; });
         field.addEventListener('focusin', () => { activeCell = field; });
-        field.addEventListener('input', () => { syncCells(); invalidate(); });
+        field.addEventListener('input', () => { syncCells(); autoInspect(); });
         field.addEventListener('paste', (event: ClipboardEvent) => {
           event.preventDefault(); event.stopImmediatePropagation(); if (disabled) return;
           const original = event.clipboardData?.getData('text/plain'); if (!original) return;
@@ -145,14 +162,15 @@ export function mountMatrixTools(container: HTMLElement, options: {
             if (!validCell(original)) throw new Error('Unsupported cell');
             // Reuse full matrix validation to reject a top-level & or row separator.
             buildMatrix({ kind: 'matrix', rows: 1, columns: 1, cells: [[checked.candidate]] });
-            cells[r][c] = checked.candidate; renderGrid(); invalidate();
+            cells[r][c] = checked.candidate; renderGrid(); autoInspect();
           } catch {
+            invalidate();
             rejectedOriginal = original; rejected.value = original; rejectedLabel.hidden = copy.hidden = false;
             status.textContent = '单元格暂不支持这段内容；原始粘贴内容保留在下方，当前矩阵未改动。'; status.dataset.state = 'error';
           }
         }, true);
         field.addEventListener('keydown', event => { if (event.key === '\\') { event.preventDefault(); event.stopImmediatePropagation(); } }, true);
-        field.addEventListener('beforeinput', event => { if ((event as InputEvent).data === '\\') { event.preventDefault(); event.stopImmediatePropagation(); } }, true);
+        field.addEventListener('beforeinput', event => { if (event.data === '\\') { event.preventDefault(); event.stopImmediatePropagation(); } }, true);
       }
     }
   }
@@ -165,7 +183,7 @@ export function mountMatrixTools(container: HTMLElement, options: {
       if (!validCell(latex)) throw new Error('Unsupported matrix');
       createPreview(latex, preview); candidate = latex; apply.disabled = disabled;
       apply.textContent = loadedSource === undefined ? '插入矩阵' : '替换当前矩阵';
-      status.textContent = '预览不会更改公式；插入或替换后仍需保存笔记。'; status.dataset.state = 'ready';
+      status.textContent = '预览已就绪，可直接插入。'; status.dataset.state = 'ready';
     } catch { status.textContent = '当前矩阵包含暂不支持的单元格；原公式未改动。'; status.dataset.state = 'error'; }
   }
   function loadCurrent(): void {
@@ -174,22 +192,23 @@ export function mountMatrixTools(container: HTMLElement, options: {
     rows = parsed.rows; columns = parsed.columns; kind = parsed.kind; loadedSource = original;
     for (let r = 0; r < 6; r++) for (let c = 0; c < 6; c++) cells[r][c] = parsed.cells[r]?.[c] ?? '';
     rowInput.value = String(rows); columnInput.value = String(columns); kindInput.value = kind;
-    renderGrid(); invalidate(); apply.textContent = '替换当前矩阵';
+    renderGrid(); autoInspect(); apply.textContent = '替换当前矩阵';
   }
   function setOpen(value: boolean): void {
     if (!value) syncCells();
     open = value; panel.hidden = !open; toggle.setAttribute('aria-expanded', String(open));
-    if (open) { renderGrid(); invalidate(); }
+    if (open) { renderGrid(); autoInspect(); }
     else { fields.length = 0; grid.replaceChildren(); }
     options.onOpenChange(open);
   }
-  rowInput.addEventListener('change', () => { syncCells(); rows = Number(rowInput.value); renderGrid(); invalidate(); });
-  columnInput.addEventListener('change', () => { syncCells(); columns = Number(columnInput.value); renderGrid(); invalidate(); });
-  kindInput.addEventListener('change', () => { kind = kindInput.value as MatrixKind; invalidate(); });
+  rowInput.addEventListener('change', () => { syncCells(); rows = Number(rowInput.value); renderGrid(); autoInspect(); });
+  columnInput.addEventListener('change', () => { syncCells(); columns = Number(columnInput.value); renderGrid(); autoInspect(); });
+  kindInput.addEventListener('change', () => { kind = kindInput.value as MatrixKind; autoInspect(); });
   toggle.setAttribute('aria-expanded', String(open));
-  if (open) renderGrid(); apply.disabled = true;
+  if (open) { renderGrid(); autoInspect(); } else apply.disabled = true;
   return {
     isOpen: () => open,
+    close: () => { if (open) setOpen(false); },
     getDraft: (): MatrixDraft => { syncCells(); return { open, rows, columns, kind, cells: cells.map(row => [...row]), loadedSource, rejectedOriginal }; },
     setDisabled(value: boolean) {
       disabled = value; for (const item of [toggle, rowInput, columnInput, kindInput, load, zero, review, cancel, copy, ...cellTools.querySelectorAll<HTMLButtonElement>('button')]) item.disabled = value;

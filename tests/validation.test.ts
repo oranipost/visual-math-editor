@@ -67,3 +67,20 @@ test('science notation uses mhchem rules while surrounding math slots remain che
     String.raw`\frac{\ce{H2O}}{}`, String.raw`\pu{1 N}+\sqrt{}`,
   ]) assert.equal(hasIncompleteSlots(latex), true, latex);
 });
+
+test('in-box multiline displaylines allows complete lines and nested matrices while rejecting empty rows or incomplete slots', () => {
+  for (const latex of [
+    String.raw`\displaylines{a=1\\ b=2}`,
+    String.raw`\displaylines{a=1\\ b=\frac{x+1}{\sqrt{x^2+1}}\\ c=a^2+b_1}`,
+    String.raw`\displaylines{A=\begin{pmatrix}1 & 2\\ 3 & 4\end{pmatrix}\\ \det A=-2}`,
+  ]) assert.equal(hasIncompleteSlots(latex), false, latex);
+  for (const latex of [
+    String.raw`\displaylines{}`,
+    String.raw`\displaylines{\\ }`,
+    String.raw`\displaylines{a=1\\ }`,
+    String.raw`\displaylines{\\ b=2}`,
+    String.raw`\displaylines{a=1\\ \\ b=2}`,
+    String.raw`\displaylines{a=1\\ \frac{}{2}}`,
+    String.raw`\displaylines{a=1\\ \placeholder{}}`,
+  ]) assert.equal(hasIncompleteSlots(latex), true, latex);
+});

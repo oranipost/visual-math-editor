@@ -1,10 +1,10 @@
 # Updates / 更新机制
 
-**1.0.0:** adds reviewed single-formula import, matrix/system editors, set/sequence and advanced notation, and geometry models/spatial scenes. It removes custom formula keyword creation and expansion. Save drafts, back up the plugin folder, retain `data.json`, replace only program files and restart. Existing notes remain intact; old keyword data is unused and not actively deleted. There is no persistent formula library/history. Exact validation is in [TEST-REPORT.md](../TEST-REPORT.md).
+**1.1.0:** adds in-box multi-line equation breaks (`↵ New line`), a unified compact secondary tool bar, live input-to-preview in the matrix, equation-system and formula-import panels, and decluttered trilingual labels. Save drafts, back up the plugin folder, retain `data.json`, replace only program files and restart. Existing notes remain intact; old keyword data is unused and not actively deleted. Exact validation is in [TEST-REPORT.md](../TEST-REPORT.md).
 
-**1.0.0：** 新增单式导入检查、矩阵/方程组、集合/数列、高等数学记号与几何/空间场景，移除自定义公式快捷词创建和展开。先保存草稿、备份插件目录，保留`data.json`，只替换程序文件并重启。已有笔记保留，旧关键词数据不再使用且不主动删除，不提供持久公式库/历史。准确验收范围见 [TEST-REPORT.md](../TEST-REPORT.md)。
+**1.1.0：** 新增公式框内多行换行（`↵ 换行`）、单行紧凑二级工具栏、矩阵/方程组/单式导入实时预览及三语界面精简。先保存草稿、备份插件目录，保留 `data.json`，只替换程序文件并重启。已有笔记保留，旧关键词数据不再使用且不主动删除。准确验收范围见 [TEST-REPORT.md](../TEST-REPORT.md)。
 
-New geometry blocks require 1.0.0; downgrading retains their definitions in notes but an older build cannot render/edit that mode. Existing function, complex, polar, XYZ and calculus blocks remain supported. / 新增几何区块需要1.0.0，降级后定义仍在笔记中，但旧版本无法渲染/编辑该模式。本版继续支持旧函数、复平面、极坐标、XYZ和数值微积分区块。
+New geometry blocks require 1.0.0 or later; downgrading retains their definitions in notes but an older build cannot render/edit that mode. Existing function, complex, polar, XYZ and calculus blocks remain supported. / 几何区块需要 1.0.0 及以上版本，降级后定义仍在笔记中，但旧版本无法渲染/编辑该模式。本版继续支持旧函数、复平面、极坐标、XYZ 和数值微积分区块。
 
 [English](#english) · [简体中文](#简体中文) · [Installation](INSTALLATION.md)
 

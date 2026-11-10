@@ -11,11 +11,11 @@ export interface SetSequenceTool {
   readonly example: string;
 }
 export const SET_SEQUENCE_HEADING = '集合与数列';
-export const SET_SEQUENCE_HINT = '选择结构后填写方框；这里只排版，不求解。集合的变量和条件由你填写。';
+export const SET_SEQUENCE_HINT = '点击插入集合或数列记号，填完方框后保存。';
 export const SET_SEQUENCE_GROUPS: readonly { readonly id: SetSequenceGroup; readonly label: string; readonly hint?: string }[] = [
   { id: 'sets', label: '集合与常用数集' },
   { id: 'relations', label: '集合关系符号' },
-  { id: 'sequences', label: '数列模板', hint: '数列默认用 a 表示，所有字符都能直接编辑。等差或等比通项依次填写首项与公差或公比。' },
+  { id: 'sequences', label: '数列模板' },
 ];
 export const SET_SEQUENCE_TOOLS: readonly SetSequenceTool[] = [
   { id: 'set', group: 'sets', label: '列举集合', insertLabel: '插入集合大括号，可包裹选中内容', glyph: '{…}', template: selected => '\\left\\{' + (selected ? '#0' : '#?') + '\\right\\}', example: '\\left\\{1,2,3\\right\\}' },

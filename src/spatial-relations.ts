@@ -28,11 +28,11 @@ const LABELS: SpatialLabels = {
 const failure = (error: string): PlotFailure => ({ ok: false, error });
 function dataObject(value: unknown, allowed: readonly string[]): Record<string, unknown> | undefined {
   if (!value || typeof value !== 'object') return undefined;
-  const prototype = Object.getPrototypeOf(value);
+  const prototype: unknown = Object.getPrototypeOf(value);
   if (prototype !== null && prototype !== Object.prototype) return undefined;
   const keys = Reflect.ownKeys(value);
   if (keys.length > allowed.length || keys.some(key => typeof key !== 'string' || !allowed.includes(key))) return undefined;
-  const data: Record<string, unknown> = Object.create(null);
+  const data = Object.create(null) as Record<string, unknown>;
   for (const key of keys as string[]) {
     const descriptor = Object.getOwnPropertyDescriptor(value, key);
     if (!descriptor || !Object.hasOwn(descriptor, 'value')) return undefined;
@@ -158,7 +158,7 @@ export function createSpatialRelationPlot(input: PlotSpec, customLabels: Partial
     const normalizedAzimuth = ((azimuth % 360) + 360) % 360;
     const spec: PlotSpec = { mode: 'geometry', expression: '', xMin: -1, xMax: 1, yMin: -1, yMax: 1, geometry: { ...analysis.model }, azimuth: normalizedAzimuth, elevation, geometryZoom: zoom };
     const labels = { ...LABELS };
-    for (const key of Object.keys(labels) as (keyof SpatialLabels)[]) if (typeof customLabels[key] === 'string') labels[key] = customLabels[key]!.slice(0, 600);
+    for (const key of Object.keys(labels) as (keyof SpatialLabels)[]) if (typeof customLabels[key] === 'string') labels[key] = customLabels[key].slice(0, 600);
     const extent = analysis.patchExtent, scale = 82 / extent * zoom, model = analysis.model;
     const screen = (point: SpatialPoint): SpatialPoint => { const p = project(point, normalizedAzimuth, elevation); return { x: 400 + p.x * scale, y: 207 - p.y * scale, z: p.z }; };
     const inside = (p: SpatialPoint): boolean => p.x >= 40 && p.x <= 760 && p.y >= 55 && p.y <= 355;

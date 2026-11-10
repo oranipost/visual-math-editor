@@ -1,5 +1,21 @@
 # Test report / 测试记录
 
+## 1.1.0 — pre-publication validation (2026-11-10)
+
+**Prepared version: Visual Math 1.1.0 / Oliver, desktop release.** The plugin ID remains `visual-math-editor` (minimum Obsidian `1.14.4`, desktop only). The following are local pre-publication checks; hosted CI, GitHub artifact attestations, public GitHub release and Obsidian community directory review are separate steps. Older sections below retain their original build identities and dates.
+
+### Completed local checks
+
+- **274 automated tests passed** (`npm run check`), with TypeScript `tsc --noEmit` (`0` errors), the production build (`dist/main.js`, `dist/manifest.json`, `dist/styles.css`) and the developer-preview build passing. Coverage includes in-box multi-line equation editing (`↵ New line` / `Shift+Enter`) backed by `\displaylines{...}` while preserving existing `aligned`, `gathered` and `cases` environments, incomplete multi-line row validation, `planWrite` and `findMathRanges` inline/display round-trips, trilingual (`en`, `zh-CN`, `es`) UI copy, live preview updates, and cleanup of all 15 non-blocking TypeScript and CSS lint warnings reported by the 1.0.0 community directory scan.
+- **1,250 browser component checks passed across six suites** on the `1.1.0` preview build: **370** editor/science/graph and in-box multi-line checks, **181** single-formula import checks, **257** equation-system/set/sequence and structured-draft checks, **258** geometry component checks, **115** matrix/advanced-notation checks, and **69** trigonometry/geometry-symbol checks. Multi-line checks verify single-line to multi-line conversion, adding rows, toolbar insertions inside subsequent rows, Visual/LaTeX/Hybrid synchronization, draft Undo/Redo and save callbacks. Compact secondary pill-bar exclusivity (one open drawer at a time) and live preview as you type across Matrix (`1×1`–`6×6`), Equation System (`2–6` rows) and Single-Formula Import were also verified. These suites use test-memory callbacks and component remounts on localhost and do not write to a user's vault.
+- **Packaging validation passed (`npm run package`)**: produced `release/visual-math-editor-1.1.0.zip` (**31 installer files**), `release/visual-math-editor-source-1.1.0.zip` (**138 source files**, retaining full GPLv3 + Obsidian linking exception notices, third-party attributions and all four pinned dependency archives in `third-party-sources/`), and `release/SHA256SUMS.txt`. Documentation links and refreshed `1.1.0` screenshots in `docs/images/` match the repository contents, with unreferenced legacy screenshots removed.
+
+### Scope and platform boundaries
+
+The **8,192 UTF-16 code unit** original-input limit and **4,096 UTF-16 code unit** visual-rendering budget, note-write guards, existing `vme-plot` graph/geometry serialization and user `data.json` compatibility remain unchanged from 1.0.0. Automated macOS Accessibility scripting (`System Events`) was unavailable in this session, so fresh `1.1.0` checks above reflect Node unit tests, production packaging and real-browser MathLive component suites rather than a new automated native vault GUI run. **Windows, Linux, mobile, detached windows, arbitrary themes/plugin combinations and general symbolic solving remain outside verified scope.**
+
+1.1.0发布前本地验收：`npm run check` 通过（TypeScript 零错误、**274 项自动化测试**通过、生产构建与预览构建通过），六套真实浏览器组件回归共 **1,250 项检查**全部通过（含框内直接换行 `\displaylines{...}`、紧凑单抽屉二级工具栏、矩阵/方程组/单公式导入实时预览、中英西三语精简文案及 1.0.0 社区扫描 15 条非阻塞警告清理），`npm run package` 打包校验通过（安装包 **31 个文件**、源码包 **138 个文件**及 `SHA256SUMS.txt`）。托管签名构建、公开 Release 与社区新版本扫描将在打标发布后独立核验记录。
+
 ## 1.0.0 — pre-publication validation (2026-10-31)
 
 **Prepared version: Visual Math 1.0.0 / Oliver, desktop release.** The plugin ID remains `visual-math-editor`. The following are current local observations; publication, hosted artifact verification, community review and native installation are separate steps. No hosted 1.0.0 release or directory result has been established at this checkpoint. All older sections below retain their original build identities and dates.

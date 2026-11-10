@@ -8,7 +8,7 @@ export interface MathSymbolTool {
   example: string;
 }
 export const MATH_SYMBOLS_HEADING = '三角函数与几何符号';
-export const MATH_SYMBOLS_HINT = '函数可填写方框或套用选中内容。相似 ∼、全等 ≅、角 ∠、三角形 △ 和直角 90° 含义不同。';
+export const MATH_SYMBOLS_HINT = '点击插入符号或函数；选中内容后点击可自动包裹。';
 export const MATH_SYMBOL_TOOLS: readonly MathSymbolTool[] = [
   { id: 'sin', label: '正弦', glyph: 'sin( )', insertLabel: '插入正弦函数', template: selected => `\\sin\\left(${selected ? '#0' : '#?'}\\right)`, example: String.raw`\sin\left(x\right)` },
   { id: 'cos', label: '余弦', glyph: 'cos( )', insertLabel: '插入余弦函数', template: selected => `\\cos\\left(${selected ? '#0' : '#?'}\\right)`, example: String.raw`\cos\left(x\right)` },

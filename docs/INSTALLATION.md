@@ -1,23 +1,23 @@
 # Installation / 安装说明
 
-**1.0.0 Desktop release:** [installation ZIP](https://github.com/oranipost/visual-math-editor/releases/download/1.0.0/visual-math-editor-1.0.0.zip) · [release notes and checksums](https://github.com/oranipost/visual-math-editor/releases/tag/1.0.0). The ZIP is compiled. Current tests, native platforms, release availability and community review are recorded separately in [TEST-REPORT.md](../TEST-REPORT.md).
+**1.1.0 Desktop release:** [installation ZIP](https://github.com/oranipost/visual-math-editor/releases/download/1.1.0/visual-math-editor-1.1.0.zip) · [release notes and checksums](https://github.com/oranipost/visual-math-editor/releases/tag/1.1.0) · [Official Website](https://oranipost.github.io/visual-math/) · [YouTube Tutorials](https://www.youtube.com/@VisualMathForObsidian). The ZIP is compiled. Current tests, native platforms, release availability and community review are recorded separately in [TEST-REPORT.md](../TEST-REPORT.md).
 
-**1.0.0 桌面正式版：** [安装包](https://github.com/oranipost/visual-math-editor/releases/download/1.0.0/visual-math-editor-1.0.0.zip) · [发行说明与校验值](https://github.com/oranipost/visual-math-editor/releases/tag/1.0.0)。安装包已编译；具体构建测试、原生平台、发行及社区审核分别见 [TEST-REPORT.md](../TEST-REPORT.md)。
+**1.1.0 桌面正式版：** [安装包](https://github.com/oranipost/visual-math-editor/releases/download/1.1.0/visual-math-editor-1.1.0.zip) · [发行说明与校验值](https://github.com/oranipost/visual-math-editor/releases/tag/1.1.0) · [官方网站](https://oranipost.github.io/visual-math/) · [YouTube 教程频道](https://www.youtube.com/@VisualMathForObsidian)。安装包已编译；具体构建测试、原生平台、发行及社区审核分别见 [TEST-REPORT.md](../TEST-REPORT.md)。
 
 [English](#english) · [简体中文](#简体中文) · [Home](../README.md)
 
 ## English
 
-**Visual Math 1.0.0 / Oliver** adds single-formula import review, visual matrix/system editors, notation tools and geometry models. Use the matching installation ZIP below; the exact build checks, native flows and separate directory review are in [TEST-REPORT.md](../TEST-REPORT.md).
+**Visual Math 1.1.0 / Oliver** adds in-box multi-line equation breaks (`↵ New line`), a unified compact secondary tool bar, live input-to-preview for matrices and equation systems, single-formula import, notation tools and geometry models. Use the matching installation ZIP below; the exact build checks, native flows and separate directory review are in [TEST-REPORT.md](../TEST-REPORT.md).
 
 This is the same plugin previously named Visual Math Editor. Keep the existing `visual-math-editor` folder and its `data.json`; do not create a second installation.
 ### Requirements and download
 
 - Obsidian **1.14.4 or later**, desktop main window. Native integration was checked on macOS with 1.14.4; other desktop systems have not been verified.
-- **1.0.0 desktop release:** [installation ZIP](https://github.com/oranipost/visual-math-editor/releases/download/1.0.0/visual-math-editor-1.0.0.zip) · [release notes and checksums](https://github.com/oranipost/visual-math-editor/releases/tag/1.0.0). Release availability is shown on [GitHub Releases](https://github.com/oranipost/visual-math-editor/releases); actual validation is recorded in [TEST-REPORT.md](../TEST-REPORT.md). [Community-directory installation](https://community.obsidian.md/plugins/visual-math-editor) also depends on availability in the app's index.
+- **1.1.0 desktop release:** [installation ZIP](https://github.com/oranipost/visual-math-editor/releases/download/1.1.0/visual-math-editor-1.1.0.zip) · [release notes and checksums](https://github.com/oranipost/visual-math-editor/releases/tag/1.1.0). Release availability is shown on [GitHub Releases](https://github.com/oranipost/visual-math-editor/releases); actual validation is recorded in [TEST-REPORT.md](../TEST-REPORT.md). [Community-directory installation](https://community.obsidian.md/plugins/visual-math-editor) also depends on availability in the app's index.
 - You do **not** need Node.js, npm, an account or an API key to use the compiled plugin.
 
-Directory review and release verification apply to the specific version that was checked; see [review observations](COMMUNITY-SUBMISSION.md) and [TEST-REPORT.md](../TEST-REPORT.md). **Code → Download ZIP**, `visual-math-editor-source-1.0.0.zip` and GitHub's automatic **Source code** downloads are for developers; they are not the ready-to-install plugin.
+Directory review and release verification apply to the specific version that was checked; see [review observations](COMMUNITY-SUBMISSION.md) and [TEST-REPORT.md](../TEST-REPORT.md). **Code → Download ZIP**, `visual-math-editor-source-1.1.0.zip` and GitHub's automatic **Source code** downloads are for developers; they are not the ready-to-install plugin.
 
 ### Community-directory installation (when available)
 
@@ -25,12 +25,12 @@ Directory review and release verification apply to the specific version that was
 2. In Obsidian's plugin details, choose **Install**, then **Enable**. Enable community plugins in **Settings → Community plugins** first if required.
 3. Open a Markdown note and click **∑** in the note header or left ribbon.
 
-The directory version and the version installed in a vault can differ while a release is scanned or indexed. Check the actual version displayed in Obsidian. A passing review or native installation result for an older release does not establish the result for 1.0.0.
+The directory version and the version installed in a vault can differ while a release is scanned or indexed. Check the actual version displayed in Obsidian. A passing review or native installation result for an older release does not establish the result for 1.1.0.
 
 ### Manual installation
 
 1. In Obsidian, open the vault in which you want to use the plugin. Locate that vault's folder in your file manager.
-2. Extract `visual-math-editor-1.0.0.zip`. Copy its entire `visual-math-editor` folder into the vault's `.obsidian/plugins/` folder. Create `plugins` if necessary.
+2. Extract `visual-math-editor-1.1.0.zip`. Copy its entire `visual-math-editor` folder into the vault's `.obsidian/plugins/` folder. Create `plugins` if necessary.
 3. Check the layout below. `main.js` must be directly inside `visual-math-editor`, with no second nested plugin folder.
 4. Restart Obsidian. Open **Settings → Community plugins**, turn on community plugins if necessary, and enable **Visual Math**.
 5. Open a Markdown note. Click **∑** in the note header or left ribbon, or run **Visual Math: Insert or edit equation** from the command palette.
@@ -115,16 +115,16 @@ Developer: [Oliver / oranipost](https://github.com/oranipost). Public feedback: 
 
 ## 简体中文
 
-**Visual Math 1.0.0 / Oliver** 加入单式导入检查、矩阵/方程组编辑器、记号工具与几何模型。使用下方对应版本的安装 ZIP；准确构建、原生流程和独立目录审核结果见 [TEST-REPORT.md](../TEST-REPORT.md)。
+**Visual Math 1.1.0 / Oliver** 支持框内多行公式换行（`↵ 换行`）、单行紧凑扩展工具栏、矩阵/方程组实时预览、单式导入、记号工具与几何模型。使用下方对应版本的安装 ZIP；准确构建、原生流程和独立目录审核结果见 [TEST-REPORT.md](../TEST-REPORT.md)。
 
 这就是原 Visual Math Editor。继续使用已有的 `visual-math-editor` 文件夹并保留 `data.json`，不要安装成两个插件。
 ### 要求与下载
 
 - Obsidian **1.14.4 或更新版本**，目前支持桌面主窗口。原生测试使用 macOS 与 1.14.4，其他桌面系统尚未验证。
-- **1.0.0 桌面正式版：**[安装 ZIP](https://github.com/oranipost/visual-math-editor/releases/download/1.0.0/visual-math-editor-1.0.0.zip) · [发布说明与校验值](https://github.com/oranipost/visual-math-editor/releases/tag/1.0.0)。发行可用性见 [GitHub Releases](https://github.com/oranipost/visual-math-editor/releases)，实际验证见 [TEST-REPORT.md](../TEST-REPORT.md)。插件进入应用索引后也可[从社区目录安装](https://community.obsidian.md/plugins/visual-math-editor)。
+- **1.1.0 桌面正式版：**[安装 ZIP](https://github.com/oranipost/visual-math-editor/releases/download/1.1.0/visual-math-editor-1.1.0.zip) · [发布说明与校验值](https://github.com/oranipost/visual-math-editor/releases/tag/1.1.0)。发行可用性见 [GitHub Releases](https://github.com/oranipost/visual-math-editor/releases)，实际验证见 [TEST-REPORT.md](../TEST-REPORT.md)。插件进入应用索引后也可[从社区目录安装](https://community.obsidian.md/plugins/visual-math-editor)。
 - 使用编译好的插件**不需要** Node.js、npm、账号或 API 密钥。
 
-目录审核与发行验证只对应实际检查的具体版本；分别见[审核记录](COMMUNITY-SUBMISSION.md)和 [TEST-REPORT.md](../TEST-REPORT.md)。**Code → Download ZIP**、`visual-math-editor-source-1.0.0.zip` 和 GitHub 自动生成的 **Source code** 均是开发源码，需要自行构建。
+目录审核与发行验证只对应实际检查的具体版本；分别见[审核记录](COMMUNITY-SUBMISSION.md)和 [TEST-REPORT.md](../TEST-REPORT.md)。**Code → Download ZIP**、`visual-math-editor-source-1.1.0.zip` 和 GitHub 自动生成的 **Source code** 均是开发源码，需要自行构建。
 
 ### 社区目录安装（索引可用后）
 
@@ -132,12 +132,12 @@ Developer: [Oliver / oranipost](https://github.com/oranipost). Public feedback: 
 2. 在 Obsidian 插件详情中点击 **Install（安装）**，再点 **Enable（启用）**。需要时先在 **设置 → 第三方插件** 中开启社区插件。
 3. 打开 Markdown 笔记，点击笔记右上角或左侧工具栏的 **∑**。
 
-扫描或索引同步期间，目录版本与各笔记库安装版本可能不同，请检查 Obsidian 实际显示的版本。旧版审核或原生安装结果不代表1.0.0已通过；按对应版本记录核验。
+扫描或索引同步期间，目录版本与各笔记库安装版本可能不同，请检查 Obsidian 实际显示的版本。旧版审核或原生安装结果不代表 1.1.0 已通过；按对应版本记录核验。
 
 ### 手动安装
 
 1. 在 Obsidian 中打开准备使用插件的 vault，找到该 vault 在电脑中的文件夹。
-2. 解压 `visual-math-editor-1.0.0.zip`，将其中整个 `visual-math-editor` 文件夹放入 vault 的 `.obsidian/plugins/`。没有 `plugins` 时可新建。
+2. 解压 `visual-math-editor-1.1.0.zip`，将其中整个 `visual-math-editor` 文件夹放入 vault 的 `.obsidian/plugins/`。没有 `plugins` 时可新建。
 3. 对照上方目录示例：`main.js`、`manifest.json`、`styles.css` 必须直接位于 `visual-math-editor` 中，避免多嵌套一层同名目录。
 4. 重启 Obsidian，打开 **设置 → 第三方插件（Settings → Community plugins）**，需要时先开启第三方插件，再启用 **Visual Math**。
 5. 打开 Markdown 笔记，点击笔记右上角或左侧工具栏的 **∑**；也可在命令面板运行 **Visual Math: 插入或编辑公式**。

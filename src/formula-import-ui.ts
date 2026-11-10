@@ -26,7 +26,7 @@ export function mountFormulaImport(container: HTMLElement, options: {
   panel.setAttribute('role', 'region'); panel.setAttribute('aria-label', '导入单条公式');
   panel.dataset.testid = 'formula-import-panel';
   const title = element('h3', '导入单条公式');
-  const help = element('p', '先检查候选；应用会替换当前整条公式，保存后才更新笔记。');
+  const help = element('p', '粘贴带 $、$$ 或环境的公式，确认后替换当前公式。');
   const originalLabel = element('label', '导入原文');
   const original = element('textarea'); original.dataset.testid = 'import-original'; original.rows = 4;
   original.className = 'vme-source'; original.spellcheck = false; original.wrap = 'off';
@@ -40,10 +40,12 @@ export function mountFormulaImport(container: HTMLElement, options: {
     );
   });
   const review = action('检查并预览', 'import-preview-button', inspect);
-  const candidateLabel = element('label', '候选源码（不含外包装）');
+  const candidateDetails = element('details'); candidateDetails.className = 'vme-import-candidate-details';
+  const candidateSummary = element('summary', '候选源码（不含外包装）'); candidateSummary.className = 'vme-import-candidate-summary';
   const candidate = element('textarea'); candidate.dataset.testid = 'import-candidate'; candidate.readOnly = true;
-  candidate.className = 'vme-source'; candidate.rows = 3; candidate.wrap = 'off';
+  candidate.className = 'vme-source'; candidate.rows = 2; candidate.wrap = 'off';
   candidate.setAttribute('aria-label', '候选源码（不含外包装）');
+  candidateDetails.append(candidateSummary, candidate);
   const layout = element('p'); layout.dataset.testid = 'import-layout';
   const preview = element('div'); preview.dataset.testid = 'import-preview'; preview.className = 'vme-import-preview';
   const status = element('p'); status.dataset.testid = 'import-status'; status.setAttribute('role', 'status');
@@ -57,11 +59,11 @@ export function mountFormulaImport(container: HTMLElement, options: {
       status.dataset.state = 'error'; apply.disabled = true;
     }
   });
-  const cancel = action('取消导入', 'import-cancel', close);
+  const cancel = action('取消', 'import-cancel', close);
   const actions = element('div'); actions.className = 'vme-import-actions'; actions.append(useCurrent, copyOriginal, review, apply, cancel);
   // Wrapping labels avoids duplicate ids across dialog and inline editor instances.
-  originalLabel.append(original); candidateLabel.append(candidate);
-  panel.append(title, help, originalLabel, candidateLabel, layout, preview, status, copyStatus, actions);
+  originalLabel.append(original);
+  panel.append(title, help, originalLabel, candidateDetails, layout, preview, status, copyStatus, actions);
   container.append(panel);
   let analysis: FormulaImportAnalysis | undefined;
   let inspectedOriginal: string | undefined;
@@ -104,7 +106,7 @@ export function mountFormulaImport(container: HTMLElement, options: {
       status.dataset.state = sourceOnly ? 'source-only' : 'ready';
       status.textContent = sourceOnly
         ? '仅源码可用：部分命令无法可视化。应用后请在源码模式检查；笔记环境也可能不支持这些命令。'
-        : '可视化预览可用。请检查结构；应用前当前公式保持不变。';
+        : '预览已就绪，可直接应用。';
       apply.textContent = sourceOnly ? '仅按源码应用并替换' : '应用并替换公式';
       apply.disabled = false;
     } catch {
@@ -115,6 +117,19 @@ export function mountFormulaImport(container: HTMLElement, options: {
   function close(): void {
     panel.hidden = true; preview.replaceChildren(); options.onOpenChange(false);
   }
+  original.addEventListener('paste', (event: ClipboardEvent) => {
+    if (disabled) return;
+    const pasted = event.clipboardData?.getData('text/plain');
+    if (pasted === undefined) return;
+    event.preventDefault();
+    const start = original.selectionStart ?? 0;
+    const end = original.selectionEnd ?? original.value.length;
+    originalText = start === 0 && end === original.value.length
+      ? pasted
+      : original.value.slice(0, start) + pasted + original.value.slice(end);
+    original.value = originalText;
+    inspect();
+  });
   original.addEventListener('input', () => {
     originalText = original.value;
     analysis = undefined; inspectedOriginal = undefined; apply.disabled = true; preview.replaceChildren();

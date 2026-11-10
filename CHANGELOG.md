@@ -2,6 +2,15 @@
 
 This file records version changes. Builds before 0.6.2 were local MVP releases; 0.6.2 prepares the first public desktop beta. Publication status is shown on GitHub Releases. Neither a local package nor a public GitHub release implies Obsidian community-directory approval.
 
+## 1.1.0 — 2026-11-10 · Desktop release
+
+### What's New in 1.1.0
+- **Multi-line equations in one box (`↵ New line` / `Shift+Enter`)**: You can now add line breaks directly inside the visual equation box without leaving the current formula. Multi-line equations use `\displaylines{...}` (and preserve existing `aligned` / `gathered` / `cases` environments) so step-by-step derivations stay in a single block.
+- **Cleaner layout & compact secondary bar**: Secondary math tools (`Trig & geometry`, `Sets & sequences`, `Matrix`, `System`, `Advanced math`, `Import`) now sit in a single-row pill bar that opens one drawer at a time instead of stacking multiple open panels.
+- **Live preview as you type**: The Matrix builder (`1×1`–`6×6`), Equation System builder (`2–6` rows), and Single-Formula Import panel now update their math preview automatically while you type, without requiring a separate Preview click first.
+- **Simpler trilingual copy & updated screenshots**: Trimmed repetitive helper text across English, Simplified Chinese, and Spanish. Updated the documentation with fresh `1.1.0` screenshots, the official website ([oranipost.github.io/visual-math](https://oranipost.github.io/visual-math/)), and the official YouTube channel ([@VisualMathForObsidian](https://www.youtube.com/@VisualMathForObsidian)).
+- **Code & CSS cleanup**: Resolved the 15 non-blocking TypeScript and CSS lint warnings from the 1.0.0 community directory scan.
+
 ## 1.0.0 — 2026-10-31 · Desktop release
 
 - Add a single-equation import review with exact original-input retention, conservative recognition of one complete outer math wrapper, separate candidate/preview, explicit apply/cancel and draft Undo/Redo. Invalid or unsupported input is not silently shortened or repaired; unknown-source preservation remains distinct from visual support.
