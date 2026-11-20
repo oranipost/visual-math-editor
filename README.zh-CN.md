@@ -1,8 +1,8 @@
 # Visual Math for Obsidian
 
-[English](README.md) · **简体中文** · [Español](README.es.md)
+[English](README.md) · **简体中文** · [Español](README.es.md) · [日本語](README.ja.md) · [Deutsch](README.de.md) · [Français](README.fr.md)
 
-**[在 Obsidian 社区商店安装](https://community.obsidian.md/plugins/visual-math-editor)** · **[官方网站](https://oranipost.github.io/visual-math/)** · **[YouTube 教程频道](https://www.youtube.com/@VisualMathForObsidian)** · **[下载 1.1.0 安装包 ZIP](https://github.com/oranipost/visual-math-editor/releases/download/1.1.0/visual-math-editor-1.1.0.zip)** · **[版本发布说明](https://github.com/oranipost/visual-math-editor/releases/tag/1.1.0)**
+**[在 Obsidian 社区商店安装](https://community.obsidian.md/plugins/visual-math-editor)** · **[官方网站](https://oranipost.github.io/visual-math/)** · **[YouTube 教程频道](https://www.youtube.com/@VisualMathForObsidian)** · **[下载 1.1.1 安装包 ZIP](https://github.com/oranipost/visual-math-editor/releases/download/1.1.1/visual-math-editor-1.1.1.zip)** · **[版本发布说明](https://github.com/oranipost/visual-math-editor/releases/tag/1.1.1)**
 
 ## 简介
 
@@ -10,12 +10,12 @@
 
 在笔记里打开编辑器后，你可以直接点分数、根号、积分、求和、矩阵或方程组，直接在方框里填空。如果你已经熟悉 LaTeX，可以切到 **LaTeX** 或 **Hybrid** 模式，左边改源码、右边看公式。需要写多行推导时，按 `↵ 换行`（`Shift+Enter`）就能在同一个公式块里换行。
 
-所有公式都保存为标准的 `$…$` 或 `$$…$$` Markdown，内置字体、单位换算表和绘图工具全部在本地离线运行。
+所有公式都保存为标准的 `$…$` 或 `$$…$$` Markdown，内置字体、单位换算表和绘图工具 100% 在本地离线运行——不含 AI、无需云端账号、也没有任何付费订阅。
 
 - **官方网站与功能指南**：[oranipost.github.io/visual-math](https://oranipost.github.io/visual-math/)
 - **视频演示与教程**：[@VisualMathForObsidian YouTube 频道](https://www.youtube.com/@VisualMathForObsidian)
 
-![Visual Math 1.1.0 in Obsidian](docs/images/visual-math-demo.gif)
+![Visual Math 1.1.1 in Obsidian](docs/images/visual-math-demo.gif)
 
 ---
 
@@ -23,10 +23,10 @@
 
 - **Visual、LaTeX 与 Hybrid 三种模式**：可以用方框填空、直接写 TeX 源码，或者左右对照同时改。支持框内多行公式（`↵ 换行`）、撤销/重做历史，以及粘贴单条 LaTeX 公式导入。
 - **矩阵、方程组、集合与微积分记号**：支持 `1×1` 到 `6×6` 矩阵、带左大括号的 `2–6` 行方程组、19 个集合与数列符号、三角与几何记号，以及 9 个微积分和向量模板。
-- **函数、极坐标、三维曲面与复平面图像**：在公式正下方绘制 `y = f(x)`（含一阶/二阶数值导数与定积分阴影）、极坐标曲线 `r = f(θ)`、三维曲面 `z = f(x, y)` 和复平面 `Re / Im` 点图。
-- **三维几何模型与空间关系**：可旋转缩放 7 种基础几何体（球体、圆柱、圆锥、正棱锥、正棱柱、长方体、平面片）和 3 种空间相交场景（两平面、直线与平面、球体与平面）。
-- **化学、物理、单位换算与元素周期表**：输入化学反应式（`\ce`）并检查配平、插入常用物理公式、在 11 类 63 种单位间离线换算（`\pu`），并随时查询 118 号元素周期表。
-- **本地离线与三语界面**：无需联网或注册账号，支持 **简体中文**、**English** 和 **Español**。
+- **函数、极坐标、三维曲面与复平面图像**：在公式正下方绘制 `y = f(x)`（含一阶/二阶数值导数与定积分阴影）、极坐标曲线 `r = f(θ)`、三维曲面 `z = f(x, y)` 和复平面 `Re / Im` 点图，并支持一键复制高清 PNG 图像到剪贴板。
+- **三维几何、组合几何体建模与空间关系**：可旋转缩放 9 种基础几何图元（球体、半球体、圆柱、圆锥、圆台/正棱台、正棱锥、正棱柱、长方体、平面片），支持将 `2–6` 个立体自由拼接为组合几何体（内置球内接正方体、圆柱+圆锥等常见题型模板，支持独立偏移、旋转及实心/半透明/线框样式），并提供 3 种空间相交场景（两平面、直线与平面、球体与平面）。
+- **化学、物理、单位换算与 10 分区元素周期表**：输入化学反应式（`\ce`）并检查配平、插入 24 个常用物理公式模板、在 11 类 66 种单位间离线换算（`\pu`，含 `eV`、`keV`、`MeV`），并按 10 类标准化学分区查询全部 118 号元素。
+- **100% 本地离线与六国语言界面**：完全在本地离线运行，无 AI、无需联网或注册账号。完整支持 **简体中文**、**English**、**Español**、**日本語**、**Deutsch** 和 **Français**。
 
 ---
 
@@ -46,9 +46,9 @@
 2. 在 Obsidian 中点击 **Install（安装）**，随后点击 **Enable（启用）**。
 3. 打开任意 Markdown 笔记，点击 **∑** 即可使用。
 
-### 手动安装 ZIP（1.1.0 桌面正式版）
+### 手动安装 ZIP（1.1.1 桌面正式版）
 
-下载已编译好的 **[visual-math-editor-1.1.0.zip](https://github.com/oranipost/visual-math-editor/releases/download/1.1.0/visual-math-editor-1.1.0.zip)**（请不要下载 GitHub 自动生成的 *Source code* 源码压缩包）：
+下载已编译好的 **[visual-math-editor-1.1.1.zip](https://github.com/oranipost/visual-math-editor/releases/download/1.1.1/visual-math-editor-1.1.1.zip)**（请不要下载 GitHub 自动生成的 *Source code* 源码压缩包）：
 
 1. 解压并将其中的 `visual-math-editor` 文件夹放入笔记库的 `<你的笔记库>/.obsidian/plugins/` 下。
 2. 确认 `main.js`、`manifest.json`、`styles.css` 与许可证文件直接位于 `.obsidian/plugins/visual-math-editor/` 内。
@@ -58,10 +58,10 @@
 
 ---
 
-## 界面截图 (v1.1.0)
+## 界面截图 (v1.1.1)
 
 ### Hybrid 模式、框内多行公式与紧凑工具栏
-![Visual Math 1.1.0 的 Hybrid 模式与多行公式编辑](docs/images/vme-1.1-hybrid-multiline.png)
+![Visual Math 1.1.1 的 Hybrid 模式与多行公式编辑](docs/images/vme-1.1-hybrid-multiline.png)
 
 ### 可视化矩阵与左大括号方程组
 ![带实时预览的矩阵与方程组编辑器](docs/images/vme-1.1-matrix-system.png)
@@ -88,7 +88,7 @@
 - **图像与几何**：
   - 显式函数 `y = f(x)`（最长 500 字符）、极坐标 `r = f(θ)`（跨度不超过 `100π`）、有限连续区间上的一阶/二阶数值导数与定积分、三维网格曲面 `z = f(x, y)`，以及最多 20 个复数点（`a + bi`，合计 1,000 字符）。
   - 保存到笔记后，公式区块（`$…$` / `$$…$$`）与图像区块（`vme-plot`）各自独立；可用图像上的 **编辑图像** 或 **保存视野** 单独更新图像。
-- **科学工具说明**：化学（`\ce{…}`）与单位（`\pu{…}`）导出到 Obsidian 外部时需要宿主环境支持 `mhchem`。离线换算基于固定的 Convert 8.0.2 常数，元素数据参考 CIAAW 与 NIST 标准。
+- **科学工具说明**：化学（`\ce{…}`）与单位（`\pu{…}`）导出到 Obsidian 外部时需要宿主环境支持 `mhchem`。离线换算覆盖 11 类 66 种单位（基于固定的 Convert 8.0.2 常数及 2019 SI 精确电子伏特定义），元素数据参考 CIAAW 与 NIST 标准。
 - **兼容性**：要求桌面版 **Obsidian 1.14.4 或更新版本**。测试与发行核验记录见 [TEST-REPORT.md](TEST-REPORT.md) 与 [CHANGELOG.md](CHANGELOG.md)。
 
 ### 从源码构建

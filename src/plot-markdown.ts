@@ -1,27 +1,93 @@
 import type { PlotSpec } from './plot-engine';
-import type { GeometryModel } from './geometry-types';
+import type { CompositeGeometryPart, CompositePartColor, CompositePartStyle, GeometryModel, SolidGeometryShape } from './geometry-types';
 import { validateGraphSpec } from './graph-render';
 import { formatMath, isMathInsertionAllowed, type MathRange } from './math-ranges';
-import { DocumentChangedError, planWrite, type WriteTarget } from './write-plan';
+import { assertTopLevelBlockContext, DocumentChangedError, type WriteTarget } from './write-plan';
 
 export interface PlotBlock { from: number; to: number; source: string; spec: PlotSpec }
 const FIELDS = ['expression', 'xMin', 'xMax', 'yMin', 'yMax'] as const;
 const EXTRA_FIELDS = ['thetaMin', 'thetaMax', 'calculus', 'integralMin', 'integralMax', 'zMin', 'zMax', 'azimuth', 'elevation', 'geometryZoom'] as const;
-const GEOMETRY_FIELDS = ['shape', 'radius', 'width', 'depth', 'height', 'sides', 'angle', 'offset', 'faces'] as const;
-const GEOMETRY_SHAPES = ['sphere', 'cylinder', 'cone', 'pyramid', 'prism', 'cuboid', 'plane', 'planes', 'line-plane', 'sphere-plane'] as const;
+const GEOMETRY_NUMERIC_FIELDS = ['radius', 'topRadius', 'width', 'depth', 'height', 'sides', 'angle', 'offset'] as const;
+const GEOMETRY_FIELDS = ['shape', ...GEOMETRY_NUMERIC_FIELDS, 'faces', 'parts'] as const;
+const SOLID_SHAPES = ['sphere', 'hemisphere', 'cylinder', 'cone', 'frustum', 'pyramid', 'prism', 'cuboid', 'plane'] as const;
+const GEOMETRY_SHAPES = [...SOLID_SHAPES, 'planes', 'line-plane', 'sphere-plane', 'composite'] as const;
+const PART_NUMERIC_FIELDS = ['radius', 'topRadius', 'width', 'depth', 'height', 'sides'] as const;
+const PART_FIELDS = ['shape', ...PART_NUMERIC_FIELDS, 'offset', 'rotation', 'style', 'color'] as const;
+const PART_STYLES = ['solid', 'translucent', 'wireframe'] as const;
+const PART_COLORS = ['indigo', 'teal', 'amber', 'rose', 'slate'] as const;
+
+function isPlainRecord(value: unknown): value is Record<string, unknown> {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const proto: unknown = Object.getPrototypeOf(value);
+  return proto === Object.prototype || proto === null;
+}
+
+function parseVectorRecord(value: unknown, axes: readonly ('x' | 'y' | 'z')[]): Record<'x' | 'y' | 'z', number> {
+  if (!isPlainRecord(value)) throw new Error('Invalid geometry vector.');
+  const keys = Reflect.ownKeys(value);
+  if (keys.some(key => typeof key !== 'string' || !axes.includes(key as 'x' | 'y' | 'z'))) throw new Error('Invalid geometry vector.');
+  const out = { x: 0, y: 0, z: 0 };
+  for (const axis of axes) {
+    const raw = value[axis];
+    if (raw === undefined) continue;
+    if (typeof raw !== 'number' || !Number.isFinite(raw)) throw new Error('Invalid geometry vector.');
+    out[axis] = raw;
+  }
+  return out;
+}
+
+function parseCompositePart(value: unknown): CompositeGeometryPart {
+  if (!isPlainRecord(value)) throw new Error('Invalid composite geometry part.');
+  const keys = Reflect.ownKeys(value);
+  if (keys.some(key => typeof key !== 'string' || !PART_FIELDS.includes(key as typeof PART_FIELDS[number]))) {
+    throw new Error('Invalid composite geometry part.');
+  }
+  if (typeof value.shape !== 'string' || !SOLID_SHAPES.includes(value.shape as SolidGeometryShape)) {
+    throw new Error('Invalid composite geometry part.');
+  }
+  const part: CompositeGeometryPart = { shape: value.shape as SolidGeometryShape };
+  for (const key of PART_NUMERIC_FIELDS) {
+    const num = value[key];
+    if (num === undefined) continue;
+    if (typeof num !== 'number' || !Number.isFinite(num)) throw new Error('Invalid composite geometry part.');
+    part[key] = num;
+  }
+  if (value.offset !== undefined) part.offset = parseVectorRecord(value.offset, ['x', 'y', 'z']);
+  if (value.rotation !== undefined) part.rotation = parseVectorRecord(value.rotation, ['x', 'y', 'z']);
+  if (value.style !== undefined) {
+    if (typeof value.style !== 'string' || !PART_STYLES.includes(value.style as CompositePartStyle)) throw new Error('Invalid composite geometry part.');
+    part.style = value.style as CompositePartStyle;
+  }
+  if (value.color !== undefined) {
+    if (typeof value.color !== 'string' || !PART_COLORS.includes(value.color as CompositePartColor)) throw new Error('Invalid composite geometry part.');
+    part.color = value.color as CompositePartColor;
+  }
+  return part;
+}
 
 function parseGeometryModel(value: unknown): GeometryModel {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Invalid geometry settings.');
-  const model = value as Record<string, unknown>;
-  if (Object.keys(model).some(key => !GEOMETRY_FIELDS.includes(key as typeof GEOMETRY_FIELDS[number]))
-    || typeof model.shape !== 'string' || !GEOMETRY_SHAPES.includes(model.shape as typeof GEOMETRY_SHAPES[number])
-    || (model.faces !== undefined && typeof model.faces !== 'boolean')
-    || GEOMETRY_FIELDS.slice(1, -1).some(key => model[key] !== undefined && (typeof model[key] !== 'number' || !Number.isFinite(model[key])))) {
+  if (!isPlainRecord(value)) throw new Error('Invalid geometry settings.');
+  const keys = Reflect.ownKeys(value);
+  if (keys.some(key => typeof key !== 'string' || !GEOMETRY_FIELDS.includes(key as typeof GEOMETRY_FIELDS[number]))
+    || typeof value.shape !== 'string' || !GEOMETRY_SHAPES.includes(value.shape as typeof GEOMETRY_SHAPES[number])
+    || (value.faces !== undefined && typeof value.faces !== 'boolean')
+    || GEOMETRY_NUMERIC_FIELDS.some(key => value[key] !== undefined && (typeof value[key] !== 'number' || !Number.isFinite(value[key])))) {
     throw new Error('Invalid geometry settings.');
+  }
+  const out: Record<string, unknown> = { shape: value.shape };
+  for (const key of GEOMETRY_NUMERIC_FIELDS) {
+    if (value[key] !== undefined) out[key] = value[key];
+  }
+  if (value.faces !== undefined) out.faces = value.faces;
+  if (value.parts !== undefined) {
+    if (value.shape !== 'composite' || !Array.isArray(value.parts) || value.parts.length < 2 || value.parts.length > 6) {
+      throw new Error('Invalid geometry settings.');
+    }
+    out.parts = value.parts.map(parseCompositePart);
   }
   // Return only owned, explicitly supported fields. Shape-specific dimensions and
   // bounds are checked by the renderer, before any graph can be edited or saved.
-  return Object.fromEntries(GEOMETRY_FIELDS.filter(key => model[key] !== undefined).map(key => [key, model[key]])) as unknown as GeometryModel;
+  return out as unknown as GeometryModel;
 }
 
 export function parsePlotSpec(source: string): PlotSpec {
@@ -82,7 +148,7 @@ export function findPlotBlocks(markdown: string): PlotBlock[] {
     const masked = markdown.slice(0, from) + markdown.slice(from, to).replace(/[^\r\n]/g, 'x') + markdown.slice(to);
     if (!isMathInsertionAllowed(masked, from)) continue;
     try {
-      planWrite(masked, { snapshot: masked, from, to }, 'x', true);
+      assertTopLevelBlockContext(masked, { snapshot: masked, from, to });
       blocks.push({ from, to, source, spec: parsePlotSpec(source) });
     } catch { /* Unsupported/nested blocks are left unchanged. */ }
   }
@@ -103,7 +169,7 @@ function checkTarget(current: string, target: WriteTarget): void {
 export function planGraphInsert(current: string, target: WriteTarget, spec: PlotSpec, latex: string, display: boolean, original?: MathRange): string {
   checkTarget(current, target);
   if (!isMathInsertionAllowed(current, target.from) && !(target.from === target.to && canAppendAfterGraph(current, target.from))) throw new Error('Insert the graph in ordinary note text, outside code or properties.');
-  planWrite(current, target, 'x', true); // Reuse the conservative container guard.
+  assertTopLevelBlockContext(current, target); // Graphs remain top-level blocks.
   const math = latex.trim() ? original && latex === original.latex && display === original.display
     ? current.slice(target.from, target.to) : formatMath(latex, display) : '';
   const core = (math ? math + '\n\n' : '') + serializePlot(spec);

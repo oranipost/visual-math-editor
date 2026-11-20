@@ -52,14 +52,16 @@ export const PLOT_LIMITS = Object.freeze({
 
 const FUNCTION_NAMES = ['sin', 'cos', 'tan', 'sec', 'csc', 'cot', 'asin', 'acos', 'atan', 'sinh', 'cosh', 'tanh', 'asinh', 'acosh', 'atanh', 'sqrt', 'abs', 'ln', 'log', 'exp'] as const;
 export type PlotVariable = 'x' | 'y' | 'theta';
-type FunctionName = typeof FUNCTION_NAMES[number];
+export type PlotFunctionName = typeof FUNCTION_NAMES[number];
+type FunctionName = PlotFunctionName;
 interface RationalExponent { numerator: number; denominator: number }
-type Node =
-  | { type: 'number'; value: number }
+export type PlotNode =
+  | { type: 'number'; value: number; constant?: 'pi' | 'e' }
   | { type: 'variable'; name: PlotVariable }
-  | { type: 'unary'; negative: boolean; child: Node }
-  | { type: 'binary'; op: string; left: Node; right: Node; rationalExponent?: RationalExponent }
-  | { type: 'function'; name: FunctionName; child: Node };
+  | { type: 'unary'; negative: boolean; child: PlotNode }
+  | { type: 'binary'; op: string; left: PlotNode; right: PlotNode; rationalExponent?: RationalExponent }
+  | { type: 'function'; name: FunctionName; child: PlotNode };
+type Node = PlotNode;
 type Token = { kind: 'number'; value: number } | { kind: 'name'; value: string } | { kind: 'symbol'; value: string };
 
 class ExpressionError extends Error {}
@@ -173,7 +175,7 @@ class Parser {
     if (token.kind === 'name') {
       if (this.variables.includes(token.value as PlotVariable)) return this.node({ type: 'variable', name: token.value as PlotVariable });
       if (token.value === 'pi' || token.value === 'e') {
-        return this.node({ type: 'number', value: token.value === 'pi' ? Math.PI : Math.E });
+        return this.node({ type: 'number', value: token.value === 'pi' ? Math.PI : Math.E, constant: token.value });
       }
       if (!FUNCTION_NAMES.includes(token.value as FunctionName)) fail(`Unknown name. Use ${this.variables.join(', ')}, pi, e, or a supported function.`);
       if (!this.take('(')) fail('Function arguments need parentheses, for example sin(x).');
@@ -186,7 +188,7 @@ class Parser {
 }
 
 function signedInteger(node: Node): number | undefined {
-  if (node.type === 'number') return Number.isSafeInteger(node.value) ? node.value : undefined;
+  if (node.type === 'number') return !node.constant && Number.isSafeInteger(node.value) ? node.value : undefined;
   if (node.type !== 'unary') return undefined;
   const child = signedInteger(node.child);
   return child === undefined ? undefined : (node.negative ? -child : child);
@@ -223,7 +225,7 @@ function evaluate(node: Node, x: number, y = 0): number {
         case '+': return left + right;
         case '-': return left - right;
         case '*': return left * right;
-        case '/': return right === 0 ? NaN : left / right;
+        case '/': return right === 0 || !Number.isFinite(right) ? NaN : left / right;
         case '^': {
           const rational = node.rationalExponent;
           if (left < 0 && rational && rational.denominator % 2 === 1) {
@@ -255,8 +257,8 @@ function evaluate(node: Node, x: number, y = 0): number {
         case 'atanh': return Math.atanh(value);
         case 'sqrt': return Math.sqrt(value);
         case 'abs': return Math.abs(value);
-        case 'ln': return Math.log(value);
-        case 'log': return Math.log10(value);
+        case 'ln': return value <= 0 ? NaN : Math.log(value);
+        case 'log': return value <= 0 ? NaN : Math.log10(value);
         case 'exp': return Math.exp(value);
       }
     }
@@ -327,7 +329,7 @@ function mayCrossZero(at: (x: number) => number, from: number, to: number): bool
   return vertex > 0 && vertex < 1 && minimum < Math.min(aa, bb) * 0.05;
 }
 
-export function compileExpression(input: string, variables: readonly PlotVariable[] = ['x']): CompiledExpression | PlotFailure {
+export function parsePlotAst(input: string, variables: readonly PlotVariable[] = ['x']): { ok: true; expression: string; root: PlotNode } | PlotFailure {
   if (typeof input !== 'string') return { ok: false, error: 'Enter an expression such as x^2 or sin(x).' };
   if (input.length > PLOT_LIMITS.expressionLength) return { ok: false, error: 'The expression is too long (maximum 500 characters).' };
   if (!variables.length || variables.some(variable => !['x', 'y', 'theta'].includes(variable))
@@ -336,26 +338,34 @@ export function compileExpression(input: string, variables: readonly PlotVariabl
   }
   const prefix = variables.includes('theta') ? /^r\s*=\s*/ : variables.includes('y') ? /^z\s*=\s*/ : /^y\s*=\s*/;
   const expression = input.trim().replace(prefix, '').replace(/π/g, 'pi').replace(/θ/g, 'theta')
+    .replace(/ar(?:c)?sinh\b/g, 'asinh').replace(/ar(?:c)?cosh\b/g, 'acosh').replace(/ar(?:c)?tanh\b/g, 'atanh')
     .replace(/arcsin\b/g, 'asin').replace(/arccos\b/g, 'acos').replace(/arctan\b/g, 'atan')
     .replace(/[−–]/g, '-').replace(/×/g, '*').replace(/÷/g, '/');
   try {
     const root = new Parser(tokenize(expression), variables).parse();
-    const guards = domainGuards(root);
-    return {
-      ok: true, expression,
-      evaluate: (x, y = 0) => {
-        if (!Number.isFinite(x) || !Number.isFinite(y)) return NaN;
-        const result = evaluate(root, x, y);
-        return Number.isFinite(result) ? result : NaN;
-      },
-      crossesDomainBoundary: (from, to, fromY = 0, toY = fromY) => guards.some((guard) => mayCrossZero(
-        t => guard.at(from + (to - from) * t, fromY + (toY - fromY) * t), 0, 1)),
-      evaluationCost: nodeCost(root) + 8 * guards.reduce((sum, guard) => sum + guard.cost, 0),
-    };
+    return { ok: true, expression, root };
   } catch (error) {
     if (error instanceof ExpressionError) return { ok: false, error: error.message };
     return { ok: false, error: 'The expression could not be parsed.' };
   }
+}
+
+export function compileExpression(input: string, variables: readonly PlotVariable[] = ['x']): CompiledExpression | PlotFailure {
+  const parsed = parsePlotAst(input, variables);
+  if (!parsed.ok) return parsed;
+  const { expression, root } = parsed;
+  const guards = domainGuards(root);
+  return {
+    ok: true, expression,
+    evaluate: (x, y = 0) => {
+      if (!Number.isFinite(x) || !Number.isFinite(y)) return NaN;
+      const result = evaluate(root, x, y);
+      return Number.isFinite(result) ? result : NaN;
+    },
+    crossesDomainBoundary: (from, to, fromY = 0, toY = fromY) => guards.some((guard) => mayCrossZero(
+      t => guard.at(from + (to - from) * t, fromY + (toY - fromY) * t), 0, 1)),
+    evaluationCost: nodeCost(root) + 8 * guards.reduce((sum, guard) => sum + guard.cost, 0),
+  };
 }
 
 export function validatePlotSpec(spec: PlotSpec): { ok: true; spec: PlotSpec } | PlotFailure {
@@ -518,7 +528,7 @@ export function renderSvg(spec: PlotSpec, segments: PlotPoint[][], options: SvgR
   const title = options.title ?? `Equation graph: y = ${expression}`;
   const description = options.description ?? 'Approximate numerical graph. The horizontal axis is X and the vertical axis is Y. Trigonometric arguments use radians. Domain gaps and unresolved discontinuities are omitted.';
   const display = options.title ?? `y = ${shortExpression}`;
-  return `<svg data-vme-plot="${escapeXml(options.mode ?? 'function')}" xmlns="http://www.w3.org/2000/svg" width="800" height="480" viewBox="0 0 800 480" style="max-width:100%;height:auto" role="img" aria-label="${escapeXml(`${title}; horizontal axis X, vertical axis Y`)}"><title>${escapeXml(title)}</title><desc>${escapeXml(description)}</desc><rect width="800" height="480" rx="12" fill="#fff"/><g font-family="system-ui, sans-serif" fill="#1f2937"><text data-vme-plot-caption="title" x="${left}" y="31" font-size="17">${escapeXml(display.length > titleLength ? `${display.slice(0, titleLength - 3)}…` : display)}</text><g stroke="#e5e7eb" stroke-width="1">${grid.join('')}</g><rect data-plot-frame="true" x="${left}" y="${top}" width="${width}" height="${height}" fill="none" stroke="#cbd5e1"/><g stroke="#64748b" stroke-width="1.3">${axes.join('')}</g><g font-size="16">${labels.join('')}</g><g font-size="22" font-weight="700"><text data-axis-label="X" x="774" y="418" text-anchor="middle">X</text><text data-axis-label="Y" x="38" y="35" text-anchor="middle">Y</text></g><g data-integral-shading="true" fill="#93c5fd" fill-opacity="0.5">${fills}</g><g fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${paths}</g><text data-vme-plot-caption="footer" x="${left}" y="455" font-size="12" fill="#64748b">${escapeXml(options.annotation ?? '≈ · rad')}</text></g></svg>`;
+  return `<svg data-vme-plot="${escapeXml(options.mode ?? 'function')}" xmlns="http://www.w3.org/2000/svg" width="800" height="480" viewBox="0 0 800 480" style="max-width:100%;height:auto" role="img" aria-label="${escapeXml(`${title}; horizontal axis X, vertical axis Y`)}"><title>${escapeXml(title)}</title><desc>${escapeXml(description)}</desc><rect width="800" height="480" rx="12" fill="#fff"/><g font-family="system-ui, sans-serif" fill="#1f2937"><text data-vme-plot-caption="title" x="${left}" y="31" font-size="17">${escapeXml(display.length > titleLength ? `${display.slice(0, titleLength - 3)}…` : display)}</text><g stroke="#e5e7eb" stroke-width="1">${grid.join('')}</g><rect data-plot-frame="true" x="${left}" y="${top}" width="${width}" height="${height}" fill="none" stroke="#cbd5e1"/><g stroke="#64748b" stroke-width="1.3">${axes.join('')}</g><g font-size="16">${labels.join('')}</g><g font-size="22" font-weight="700"><text data-axis-label="X" x="774" y="418" text-anchor="middle">X</text><text data-axis-label="Y" x="38" y="35" text-anchor="middle">Y</text></g><g data-integral-shading="true" fill="#8b7ef0" fill-opacity="0.28">${fills}</g><g fill="none" stroke="#5b4ec7" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${paths}</g><text data-vme-plot-caption="footer" x="${left}" y="455" font-size="12" fill="#64748b">${escapeXml(options.annotation ?? '≈ · rad')}</text></g></svg>`;
 }
 
 export function createPlot(input: PlotSpec): PlotResult {

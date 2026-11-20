@@ -14,18 +14,39 @@ import { mountAdvancedMathTools } from './advanced-math-ui';
 import { mountMathSymbolTools } from './math-symbols-ui';
 import { mountEquationSystemTools, type SystemDraft } from './equation-system-ui';
 import { mountSetSequenceTools } from './set-sequence-ui';
+import {
+  isLanguage,
+  isModeDisplay,
+  resolveInitialEditorMode,
+  shouldHideModeChrome,
+  type EditorMode,
+  type ModeDisplay,
+} from './settings';
 
-export type EditorMode = 'visual' | 'latex' | 'hybrid';
+export type { EditorMode, ModeDisplay } from './settings';
 
 export interface FormulaImportDraft { original: string; open: boolean }
 
-export interface EditorDraft { latex: string; display: boolean; mode: EditorMode; formulaImport?: FormulaImportDraft; matrix?: MatrixDraft; system?: SystemDraft; science?: ScienceDraft; plot?: PlotDraft }
+export interface EditorDraft {
+  latex: string;
+  display: boolean;
+  mode: EditorMode;
+  temporarySourceFallback?: boolean;
+  formulaImport?: FormulaImportDraft;
+  matrix?: MatrixDraft;
+  system?: SystemDraft;
+  science?: ScienceDraft;
+  plot?: PlotDraft;
+}
 
 export interface EditorOptions {
   latex?: string;
   display?: boolean;
   editing?: boolean;
   initialMode?: EditorMode;
+  modeDisplay?: ModeDisplay;
+  preferredMode?: EditorMode;
+  temporarySourceFallback?: boolean;
   compact?: boolean;
   language?: Language;
   systemLanguage?: string;
@@ -34,11 +55,25 @@ export interface EditorOptions {
   systemDraft?: SystemDraft;
   scienceDraft?: ScienceDraft;
   plotDraft?: PlotDraft;
+  alsoInsertGraphEquation?: boolean;
+  onAlsoInsertGraphEquationChange?: (enabled: boolean) => void | Promise<void>;
   graphOnly?: boolean;
   onSaveGraph?: (spec: PlotSpec, latex: string, display: boolean) => void | Promise<void>;
   onLanguageChange?: (language: Language) => void | Promise<void>;
+  onModeDisplayChange?: (modeDisplay: ModeDisplay) => void | Promise<void>;
+  onPreferredModeChange?: (preferredMode: EditorMode) => void | Promise<void>;
   onSave: (latex: string, display: boolean) => void | Promise<void>;
   onCancel: () => void;
+}
+
+export interface MountedEditor {
+  destroy: () => void;
+  field: MathfieldElement;
+  getImportOriginal: () => string;
+  getDraft: () => EditorDraft;
+  setLanguage: (language: Language) => void;
+  setModeDisplay: (modeDisplay: ModeDisplay) => void;
+  setPreferredMode: (preferredMode: EditorMode) => void;
 }
 
 type Structure = {
@@ -62,8 +97,16 @@ const structures: Structure[] = [
 const symbols = [
   ['alpha', 'α', '阿尔法', '\\alpha'],
   ['beta', 'β', '贝塔', '\\beta'],
+  ['gamma', 'γ', '伽马', '\\gamma'],
   ['theta', 'θ', '西塔', '\\theta'],
+  ['lambda', 'λ', '拉姆达', '\\lambda'],
+  ['mu', 'μ', '缪', '\\mu'],
   ['pi', 'π', '圆周率', '\\pi'],
+  ['rho', 'ρ', '柔', '\\rho'],
+  ['sigma', 'σ', '西格玛', '\\sigma'],
+  ['varphi', 'φ', '斐', '\\varphi'],
+  ['varepsilon', 'ε', '艾普西隆', '\\varepsilon'],
+  ['omega', 'ω', '欧米伽', '\\omega'],
   ['delta', 'Δ', '德尔塔', '\\Delta'],
   ['infinity', '∞', '无穷大', '\\infty'],
   ['plus-minus', '±', '正负号', '\\pm'],
@@ -124,17 +167,15 @@ function structureGlyph(id: string): HTMLElement {
 }
 
 /** The caller owns the host dialog/inline panel, local assets, and the commit transaction. */
-export function mountEditor(container: HTMLElement, options: EditorOptions): {
-  destroy: () => void;
-  field: MathfieldElement;
-  getImportOriginal: () => string;
-  getDraft: () => EditorDraft;
-} {
+export function mountEditor(container: HTMLElement, options: EditorOptions): MountedEditor {
   const root = el('div', options.compact ? 'vme-editor vme-compact' : 'vme-editor');
   root.dataset.testid = 'visual-math-editor';
   const instanceId = `vme-${Math.random().toString(36).slice(2)}`;
   let display = options.display ?? true;
-  let mode: EditorMode = options.initialMode ?? 'visual';
+  let modeDisplay: ModeDisplay = options.modeDisplay ?? 'all';
+  let preferredMode: EditorMode = options.preferredMode ?? options.initialMode ?? 'visual';
+  let temporarySourceFallback = Boolean(options.temporarySourceFallback && modeDisplay === 'visual');
+  let mode: EditorMode = resolveInitialEditorMode({ modeDisplay, preferredMode }, options.initialMode, temporarySourceFallback);
   let rawSource = options.latex ?? '';
   let syncing = false;
   let destroyed = false;
@@ -165,17 +206,47 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
   title.id = `${instanceId}-title`;
   const subtitle = el('p', 'vme-subtitle', '选择熟悉的方式，写下你的公式。');
   headingCopy.append(eyebrow, title, subtitle);
-  const localBadge = el('span', 'vme-local-badge', '本地离线');
-  localBadge.title = '公式在本机编辑，无需账号或网络';
   const language = el('select', 'vme-language-select');
   language.dataset.testid = 'interface-language';
   language.setAttribute('aria-label', '界面语言');
-  for (const [value, label] of [['system', '跟随 Obsidian'], ['zh', '中文'], ['en', 'English'], ['es', 'Español']] as const) {
+  for (const [value, label] of [
+    ['system', '跟随 Obsidian'],
+    ['zh', '中文'],
+    ['en', 'English'],
+    ['es', 'Español'],
+    ['ja', '日本語'],
+    ['de', 'Deutsch'],
+    ['fr', 'Français'],
+  ] as const) {
     const option = el('option', '', label);
     option.value = value;
     language.append(option);
   }
   language.value = options.language ?? 'system';
+
+  const modeDisplaySelect = el('select', 'vme-mode-display-select');
+  modeDisplaySelect.dataset.testid = 'mode-display-select';
+  modeDisplaySelect.setAttribute('aria-label', '编辑模式显示');
+  modeDisplaySelect.title = '编辑模式显示';
+  for (const [value, label] of [
+    ['all', '全部模式'],
+    ['visual', '只显示 Visual'],
+    ['hybrid', '只显示 Hybrid'],
+    ['latex', '只显示 LaTeX'],
+  ] as const) {
+    const option = el('option', '', label);
+    option.value = value;
+    modeDisplaySelect.append(option);
+  }
+  modeDisplaySelect.value = modeDisplay;
+
+  function selectUserMode(target: EditorMode, focusField: boolean): void {
+    setMode(target, focusField);
+    if (modeDisplay === 'all') {
+      preferredMode = target;
+      void options.onPreferredModeChange?.(target);
+    }
+  }
 
   const modeTabs = el('div', 'vme-mode-tabs');
   modeTabs.setAttribute('role', 'tablist');
@@ -186,7 +257,7 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
     ['latex', 'LaTeX', '编辑公式源码'],
     ['hybrid', 'Hybrid', '源码与可视化双向同步'],
   ] as const) {
-    const tab = button(label, 'vme-mode-tab', `mode-${value}`, () => setMode(value, true));
+    const tab = button(label, 'vme-mode-tab', `mode-${value}`, () => selectUserMode(value, true));
     tab.id = `${instanceId}-tab-${value}`;
     tab.setAttribute('role', 'tab');
     tab.setAttribute('aria-controls', `${instanceId}-workspace`);
@@ -201,7 +272,7 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
       if (event.key === 'End') target = ordered[ordered.length - 1];
       if (target) {
         event.preventDefault();
-        setMode(target);
+        selectUserMode(target, false);
         modeButtons.get(target)?.focus();
       }
     });
@@ -209,6 +280,14 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
     modeTabs.append(tab);
   }
   const modeDescription = el('p', 'vme-mode-description');
+
+  function syncModeChrome(): void {
+    const hideChrome = shouldHideModeChrome({ modeDisplay, graphSelected, temporarySourceFallback });
+    modeTabs.hidden = hideChrome;
+    modeDescription.hidden = hideChrome;
+    modeDisplaySelect.hidden = graphSelected;
+    root.dataset.modeDisplay = modeDisplay;
+  }
 
   const toolbar = el('div', 'vme-toolbar');
   toolbar.setAttribute('role', 'group');
@@ -229,9 +308,22 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
   field.setAttribute('popover-policy', 'off');
   field.tabIndex = 0;
   const fieldBox = el('div', 'vme-field-box');
+  const blockedContainer = el('div', 'vme-blocked-state');
+  blockedContainer.hidden = true;
   const blockedMessage = el('p', 'vme-unsupported-message');
   blockedMessage.hidden = true;
-  fieldBox.append(field, blockedMessage);
+  const fallbackButton = button('临时用源码模式查看', 'vme-text-button vme-temporary-fallback-button', 'temporary-source-fallback', () => {
+    if (saving) return;
+    temporarySourceFallback = true;
+    syncModeChrome();
+    setMode('hybrid', true, false);
+  });
+  fallbackButton.dataset.testid = 'temporary-source-fallback';
+  fallbackButton.title = '仅在本次编辑中打开源码模式，不更改“只显示 Visual”设置';
+  fallbackButton.setAttribute('aria-label', '仅在本次编辑中打开源码模式，不更改“只显示 Visual”设置');
+  fallbackButton.hidden = true;
+  blockedContainer.append(blockedMessage, fallbackButton);
+  fieldBox.append(field, blockedContainer);
 
   const status = el('p', 'vme-error');
   status.id = `${instanceId}-error`;
@@ -269,13 +361,13 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
     field.setAttribute('aria-invalid', invalid);
   }
 
-  function insert(template: string): void {
+  function insert(template: string, insertOptions?: { focus?: boolean }): void {
     if (saving || visualBlocked) return;
     syncFromVisual();
     if (visualBlocked) return;
     try {
       validateLatex(template.replace(/#\?/g, '\\placeholder{}').replace(/#0/g, 'x'));
-      field.insert(template, { format: 'latex', mode: 'math', selectionMode: 'placeholder', focus: true, feedback: false });
+      field.insert(template, { format: 'latex', mode: 'math', selectionMode: 'placeholder', focus: insertOptions?.focus ?? true, feedback: false });
       parserIssue = null;
       syncFromVisual();
     } catch {
@@ -358,7 +450,9 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
     tool.addEventListener('pointerdown', (event) => event.preventDefault());
     symbolGroup.append(tool);
   }
-  symbolBar.append(symbolGroup);
+  const greekHint = el('p', 'vme-greek-hint', '提示：空格或运算符后输入 rho、lambda、omega 等英文名可直接变希腊字母');
+  greekHint.dataset.testid = 'greek-typing-hint';
+  symbolBar.append(symbolGroup, greekHint);
 
   const canvasTop = el('div', 'vme-canvas-top');
   const canvasLabel = el('label', 'vme-section-label', '你的公式');
@@ -370,12 +464,12 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
     restoreHistory(-1);
   });
   undo.setAttribute('aria-label', '撤销');
-  undo.title = '撤销';
+  undo.title = '撤销（Ctrl/Cmd+Z）';
   const redo = button('↷', 'vme-icon-button', 'redo', () => {
     restoreHistory(1);
   });
   redo.setAttribute('aria-label', '重做');
-  redo.title = '重做';
+  redo.title = '重做（Ctrl+Y / Cmd+Shift+Z）';
   const clear = button('清空', 'vme-clear-button', 'clear', () => {
     if (saving || visualBlocked) return;
     syncFromVisual();
@@ -465,7 +559,7 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
     if (saving || options.graphOnly) return;
     equationGraphOpen = !equationGraphOpen;
     equationGraphHost.hidden = !equationGraphOpen;
-    if (equationGraphOpen) equationGraphHost.append(plotHost);
+    if (equationGraphOpen && plotHost.parentElement !== equationGraphHost) equationGraphHost.append(plotHost);
     plotTools.setEquationLinked(equationGraphOpen);
     updateEquationGraphToggle();
   });
@@ -509,20 +603,23 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
   const footerNote = el('p', 'vme-footer-note', '点击保存后，才会更新笔记。');
   const actions = el('div', 'vme-actions');
   const cancel = button('取消', 'vme-cancel-button', 'cancel', () => { if (!saving) options.onCancel(); });
+  cancel.title = '取消编辑（Esc）';
   const save = button('', 'vme-save-button', 'save', () => void saveEquation());
+  save.title = options.editing ? '保存修改（Ctrl/Cmd+Enter）' : '插入公式（Ctrl/Cmd+Enter）';
   actions.append(cancel, save);
   footer.append(footerNote, actions);
   const subjectTools = el('div', 'vme-subject-tools');
-  const matrixHost = el('div', 'vme-secondary-slot');
-  const systemHost = el('div', 'vme-secondary-slot');
-  const setSequenceHost = el('div', 'vme-secondary-slot');
-  const advancedMathHost = el('div', 'vme-secondary-slot');
-  const mathSymbolHost = el('div', 'vme-secondary-slot');
   const importHost = el('div', 'vme-import-host');
   const importOpen = button('导入公式', 'vme-import-open', 'import-open', () => {
-    if (saving || structureEditing()) return;
+    if (saving) return;
+    if (importTools.isOpen()) {
+      importTools.close();
+      return;
+    }
     if (mode !== 'latex' && !visualBlocked) syncFromVisual();
     closeDetailsDrawers();
+    matrixTools.close();
+    systemTools.close();
     importTools.open();
   });
   importOpen.title = '粘贴带 $、$$ 或环境的单条公式';
@@ -530,8 +627,7 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
   const secondaryTools = el('div', 'vme-secondary-tools');
   secondaryTools.setAttribute('role', 'group');
   secondaryTools.setAttribute('aria-label', '扩展数学工具');
-  secondaryTools.append(mathSymbolHost, setSequenceHost, matrixHost, systemHost, advancedMathHost, importOpen);
-  heading.append(headingCopy, modeTabs, localBadge, language);
+  heading.append(headingCopy, modeTabs, modeDisplaySelect, language);
   root.append(heading, modeDescription, subjectTools, importHost, workspace, equationGraph, status);
   if (options.compact) heading.append(footer);
   else root.append(footer);
@@ -543,8 +639,10 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
   const plotTools = mountPlotTools(plotHost, {
     initialDraft: options.plotDraft,
     editing: options.graphOnly,
+    alsoInsertEquation: options.alsoInsertGraphEquation,
+    onAlsoInsertEquationChange: options.onAlsoInsertGraphEquationChange,
     getCurrentGraph: options.graphOnly ? undefined : () => graphFromLatex(rawSource),
-    onInsertGraph: options.onSaveGraph ? async spec => {
+    onInsertGraph: options.onSaveGraph ? async (spec, _svg, generatedEquationLatex) => {
       if (saving || destroyed) return;
       if (!options.graphOnly && mode !== 'latex' && !visualBlocked) syncFromVisual();
       if (!options.graphOnly && rawSource.trim() && (sourceIssue || incomplete || unsupported)) {
@@ -554,10 +652,12 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
       if (linkedGraph && (linkedGraph.expression !== spec.expression || (linkedGraph.mode ?? 'function') !== (spec.mode ?? 'function'))) {
         throw new Error('The equation changed. Preview the graph again.');
       }
+      const effectiveLatex = !options.graphOnly && !rawSource.trim() && generatedEquationLatex ? generatedEquationLatex : rawSource;
+      const effectiveDisplay = !options.graphOnly && !rawSource.trim() && generatedEquationLatex ? true : display;
       saving = true;
       root.setAttribute('aria-busy', 'true');
       updateControls();
-      try { await options.onSaveGraph!(spec, rawSource, display); }
+      try { await options.onSaveGraph!(spec, effectiveLatex, effectiveDisplay); }
       finally {
         saving = false;
         if (!destroyed) { root.removeAttribute('aria-busy'); updateControls(); }
@@ -574,14 +674,16 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
     onSubjectChange: subject => {
       graphSelected = subject === 'graph';
       root.dataset.subject = subject;
-      workspace.hidden = layout.hidden = modeTabs.hidden = modeDescription.hidden = save.hidden = graphSelected;
+      workspace.hidden = layout.hidden = save.hidden = graphSelected;
+      subjectTools.hidden = mode === 'latex' && !graphSelected;
+      syncModeChrome();
       importOpen.hidden = graphSelected || Boolean(options.graphOnly);
       importHost.hidden = graphSelected || Boolean(options.graphOnly);
       equationGraph.hidden = graphSelected || Boolean(options.graphOnly);
       if (graphSelected) {
         equationGraphOpen = false;
         equationGraphHost.hidden = true;
-        advancedPlotHost.append(plotHost);
+        if (plotHost.parentElement !== advancedPlotHost) advancedPlotHost.append(plotHost);
         plotTools.setEquationLinked(false);
         updateEquationGraphToggle();
       }
@@ -606,7 +708,7 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
     },
   });
   if (equationGraphOpen) {
-    equationGraphHost.append(plotHost);
+    if (plotHost.parentElement !== equationGraphHost) equationGraphHost.append(plotHost);
     plotTools.setEquationLinked(true);
   }
 
@@ -632,7 +734,11 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
     getLatex: () => rawSource,
     onOpenChange: open => {
       importOpen.setAttribute('aria-expanded', String(open));
-      if (open) closeDetailsDrawers();
+      if (open) {
+        closeDetailsDrawers();
+        matrixTools?.close();
+        systemTools?.close();
+      }
       updateControls();
       if (!open && !destroyed) {
         if (mode === 'latex' || visualBlocked) source.focus();
@@ -656,8 +762,13 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
         // The new source has already been loaded and checked. In particular,
         // do not serialize an unsupported candidate through the previous Visual
         // state before its final source-only state has been rendered.
-        if (sourceOnly && mode === 'visual') setMode('hybrid', false, false);
-        else renderSourceState();
+        if (sourceOnly && mode === 'visual') {
+          if (modeDisplay === 'visual') {
+            temporarySourceFallback = true;
+            syncModeChrome();
+          }
+          setMode('hybrid', false, false);
+        } else renderSourceState();
         restoringHistory = false; recordDraft(); updateHistory();
       } catch (error) {
         rawSource = previous.latex; source.value = rawSource; display = previous.display;
@@ -667,29 +778,45 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
     },
   });
 
-  const advancedMathTools = mountAdvancedMathTools(advancedMathHost, { onInsert: insert });
-  const mathSymbolTools = mountMathSymbolTools(mathSymbolHost, { hasSelection: () => !field.selectionIsCollapsed, onInsert: insert });
-  const setSequenceTools = mountSetSequenceTools(setSequenceHost, { hasSelection: () => !field.selectionIsCollapsed, onInsert: insert });
-  const detailsDrawers = [mathSymbolHost, setSequenceHost, advancedMathHost]
-    .map(hostNode => hostNode.querySelector('details'))
-    .filter((item): item is HTMLDetailsElement => item !== null);
+  const detailsDrawers: HTMLDetailsElement[] = [];
   function closeDetailsDrawers(except?: HTMLDetailsElement): void {
     for (const drawer of detailsDrawers) {
       if (drawer !== except && drawer.open) drawer.open = false;
     }
   }
-  const matrixTools = mountMatrixTools(matrixHost, {
+  const mathSymbolTools = mountMathSymbolTools(secondaryTools, { hasSelection: () => !field.selectionIsCollapsed, onInsert: insert });
+  const setSequenceTools = mountSetSequenceTools(secondaryTools, { hasSelection: () => !field.selectionIsCollapsed, onInsert: insert });
+  const matrixTools = mountMatrixTools(secondaryTools, {
     initialDraft: initialMatrixDraft,
     getLatex: () => rawSource,
-    onOpenChange: open => { if (open) closeDetailsDrawers(); matrixEditing = open; updateControls(); },
+    onOpenChange: open => {
+      if (open) {
+        closeDetailsDrawers();
+        systemTools?.close();
+        if (importTools.isOpen()) importTools.close();
+      }
+      matrixEditing = open;
+      updateControls();
+    },
     onApply: applyStructuredDraft,
   });
-  const systemTools = mountEquationSystemTools(systemHost, {
+  const systemTools = mountEquationSystemTools(secondaryTools, {
     initialDraft: options.systemDraft,
     getLatex: () => rawSource,
-    onOpenChange: open => { if (open) closeDetailsDrawers(); systemEditing = open; updateControls(); },
+    onOpenChange: open => {
+      if (open) {
+        closeDetailsDrawers();
+        matrixTools.close();
+        if (importTools.isOpen()) importTools.close();
+      }
+      systemEditing = open;
+      updateControls();
+    },
     onApply: applyStructuredDraft,
   });
+  const advancedMathTools = mountAdvancedMathTools(secondaryTools, { onInsert: insert });
+  secondaryTools.append(importOpen);
+  detailsDrawers.push(...Array.from(secondaryTools.querySelectorAll('details')));
   for (const drawer of detailsDrawers) {
     drawer.addEventListener('toggle', () => {
       if (drawer.open) {
@@ -782,14 +909,18 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
 
   function updateControls(): void {
     const locked = saving || importTools.isOpen();
+    const subpanelOpen = importTools.isOpen() || structureEditing();
     importTools.setDisabled(saving);
-    importOpen.disabled = saving || structureEditing();
-    matrixTools.setDisabled(locked || systemEditing || (visualBlocked && !matrixEditing));
-    systemTools.setDisabled(locked || matrixEditing || (visualBlocked && !systemEditing));
-    advancedMathTools.setDisabled(locked || structureEditing() || visualBlocked);
-    mathSymbolTools.setDisabled(locked || structureEditing() || visualBlocked);
-    setSequenceTools.setDisabled(locked || structureEditing() || visualBlocked);
+    importOpen.disabled = saving;
+    matrixTools.setDisabled(saving || (visualBlocked && !matrixEditing));
+    systemTools.setDisabled(saving || (visualBlocked && !systemEditing));
     const equationLocked = locked || structureEditing();
+    advancedMathTools.setDisabled(equationLocked || visualBlocked);
+    mathSymbolTools.setDisabled(equationLocked || visualBlocked);
+    setSequenceTools.setDisabled(equationLocked || visualBlocked);
+    workspace.hidden = graphSelected || subpanelOpen;
+    equationGraph.hidden = graphSelected || Boolean(options.graphOnly) || (subpanelOpen && !equationGraphOpen);
+    previous.hidden = next.hidden = !incomplete;
     inlineButton.disabled = displayButton.disabled = equationLocked;
     for (const control of [...structureGrid.querySelectorAll('button'), ...symbolGroup.querySelectorAll('button'), ...operatorButtons, previous, next, jumpEnd]) {
       control.disabled = equationLocked || visualBlocked;
@@ -800,10 +931,15 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
     plotTools.setDisabled(equationLocked);
     equationGraphToggle.disabled = equationLocked;
     cancel.disabled = language.disabled = saving;
+    modeDisplaySelect.disabled = equationLocked;
     for (const tab of modeButtons.values()) tab.disabled = equationLocked;
     field.readOnly = equationLocked || visualBlocked;
     field.hidden = visualBlocked;
+    const showFallbackAction = visualBlocked && mode === 'visual' && modeDisplay === 'visual' && !temporarySourceFallback;
+    blockedContainer.hidden = !visualBlocked;
     blockedMessage.hidden = !visualBlocked;
+    fallbackButton.hidden = !showFallbackAction;
+    fallbackButton.disabled = equationLocked;
     fieldBox.dataset.blocked = String(visualBlocked);
     save.disabled = equationLocked || Boolean(sourceIssue) || (mode === 'visual' && unsupported) || (mode !== 'visual' && incomplete);
     save.textContent = saving ? '正在保存…' : unsupported && mode !== 'visual' ? '按源码保存' : options.editing ? '保存修改' : '插入公式';
@@ -829,17 +965,26 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
     unsupported = !sourceIssue && (Boolean(visualIssue) || errors.length > 0 || markupUnsupported);
     incomplete = hasIncompleteSlots(rawSource);
     visualBlocked = Boolean(sourceIssue) || unsupported;
+    const lockedVisualOnly = mode === 'visual' && modeDisplay === 'visual' && !temporarySourceFallback;
     if (sourceIssue) {
-      blockedMessage.textContent = mode === 'visual' ? '公式源码尚未完整。请切换 LaTeX 或 Hybrid 模式继续编辑。' : '完成源码后，公式会自动显示在这里。';
+      blockedMessage.textContent = lockedVisualOnly
+        ? '公式源码尚未完整，可临时用源码模式查看并修复。'
+        : mode === 'visual' ? '公式源码尚未完整。请切换 LaTeX 或 Hybrid 模式继续编辑。' : '完成源码后，公式会自动显示在这里。';
     } else if (visualIssue) {
-      blockedMessage.textContent = '可视化预览已暂停，可继续编辑并保存源码。';
+      blockedMessage.textContent = lockedVisualOnly
+        ? '公式超过 4096 字符，可视化预览已暂停，可临时用源码模式查看。'
+        : '可视化预览已暂停，可继续编辑并保存源码。';
     } else if (unsupported) {
-      blockedMessage.textContent = '当前可视化引擎暂不支持这个公式。源码完整保留，可在 LaTeX 模式继续编辑。';
+      blockedMessage.textContent = lockedVisualOnly
+        ? '当前可视化暂不支持此公式，源码完整保留，可临时用源码模式查看。'
+        : '当前可视化引擎暂不支持这个公式。源码完整保留，可在 LaTeX 模式继续编辑。';
     }
     if (sourceIssue) showError(sourceIssue);
     else if (saveIssue) showError(saveIssue);
-    else if (visualIssue) showError(visualIssue, true);
-    else if (unsupported) showError(mode === 'visual' ? '请切换 LaTeX 或 Hybrid 模式查看源码。' : '仅源码保存不会修复未知命令。行内保存会把换行转换为空格；需要保留多行请选独立公式。', true);
+    else if (visualIssue) showError(lockedVisualOnly ? '公式超过 4096 字符；点击“临时用源码模式查看”可编辑或保存源码。' : visualIssue, true);
+    else if (unsupported) showError(lockedVisualOnly
+      ? '点击“临时用源码模式查看”可编辑或按源码保存。'
+      : mode === 'visual' ? '请切换 LaTeX 或 Hybrid 模式查看源码。' : '仅源码保存不会修复未知命令。行内保存会把换行转换为空格；需要保留多行请选独立公式。', true);
     else if (incomplete && mode !== 'visual') showError('公式还有未填写的方框或参数，请补全后保存。');
     else if (!display && /[\r\n]/.test(rawSource)) showError('行内保存会把换行转换为空格；需要保留多行请选独立公式。', true);
     else showError('');
@@ -880,7 +1025,8 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
     root.dataset.mode = mode;
     sourcePane.hidden = mode === 'visual';
     visualPane.hidden = mode === 'latex';
-    subjectTools.hidden = mode === 'latex';
+    subjectTools.hidden = mode === 'latex' && !graphSelected;
+    syncModeChrome();
     if (mode === 'latex') sourcePane.append(layout);
     else navigation.append(layout);
     workspace.setAttribute('aria-labelledby', `${instanceId}-tab-${mode}`);
@@ -893,8 +1039,33 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
     renderSourceState();
     if (focus) {
       if (mode === 'latex' || (mode === 'hybrid' && visualBlocked)) source.focus();
-      else if (!visualBlocked) field.focus();
+      else if (visualBlocked) {
+        if (!fallbackButton.hidden) fallbackButton.focus();
+        else if (!modeTabs.hidden) modeButtons.get('latex')?.focus();
+      } else field.focus();
     }
+  }
+
+  function applyModeDisplay(nextModeDisplay: ModeDisplay, focusAfterChange: boolean, notifyHost: boolean): void {
+    if (destroyed) return;
+    const changed = modeDisplay !== nextModeDisplay;
+    modeDisplay = nextModeDisplay;
+    if (modeDisplaySelect.value !== nextModeDisplay) modeDisplaySelect.value = nextModeDisplay;
+    if (changed || notifyHost) temporarySourceFallback = false;
+    const targetMode: EditorMode = nextModeDisplay === 'all'
+      ? (preferredMode === 'visual' && visualBlocked && mode !== 'visual' ? mode : preferredMode)
+      : (temporarySourceFallback ? mode : nextModeDisplay);
+    syncModeChrome();
+    if (mode !== targetMode) setMode(targetMode, focusAfterChange);
+    else {
+      renderSourceState();
+      if (focusAfterChange && !graphSelected) {
+        if (mode === 'latex' || (mode === 'hybrid' && visualBlocked)) source.focus();
+        else if (visualBlocked && !fallbackButton.hidden) fallbackButton.focus();
+        else if (!visualBlocked) field.focus();
+      }
+    }
+    if (notifyHost) void options.onModeDisplayChange?.(nextModeDisplay);
   }
 
   async function saveEquation(): Promise<void> {
@@ -906,10 +1077,22 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
       return;
     }
     if (!rawSource.trim()) {
-      showError('请先输入一个公式，或点击上方结构开始。');
-      if (mode === 'latex') source.focus();
-      else field.focus();
-      return;
+      const preparedScience = scienceTools.getPreparedLatex().trim();
+      if (preparedScience) {
+        rawSource = preparedScience;
+        source.value = rawSource;
+        loadVisualSource();
+        lastVisualSerialized = field.getValue('latex');
+        initialSourceUntouched = false;
+        recordDraft();
+        renderSourceState();
+        if (sourceIssue || (mode === 'visual' && unsupported)) return;
+      } else {
+        showError('请先输入一个公式，或点击上方结构开始。');
+        if (mode === 'latex') source.focus();
+        else field.focus();
+        return;
+      }
     }
     if (hasIncompleteSlots(rawSource)) {
       showError('还有方框没有填写，请补全后再保存。');
@@ -955,8 +1138,53 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
     }
   };
   const onRootKeydown = (event: KeyboardEvent): void => {
+    if (event.key === 'Escape' && !event.ctrlKey && !event.metaKey && !event.altKey) {
+      if (importTools.isOpen()) {
+        event.preventDefault();
+        event.stopPropagation();
+        importTools.close();
+        return;
+      }
+      if (matrixEditing) {
+        event.preventDefault();
+        event.stopPropagation();
+        matrixTools.close();
+        return;
+      }
+      if (systemEditing) {
+        event.preventDefault();
+        event.stopPropagation();
+        systemTools.close();
+        return;
+      }
+      const openDrawer = detailsDrawers.find(drawer => drawer.open);
+      if (openDrawer) {
+        event.preventDefault();
+        event.stopPropagation();
+        openDrawer.open = false;
+        openDrawer.querySelector<HTMLElement>('summary')?.focus();
+        return;
+      }
+      if (scienceTools.dismissElementDetails()) {
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
+      if (!saving) {
+        event.preventDefault();
+        event.stopPropagation();
+        options.onCancel();
+      }
+      return;
+    }
     if (importTools.isOpen() || structureEditing()) {
-      if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') { event.preventDefault(); event.stopPropagation(); }
+      if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+        event.preventDefault();
+        event.stopPropagation();
+        if (importTools.isOpen()) importTools.tryApply();
+        else if (matrixEditing) matrixTools.tryApply();
+        else if (systemEditing) systemTools.tryApply();
+      }
       return;
     }
     const equationTarget = event.target === source || event.composedPath().includes(field);
@@ -1015,31 +1243,63 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): {
   setMode(mode);
   const localization = localizeEditor(root, options.language ?? 'system', options.systemLanguage);
   language.addEventListener('change', () => {
-    const selected = language.value as Language;
+    if (!isLanguage(language.value)) return;
+    const selected = language.value;
     localization.setLanguage(selected);
     void options.onLanguageChange?.(selected);
+  });
+  modeDisplaySelect.addEventListener('change', () => {
+    if (!isModeDisplay(modeDisplaySelect.value)) return;
+    applyModeDisplay(modeDisplaySelect.value, true, true);
   });
   if (options.formulaImportDraft?.open) importTools.open(options.formulaImportDraft.original);
   const focusTimer = window.setTimeout(() => {
     if (destroyed || options.compact || importTools.isOpen() || structureEditing()) return;
     if (graphSelected) {
       const kind = root.querySelector<HTMLSelectElement>('[data-testid="plot-kind"]')?.value;
-      const focusId = kind === 'geometry' ? 'geometry-shape' : kind === 'complex' ? 'complex-points' : 'plot-expression';
+      const focusId = kind === 'geometry' ? 'geometry-shape' : kind === 'complex' ? 'complex-points' : 'plot-mathfield';
       root.querySelector<HTMLElement>(`[data-testid="${focusId}"]`)?.focus(); return;
     }
     if (mode === 'latex' || (mode === 'hybrid' && visualBlocked)) source.focus();
-    else if (visualBlocked) modeButtons.get('latex')?.focus();
-    else field.focus();
+    else if (visualBlocked) {
+      if (!fallbackButton.hidden) fallbackButton.focus();
+      else if (!modeTabs.hidden) modeButtons.get('latex')?.focus();
+    } else field.focus();
   }, 30);
 
   return {
     field,
     getImportOriginal: () => importTools.getOriginal(),
+    setLanguage: (nextLanguage: Language) => {
+      if (destroyed) return;
+      if (language.value !== nextLanguage) language.value = nextLanguage;
+      localization.setLanguage(nextLanguage);
+    },
+    setModeDisplay: (nextModeDisplay: ModeDisplay) => {
+      applyModeDisplay(nextModeDisplay, false, false);
+    },
+    setPreferredMode: (nextPreferredMode: EditorMode) => {
+      if (destroyed) return;
+      preferredMode = nextPreferredMode;
+      if (modeDisplay === 'all' && mode !== nextPreferredMode && !(nextPreferredMode === 'visual' && visualBlocked)) {
+        setMode(nextPreferredMode, false);
+      }
+    },
     getDraft: () => {
       // MathLive dispatches input on the next task. Flush before a viewport
       // unmount so the final physical keystroke is included in the draft.
       if (mode !== 'latex' && !visualBlocked) syncFromVisual();
-      return { latex: rawSource, display, mode, formulaImport: importTools.getDraft(), matrix: matrixTools.getDraft(), system: systemTools.getDraft(), science: scienceTools.getDraft(), plot: plotTools.getDraft() };
+      return {
+        latex: rawSource,
+        display,
+        mode,
+        ...(temporarySourceFallback ? { temporarySourceFallback: true } : {}),
+        formulaImport: importTools.getDraft(),
+        matrix: matrixTools.getDraft(),
+        system: systemTools.getDraft(),
+        science: scienceTools.getDraft(),
+        plot: plotTools.getDraft(),
+      };
     },
     destroy: () => {
       if (destroyed) return;

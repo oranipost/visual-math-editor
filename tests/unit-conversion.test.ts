@@ -34,7 +34,7 @@ test('unit identities are unique with Chinese, English and insertable notation',
       assert.ok(visible.includes(expected), `${unit.id} dropped its unit: ${visible}`);
     }
   }
-  assert.equal(ids.size, 63);
+  assert.equal(ids.size, 66);
 });
 
 test('international length and avoirdupois mass reference values', () => {
@@ -83,6 +83,12 @@ test('time, pressure, energy, power and angles convert offline', () => {
   assert.equal(convertQuantity(1, 'bar', 'Pa'), 100000);
   near(convertQuantity(1, 'psi', 'kPa'), 6.894757, 1e-7);
   assert.equal(convertQuantity(1, 'kWh', 'J'), 3600000);
+  assert.equal(convertQuantity(1, 'eV', 'J'), 1.602176634e-19);
+  assert.equal(convertQuantity(1000, 'eV', 'keV'), 1);
+  assert.equal(convertQuantity(1, 'MeV', 'keV'), 1000);
+  assert.equal(convertQuantity(1, 'MeV', 'eV'), 1000000);
+  near(convertQuantity(1, 'MeV', 'J'), 1.602176634e-13);
+  near(convertQuantity(1.602176634e-19, 'J', 'eV'), 1);
   assert.equal(convertQuantity(1000, 'W', 'kW'), 1);
   near(convertQuantity(1, 'hp', 'W'), 745.699872);
   near(convertQuantity(180, 'deg', 'rad'), Math.PI);

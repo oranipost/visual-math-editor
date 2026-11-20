@@ -62,7 +62,7 @@ export async function checkEquationSystems(check: (condition: boolean, message: 
     await act('system-toggle');
     check(!node('system-panel').hidden && fixture.querySelectorAll('[data-testid^="system-line-"]').length === 2, '方程组：默认两行可视化输入，不需要LaTeX');
     check(mounted!.field.readOnly && node<HTMLTextAreaElement>('latex-source').readOnly && button('save').disabled, '方程组：独立草稿锁定主公式、源码与保存');
-    check(button('matrix-toggle').disabled && button('import-open').disabled && button('advanced-limit').disabled && button('mode-latex').disabled, '方程组：矩阵、导入、模板和模式切换互斥');
+    check(node('matrix-panel').hidden && node('formula-import-panel').hidden && button('advanced-limit').disabled && button('mode-latex').disabled, '方程组：矩阵、导入、模板和模式切换互斥');
     check(!button('system-cancel').disabled, '方程组：锁定期间自身取消可用');
     await act('system-line-fraction');
     check(line(1).getValue('latex').includes('\\frac') && line(1).errors.length === 0 && hasIncompleteSlots(line(1).getValue('latex')), '方程组：分数按钮插入真正可填写的分数结构，没有双反斜杠');

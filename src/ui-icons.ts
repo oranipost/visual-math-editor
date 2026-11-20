@@ -1,7 +1,7 @@
 import { createSvgElement } from './dom';
 
 /** Small original SVG controls, with visible text labels supplied by the caller. */
-export type ControlIcon = 'preview' | 'insert' | 'save' | 'zoom-in' | 'zoom-out' | 'reset' | 'fit' | 'edit';
+export type ControlIcon = 'preview' | 'insert' | 'save' | 'zoom-in' | 'zoom-out' | 'reset' | 'fit' | 'edit' | 'copy';
 const paths: Record<ControlIcon, string> = {
   preview: 'M3 17V4 M3 17H20 M6 13L10 8L14 11L19 5',
   insert: 'M12 4V20 M4 12H20',
@@ -11,6 +11,7 @@ const paths: Record<ControlIcon, string> = {
   reset: 'M4 10A8 8 0 1 1 5 17 M4 4V10H10',
   fit: 'M8 3H3V8 M16 3H21V8 M3 16V21H8 M21 16V21H16 M9 12H15 M12 9V15',
   edit: 'M14 5L19 10 M4 16L3 21L8 20L21 7L17 3L4 16Z',
+  copy: 'M9 9H19V20H9Z M5 15H4V4H15V5',
 };
 export function controlIcon(name: ControlIcon, documentRef: Document = document): SVGSVGElement {
   const svg = createSvgElement('svg', documentRef);

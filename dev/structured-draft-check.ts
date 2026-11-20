@@ -85,11 +85,14 @@ export async function checkStructuredDrafts(check: (condition: boolean, message:
     second.dispatchEvent(new Event('input', { bubbles: true }));
     await settle();
     check(await focusThroughProduction(first), '真实正文 Widget：Σ恢复操作实际聚焦可编辑方程行，而不是只读主公式');
-    check(!first.readOnly && button('matrix-toggle').disabled && button('import-open').disabled,
-      '真实正文 Widget：方程组行可编辑，同时矩阵与导入保持互锁');
+    check(!first.readOnly && node('matrix-panel').hidden && node('formula-import-panel').hidden,
+      '真实正文 Widget：方程组行可编辑，同时矩阵与导入单抽屉收起');
     await act('matrix-toggle');
-    check(node('matrix-panel').hidden && !node('system-panel').hidden && cleanNote(),
-      '真实正文 Widget：方程组打开时不能旁路打开矩阵或写入原笔记');
+    check(!node('matrix-panel').hidden && node('system-panel').hidden && cleanNote(),
+      '真实正文 Widget：切换矩阵时自动收起方程组，不会双面板并存或写入原笔记');
+    await act('system-toggle');
+    check(node('matrix-panel').hidden && !node('system-panel').hidden && first.getValue('latex') === 'x+y=3' && cleanNote(),
+      '真实正文 Widget：切回方程组保留刚才输入的行草稿且原笔记不变');
 
     // A focused widget can be retained by CodeMirror. Blur it before genuinely scrolling its anchor out of view.
     view.contentDOM.focus();
@@ -109,8 +112,8 @@ export async function checkStructuredDrafts(check: (condition: boolean, message:
       '真实正文 Widget：恢复操作让CodeMirror重新挂载方程组面板');
     check(!node('system-panel').hidden && node<MathfieldElement>('system-line-1').getValue('latex') === 'x+y=3'
       && node<MathfieldElement>('system-line-2').getValue('latex') === 'x-y=1'
-      && button('matrix-toggle').disabled && cleanNote(),
-    '真实正文 Widget：视口重挂载恢复两行内容、打开状态和互锁，不会自动应用或保存');
+      && node('matrix-panel').hidden && cleanNote(),
+    '真实正文 Widget：视口重挂载恢复两行内容、打开状态和单抽屉互斥，不会自动应用或保存');
     check(await focusThroughProduction(node<MathfieldElement>('system-line-1')),
       '真实正文 Widget：视口重挂载后的Σ操作仍能实际聚焦方程行');
     // No input event: destroy/getDraft must flush the latest actual MathLive value.
@@ -130,9 +133,9 @@ export async function checkStructuredDrafts(check: (condition: boolean, message:
       '真实正文 Widget：取消后重开方程组仍保留本次临时编辑');
     await act('system-cancel');
     await act('matrix-toggle');
-    check(!node('matrix-panel').hidden && button('system-toggle').disabled
+    check(!node('matrix-panel').hidden && node('system-panel').hidden
       && !button('matrix-cancel').disabled && cleanNote(),
-    '真实正文 Widget：矩阵打开时反向锁定方程组，矩阵取消仍可用');
+    '真实正文 Widget：矩阵打开时方程组保持收起，矩阵取消仍可用');
     check(await focusThroughProduction(node<MathfieldElement>('matrix-cell-1-1')),
       '真实正文 Widget：Σ恢复打开的矩阵时实际聚焦可编辑单元格');
     await act('matrix-cancel');
@@ -140,7 +143,7 @@ export async function checkStructuredDrafts(check: (condition: boolean, message:
     const both = makeSession({ latex: '', display: true, mode: 'hybrid', system: systemDraft(), matrix: matrixDraft() });
     await mount(both);
     check(!node('system-panel').hidden && node('matrix-panel').hidden && !button('system-cancel').disabled
-      && button('matrix-toggle').disabled && cleanNote(),
+      && cleanNote(),
     '真实正文 Widget：异常双open草稿仅恢复方程组，仍可取消，不产生交叉死锁');
     await act('system-cancel');
     await act('matrix-toggle');
@@ -158,13 +161,14 @@ export async function checkStructuredDrafts(check: (condition: boolean, message:
       formulaImport: { open: true, original: 'z=4' },
     });
     await mount(cross);
-    check(!node('formula-import-panel').hidden && !node('system-panel').hidden
-      && button('system-cancel').disabled && !button('import-cancel').disabled && button('save').disabled && cleanNote(),
-    '真实正文 Widget：异常导入加方程组双open优先导入，保留可用取消入口与笔记锁定');
+    check(!node('formula-import-panel').hidden && node('system-panel').hidden
+      && !button('import-cancel').disabled && button('save').disabled && cleanNote(),
+    '真实正文 Widget：异常导入加方程组双open优先导入并自动收起方程组，保留可用取消入口与笔记锁定');
     await act('import-cancel');
+    await act('system-toggle');
     check(node('formula-import-panel').hidden && !node('system-panel').hidden
       && !button('system-cancel').disabled && node<MathfieldElement>('system-line-1').getValue('latex') === 'x+y=3' && cleanNote(),
-    '真实正文 Widget：取消导入后恢复方程组编辑，原行和空主式均未被替换');
+    '真实正文 Widget：取消导入后重开方程组仍保留原行，空主式未被替换');
     await act('system-cancel');
     check(node('system-panel').hidden && !node<MathfieldElement>('equation-field').readOnly
       && !button('matrix-toggle').disabled && cleanNote(),

@@ -10,6 +10,36 @@ import { createHtml } from './dom';
 import { getElementSearchNames } from './i18n';
 
 export type Subject = 'math' | 'chemistry' | 'physics' | 'units' | 'elements' | 'graph';
+export type PeriodicElementCategory =
+  | 'nonmetal'
+  | 'halogen'
+  | 'noble'
+  | 'alkali'
+  | 'alkaline-earth'
+  | 'metalloid'
+  | 'post-transition'
+  | 'transition'
+  | 'lanthanide'
+  | 'actinide';
+
+const NONMETAL_NUMBERS = new Set<number>([1, 6, 7, 8, 15, 16, 34]);
+const HALOGEN_NUMBERS = new Set<number>([9, 17, 35, 53, 85, 117]);
+const ALKALI_NUMBERS = new Set<number>([3, 11, 19, 37, 55, 87]);
+const METALLOID_NUMBERS = new Set<number>([5, 14, 32, 33, 51, 52, 84]);
+const POST_TRANSITION_NUMBERS = new Set<number>([13, 31, 49, 50, 81, 82, 83, 113, 114, 115, 116]);
+
+export function classifyPeriodicElement(number: number, group: number): PeriodicElementCategory {
+  if (number >= 57 && number <= 71) return 'lanthanide';
+  if (number >= 89 && number <= 103) return 'actinide';
+  if (group === 18) return 'noble';
+  if (NONMETAL_NUMBERS.has(number)) return 'nonmetal';
+  if (HALOGEN_NUMBERS.has(number)) return 'halogen';
+  if (ALKALI_NUMBERS.has(number)) return 'alkali';
+  if (group === 2) return 'alkaline-earth';
+  if (METALLOID_NUMBERS.has(number)) return 'metalloid';
+  if (POST_TRANSITION_NUMBERS.has(number)) return 'post-transition';
+  return 'transition';
+}
 export interface ScienceDraft {
   subject: Subject;
   chemistry: string;
@@ -22,7 +52,7 @@ interface ScienceOptions {
   mathTools: HTMLElement[];
   initialLatex: string;
   getCurrentLatex: () => string;
-  onInsertLatex: (latex: string) => void;
+  onInsertLatex: (latex: string, options?: { focus?: boolean }) => void;
   onReplaceLatex: (latex: string) => void;
   initialDraft?: ScienceDraft;
   plotTools?: HTMLElement[];
@@ -54,6 +84,8 @@ export function mountScienceTools(host: HTMLElement, options: ScienceOptions): {
   refreshCurrent: () => void;
   setDisabled: (saving: boolean, insertBlocked?: boolean) => void;
   getDraft: () => ScienceDraft;
+  getPreparedLatex: () => string;
+  dismissElementDetails: () => boolean;
 } {
   const root = el('div', 'vme-science');
   const tabs = el('div', 'vme-subject-tabs');
@@ -104,6 +136,7 @@ export function mountScienceTools(host: HTMLElement, options: ScienceOptions): {
 
   function setSubject(value: Subject): void {
     cancelFocusDetails();
+    clearPinnedElement();
     hoveredElement = null;
     focusedElement = null;
     dismissedElement = null;
@@ -187,11 +220,12 @@ export function mountScienceTools(host: HTMLElement, options: ScienceOptions): {
     reactionTop.append(check, reactionStatus);
     reactionBox.append(reactionTop, differences, suggestion, applySuggestion, reactionNote);
     const builder = isChemistry ? buildChemicalLatex : buildUnitLatex;
-    const insert = tool(isChemistry ? '插入化学式' : '插入单位', `${kind}-insert`, () => {
+    const insert = tool('加入公式草稿', `${kind}-insert`, () => {
       if (saving || insertBlocked || !prepared) return;
       options.onInsertLatex(prepared);
       refreshCurrent();
     });
+    localizedText(insert, '加入公式草稿', 'Add to draft');
     insert.classList.add('vme-science-primary');
     const refill = tool(isChemistry ? '回填当前化学式' : '回填当前单位', `${kind}-refill`, () => {
       const current = extractSingleScience(options.getCurrentLatex());
@@ -224,14 +258,16 @@ export function mountScienceTools(host: HTMLElement, options: ScienceOptions): {
     for (const event of ['keyup', 'click', 'select', 'blur']) input.addEventListener(event, rememberCaret);
     input.addEventListener('input', () => { rememberCaret(); update(); });
 
-    function addText(text: string): void {
+    function addText(text: string, focusInput = true): void {
       if (saving) return;
       const start = Math.min(caretStart, input.value.length);
       const end = Math.min(caretEnd, input.value.length);
       input.value = input.value.slice(0, start) + text + input.value.slice(end);
       caretStart = caretEnd = start + text.length;
-      input.focus();
-      input.setSelectionRange(caretStart, caretEnd);
+      if (focusInput) {
+        input.focus();
+        input.setSelectionRange(caretStart, caretEnd);
+      }
       update();
     }
     function setInput(text: string): void {
@@ -304,12 +340,12 @@ export function mountScienceTools(host: HTMLElement, options: ScienceOptions): {
       suggestion.textContent = current?.suggestion ?? '';
       applySuggestion.disabled = saving || !current?.suggestion;
       const originalChoice = current && ['unbalanced', 'impossible', 'unsupported', 'indeterminate'].includes(current.status);
-      localizedText(insert, originalChoice ? '按原式插入' : '插入化学式', originalChoice ? 'Insert as written' : 'Insert formula');
+      localizedText(insert, originalChoice ? '按原式插入' : '加入公式草稿', originalChoice ? 'Insert as written' : 'Add to draft');
       localizedText(replace, originalChoice ? '按原式更新当前化学式' : '更新当前化学式', originalChoice ? 'Update formula as written' : 'Update current formula');
     }
     update();
     if (isChemistry && options.initialDraft?.checkedInput === input.value && input.value.trim()) runReactionCheck();
-    return { input, snippets, samples, addText, setInput, refresh, getCheckedInput: () => checkedInput };
+    return { input, snippets, samples, addText, setInput, refresh, getPrepared: () => prepared, getCheckedInput: () => checkedInput };
   }
 
   const chemistry = composer('chemistry');
@@ -492,7 +528,8 @@ export function mountScienceTools(host: HTMLElement, options: ScienceOptions): {
   search.dataset.testid = 'element-search';
   search.placeholder = '原子序数、符号或英文名称';
   searchLabel.htmlFor = search.id;
-  const elementHint = el('p', 'vme-science-note', '悬停或聚焦元素查看质量与电子排布；点击加入化学输入框。');
+  const elementHint = el('p', 'vme-science-note', '悬停查看质量与电子排布；点击元素固定详情并选择加入化学式或公式。');
+  elementHint.dataset.i18nEn = 'Hover an element for atomic weight and electron configuration; click to pin details and add to a formula or equation.';
   const tableScroll = el('div', 'vme-periodic-scroll');
   const table = el('div', 'vme-periodic-table');
   table.setAttribute('role', 'group');
@@ -511,11 +548,31 @@ export function mountScienceTools(host: HTMLElement, options: ScienceOptions): {
   type ElementCell = { button: HTMLButtonElement; item: typeof PERIODIC_ELEMENTS[number] };
   let hoveredElement: ElementCell | null = null;
   let focusedElement: ElementCell | null = null;
+  let pinnedElement: ElementCell | null = null;
   let visibleElement: ElementCell | null = null;
   let detailsFrame = 0;
   let focusFrame = 0;
   let dismissedElement: HTMLButtonElement | null = null;
   const cellsByButton = new Map<HTMLButtonElement, ElementCell>();
+
+  function clearPinnedElement(): void {
+    if (pinnedElement) {
+      pinnedElement.button.removeAttribute('aria-pressed');
+      pinnedElement = null;
+    }
+  }
+
+  function dismissElementDetails(): boolean {
+    if (detailsCard.hidden && !pinnedElement) return false;
+    cancelFocusDetails();
+    const activeButton = (visibleElement ?? pinnedElement)?.button ?? null;
+    clearPinnedElement();
+    if (activeButton) dismissedElement = activeButton;
+    hoveredElement = null;
+    focusedElement = null;
+    hideElementDetails();
+    return true;
+  }
 
   function cancelFocusDetails(): void {
     if (focusFrame) { window.cancelAnimationFrame(focusFrame); focusFrame = 0; }
@@ -525,7 +582,7 @@ export function mountScienceTools(host: HTMLElement, options: ScienceOptions): {
     cancelFocusDetails();
     focusFrame = window.requestAnimationFrame(() => {
       focusFrame = 0;
-      if (destroyed || saving || subject !== 'elements') return;
+      if (destroyed || saving || subject !== 'elements' || pinnedElement) return;
       const button = root.ownerDocument.activeElement as HTMLButtonElement | null;
       const cell = button && cellsByButton.get(button);
       if (!cell || button === dismissedElement || button.disabled) return;
@@ -545,6 +602,7 @@ export function mountScienceTools(host: HTMLElement, options: ScienceOptions): {
   function hideElementDetails(): void {
     visibleElement?.button.removeAttribute('aria-describedby');
     visibleElement = null;
+    delete detailsCard.dataset.pinned;
     detailsCard.hidden = true;
     if (detailsFrame) { window.cancelAnimationFrame(detailsFrame); detailsFrame = 0; }
   }
@@ -608,6 +666,36 @@ export function mountScienceTools(host: HTMLElement, options: ScienceOptions): {
       detailsCard.append(status);
     }
     detailsCard.append(provenance);
+    if (pinnedElement === cell) {
+      detailsCard.dataset.pinned = 'true';
+      const detailActions = el('div', 'vme-element-detail-actions');
+      const feedback = el('span', 'vme-element-detail-feedback');
+      feedback.dataset.testid = 'element-detail-feedback';
+      feedback.setAttribute('role', 'status');
+      feedback.setAttribute('aria-live', 'polite');
+      feedback.hidden = true;
+      const addChemButton = tool('加入化学式', 'element-add-chemistry', () => {
+        if (saving) return;
+        chemistry.addText(cell.item.symbol, false);
+        localizedText(feedback, '已加入化学式', 'Added to formula');
+        feedback.hidden = false;
+      });
+      localizedText(addChemButton, '加入化学式', 'Add to formula');
+      const insertSymbolButton = tool('插入符号到公式', 'element-insert-symbol', () => {
+        if (saving || insertBlocked) return;
+        options.onInsertLatex(`\\mathrm{${cell.item.symbol}}`, { focus: false });
+        localizedText(feedback, '已插入符号', 'Symbol inserted');
+        feedback.hidden = false;
+      });
+      localizedText(insertSymbolButton, '插入符号到公式', 'Insert symbol');
+      insertSymbolButton.disabled = saving || insertBlocked;
+      const closeButton = tool('关闭', 'element-detail-close', () => {
+        dismissElementDetails();
+      });
+      localizedText(closeButton, '关闭', 'Close');
+      detailActions.append(addChemButton, insertSymbolButton, closeButton, feedback);
+      detailsCard.append(detailActions);
+    }
     detailsCard.dataset.massKind = detail.massKind;
     detailsCard.dataset.configurationStatus = detail.configurationStatus;
     detailsCard.hidden = false;
@@ -619,7 +707,12 @@ export function mountScienceTools(host: HTMLElement, options: ScienceOptions): {
 
   // Native keyboard focus may scroll the cell into view after its focus event.
   // Reconcile once per frame so that scrolling cannot silently dismiss it.
-  const hideOnScroll = () => { hoveredElement = null; hideElementDetails(); restoreFocusedDetails(); };
+  const hideOnScroll = () => {
+    hoveredElement = null;
+    if (pinnedElement) { positionElementDetails(); return; }
+    hideElementDetails();
+    restoreFocusedDetails();
+  };
   root.ownerDocument.addEventListener('scroll', hideOnScroll, true);
   root.ownerDocument.defaultView?.addEventListener('resize', hideOnScroll);
   for (let group = 1; group <= 18; group++) {
@@ -630,27 +723,41 @@ export function mountScienceTools(host: HTMLElement, options: ScienceOptions): {
   for (const item of PERIODIC_ELEMENTS) {
     const button = tool('', `element-${item.number}`, () => {
       if (saving) return;
-      chemistry.addText(item.symbol);
-      setSubject('chemistry');
-      chemistry.input.focus();
+      dismissedElement = null;
+      if (pinnedElement && pinnedElement !== cell) {
+        pinnedElement.button.removeAttribute('aria-pressed');
+      }
+      pinnedElement = cell;
+      cell.button.setAttribute('aria-pressed', 'true');
+      showElementDetails(cell);
     });
     button.className = 'vme-element-button';
     button.setAttribute('aria-label', `${item.number} ${item.name} ${item.symbol}`);
     const cell: ElementCell = { button, item };
     cellsByButton.set(button, cell);
-    button.addEventListener('pointerenter', () => { dismissedElement = null; hoveredElement = cell; showElementDetails(cell); });
-    button.addEventListener('pointerleave', () => { hoveredElement = null; showElementDetails(focusedElement); });
-    button.addEventListener('focus', () => { dismissedElement = null; focusedElement = cell; showElementDetails(cell); restoreFocusedDetails(); });
-    button.addEventListener('blur', () => { cancelFocusDetails(); focusedElement = null; dismissedElement = null; showElementDetails(hoveredElement); });
+    button.addEventListener('pointerenter', () => {
+      if (pinnedElement) return;
+      dismissedElement = null; hoveredElement = cell; showElementDetails(cell);
+    });
+    button.addEventListener('pointerleave', () => {
+      hoveredElement = null;
+      if (pinnedElement) return;
+      showElementDetails(focusedElement);
+    });
+    button.addEventListener('focus', () => {
+      if (pinnedElement) return;
+      dismissedElement = null; focusedElement = cell; showElementDetails(cell); restoreFocusedDetails();
+    });
+    button.addEventListener('blur', () => {
+      cancelFocusDetails(); focusedElement = null; dismissedElement = null;
+      if (pinnedElement) return;
+      showElementDetails(hoveredElement);
+    });
     button.addEventListener('keydown', (event) => {
       if (event.key !== 'Escape') return;
+      if (!dismissElementDetails()) return;
       event.preventDefault();
       event.stopPropagation();
-      cancelFocusDetails();
-      dismissedElement = button;
-      hoveredElement = null;
-      focusedElement = null;
-      hideElementDetails();
     });
     const isLanthanide = item.number >= 57 && item.number <= 71;
     const isActinide = item.number >= 89 && item.number <= 103;
@@ -658,7 +765,7 @@ export function mountScienceTools(host: HTMLElement, options: ScienceOptions): {
     const row = isLanthanide ? 10 : isActinide ? 11 : item.period + 1;
     button.style.gridColumn = String(column);
     button.style.gridRow = String(row);
-    button.dataset.category = isLanthanide ? 'lanthanide' : isActinide ? 'actinide' : item.group === 18 ? 'noble' : item.group === 1 ? 'alkali' : item.group >= 13 ? 'main' : 'transition';
+    button.dataset.category = classifyPeriodicElement(item.number, item.group);
     button.append(el('span', 'vme-element-number', String(item.number)), el('strong', 'vme-element-symbol', item.symbol), el('span', 'vme-element-name', item.name));
     table.append(button);
     elementButtons.push({ button, search: `${item.number} ${item.symbol} ${getElementSearchNames(item.name)}`.toLowerCase(), number: item.number, symbol: item.symbol.toLowerCase() });
@@ -691,6 +798,8 @@ export function mountScienceTools(host: HTMLElement, options: ScienceOptions): {
   refreshCurrent();
   return {
     refreshCurrent,
+    getPreparedLatex: () => (subject === 'chemistry' ? chemistry.getPrepared() : subject === 'units' ? units.getPrepared() : ''),
+    dismissElementDetails,
     getDraft: () => ({
       subject,
       chemistry: chemistry.input.value,
@@ -702,7 +811,13 @@ export function mountScienceTools(host: HTMLElement, options: ScienceOptions): {
       saving = value;
       insertBlocked = blocked;
       for (const tab of tabMap.values()) tab.disabled = saving;
-      if (saving) hideElementDetails();
+      if (saving) {
+        clearPinnedElement();
+        hideElementDetails();
+      } else if (pinnedElement) {
+        const insertSymbolButton = detailsCard.querySelector<HTMLButtonElement>('[data-action="element-insert-symbol"]');
+        if (insertSymbolButton) insertSymbolButton.disabled = insertBlocked;
+      }
       refreshCurrent();
       for (const button of physicsButtons) button.disabled = saving || insertBlocked;
       for (const item of elementButtons) item.button.disabled = saving;

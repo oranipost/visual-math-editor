@@ -61,7 +61,7 @@ export async function checkMatrixAdvanced(check: (condition: boolean, message: s
     await act('matrix-toggle');
     check(!node('matrix-panel').hidden && fixture.querySelectorAll('[data-testid^="matrix-cell-"]').length === 4, '矩阵：打开默认2×2可视化单元格');
     check(mounted!.field.readOnly && node<HTMLTextAreaElement>('latex-source').readOnly && button('save').disabled, '矩阵：独立草稿打开期间锁定主公式和保存');
-    check(button('advanced-limit').disabled && button('import-open').disabled, '矩阵：独立草稿打开期间锁定其他结构插入和公式导入');
+    check(button('advanced-limit').disabled && node('system-panel').hidden && node('formula-import-panel').hidden, '矩阵：独立草稿打开期间锁定其他结构插入并与方程组/导入单抽屉互斥');
     await enterCell(1, 1, '1'); await enterCell(1, 2, '2'); await enterCell(2, 1, '3');
     const lockedGrid = JSON.stringify(values());
     const lockedSource = mounted!.getDraft().latex;

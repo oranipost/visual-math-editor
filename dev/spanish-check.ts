@@ -20,8 +20,8 @@ export async function checkSpanishLocalization(check: (condition: boolean, messa
   try {
     await settle();
     check(root.lang === 'es' && button('save').textContent === 'Guardar cambios', '跟随 Obsidian es-MX 会显示西班牙语，而非回退英语');
-    check([...language.options].map(option => option.value).join(',') === 'system,zh,en,es'
-      && language.querySelector('option[value="es"]')?.textContent === 'Español', '语言选择包括 Español，所有选项值保持稳定');
+    check([...language.options].map(option => option.value).join(',') === 'system,zh,en,es,ja,de,fr'
+      && language.querySelector('option[value="es"]')?.textContent === 'Español', '语言选择包括 Español 等全部支持语种，所有选项值保持稳定');
     check(button('fraction').title === 'Insertar fracción; selecciona contenido para aplicar la estructura'
       && button('sqrt').getAttribute('aria-label') === 'Insertar raíz cuadrada', '西班牙语结构工具提示和可访问标签完整翻译');
     check(button('mode-hybrid').textContent === 'Hybrid'

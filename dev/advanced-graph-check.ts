@@ -65,9 +65,18 @@ export async function checkAdvancedGraphs(check: (value: boolean, message: strin
     select('kind','function'); await settle();
     check(tools!.getDraft().expression==='x^2' && tools!.getDraft().calculus==='integral' && tools!.getDraft().integralMax==='2', '跨极坐标和三维切换后仍保留函数及积分草稿');
     action('plot-preview'); check(q<HTMLElement>('[data-testid="plot-preview"]').classList.contains('vme-plot-enabled'), '切回二维后仍启用图内触摸和平移样式');
-    select('calculus','none'); input('expression','x+'); const field=q<HTMLInputElement>('[data-testid="plot-expression"]');
+    select('calculus','none');
+    const plotMathfield = q<HTMLElement & { getValue: (f?: string) => string; setValue: (v: string, o?: { silenceNotifications?: boolean }) => void }>('[data-testid="plot-mathfield"]');
+    plotMathfield.setValue('', { silenceNotifications: true });
+    plotMathfield.dispatchEvent(new Event('input', { bubbles: true }));
+    action('plot-symbol-fraction'); await settle();
+    check(plotMathfield.getValue('latex-expanded').includes('\\frac') && q<HTMLElement>('[data-testid="plot-status"]').dataset.state === 'incomplete' && q<HTMLButtonElement>('[data-action="plot-insert"]').disabled, '二维绘图公式框插入分式结构并在未填完占位框时提示补全');
+    const rawToggle = q<HTMLDetailsElement>('[data-testid="plot-raw-toggle"]');
+    rawToggle.open = true;
+    input('expression','x+'); const field=q<HTMLInputElement>('[data-testid="plot-expression"]');
+    field.focus();
     field.setSelectionRange(0,1); action('plot-symbol-sin'); await settle();
-    check(field.value==='sin(x)+' && document.activeElement===field, '常用符号按钮在选区包装函数并保留输入焦点');
+    check(field.value==='sin(x)+' && document.activeElement===field, '展开源码表达式后常用符号按钮在选区包装函数并保留输入焦点');
     input('expression','1/x'); select('calculus','integral'); input('integralMin','-1'); input('integralMax','1'); written=undefined; action('plot-insert'); await settle();
     check(!written && q<HTMLElement>('[data-testid="plot-status"]').dataset.state==='error', '跨奇点积分禁止插入误导性的有限面积');
   } finally { locale?.destroy(); tools?.destroy(); fixture.remove(); }

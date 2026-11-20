@@ -65,6 +65,7 @@ export function mountEquationSystemTools(container: HTMLElement, options: {
   const preview = node('div'); preview.className = 'vme-matrix-preview'; preview.dataset.testid = 'system-preview'; preview.setAttribute('aria-label', '方程组预览');
   const status = node('p'); status.dataset.testid = 'system-status'; status.setAttribute('role', 'status'); status.className = 'vme-hint';
   const review = action('预览方程组', 'system-preview', inspect);
+  review.className = 'vme-subpanel-secondary';
   const apply = action('插入方程组', 'system-apply', () => {
     if (!candidate) return;
     try {
@@ -76,6 +77,8 @@ export function mountEquationSystemTools(container: HTMLElement, options: {
       setOpen(false); status.textContent = '方程组已加入公式草稿；保存后才更新笔记。';
     } catch { status.textContent = '方程组未插入；请检查每行内容和当前公式。'; status.dataset.state = 'error'; }
   });
+  apply.className = 'vme-save-button vme-subpanel-primary';
+  apply.title = '应用到当前公式（Ctrl/Cmd+Enter）';
   const cancel = action('取消', 'system-cancel', () => setOpen(false));
   const actions = node('div'); actions.className = 'vme-import-actions'; actions.append(review, apply, cancel);
   cancel.title = '取消不会更改原公式';
@@ -135,7 +138,18 @@ export function mountEquationSystemTools(container: HTMLElement, options: {
           status.textContent = '这一行暂不支持这段内容；粘贴原文保留在下方，方程组未改动。'; status.dataset.state = 'error';
         }
       }, true);
-      field.addEventListener('keydown', event => { if (event.key === '\\') { event.preventDefault(); event.stopImmediatePropagation(); } }, true);
+      field.addEventListener('keydown', event => {
+        if (event.key === '\\') { event.preventDefault(); event.stopImmediatePropagation(); return; }
+        if (event.key === 'Enter' && !event.ctrlKey && !event.metaKey && !event.altKey && !event.shiftKey) {
+          event.preventDefault(); event.stopImmediatePropagation();
+          const currentIndex = fields.findIndex(item => item.field === field);
+          if (currentIndex >= 0 && fields.length > 0) {
+            const nextField = fields[(currentIndex + 1) % fields.length]?.field;
+            activeLine = nextField;
+            nextField?.focus();
+          }
+        }
+      }, true);
       field.addEventListener('beforeinput', event => { if (event.data === '\\') { event.preventDefault(); event.stopImmediatePropagation(); } }, true);
     }
   }
@@ -174,6 +188,11 @@ export function mountEquationSystemTools(container: HTMLElement, options: {
   return {
     isOpen: () => open,
     close: () => { if (open) setOpen(false); },
+    tryApply: (): boolean => {
+      if (!open || disabled || apply.disabled) return false;
+      apply.click();
+      return !open;
+    },
     getDraft: (): SystemDraft => { syncLines(); return { open, rows, lines: [...lines], loadedSource, rejectedOriginal }; },
     setDisabled(value: boolean) {
       disabled = value;

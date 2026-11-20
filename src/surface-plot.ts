@@ -190,8 +190,8 @@ function renderSurfaceSvg(spec: SurfaceSpec, segments: SurfacePoint[][]): string
   const origin = { x: clamp(0, spec.xMin, spec.xMax), y: clamp(0, spec.yMin, spec.yMax), z: clamp(0, spec.zMin, spec.zMax) };
   const axes: Array<{ name: 'X' | 'Y' | 'Z'; key: 'x' | 'y' | 'z'; min: number; max: number; color: string }> = [
     { name: 'X', key: 'x', min: spec.xMin, max: spec.xMax, color: '#b91c1c' },
-    { name: 'Y', key: 'y', min: spec.yMin, max: spec.yMax, color: '#047857' },
-    { name: 'Z', key: 'z', min: spec.zMin, max: spec.zMax, color: '#6d28d9' },
+    { name: 'Y', key: 'y', min: spec.yMin, max: spec.yMax, color: '#15803d' },
+    { name: 'Z', key: 'z', min: spec.zMin, max: spec.zMax, color: '#1d4ed8' },
   ];
   type LabelBox = { left: number; right: number; top: number; bottom: number };
   const occupied: LabelBox[] = [];

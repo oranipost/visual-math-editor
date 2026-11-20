@@ -1,8 +1,8 @@
 # Visual Math para Obsidian
 
-[English](README.md) · [简体中文](README.zh-CN.md) · **Español**
+[English](README.md) · [简体中文](README.zh-CN.md) · **Español** · [日本語](README.ja.md) · [Deutsch](README.de.md) · [Français](README.fr.md)
 
-**[Instalar en Obsidian](https://community.obsidian.md/plugins/visual-math-editor)** · **[Sitio web oficial](https://oranipost.github.io/visual-math/)** · **[Tutoriales en YouTube](https://www.youtube.com/@VisualMathForObsidian)** · **[Descargar ZIP 1.1.0](https://github.com/oranipost/visual-math-editor/releases/download/1.1.0/visual-math-editor-1.1.0.zip)** · **[Notas de la versión](https://github.com/oranipost/visual-math-editor/releases/tag/1.1.0)**
+**[Instalar en Obsidian](https://community.obsidian.md/plugins/visual-math-editor)** · **[Sitio web oficial](https://oranipost.github.io/visual-math/)** · **[Tutoriales en YouTube](https://www.youtube.com/@VisualMathForObsidian)** · **[Descargar ZIP 1.1.1](https://github.com/oranipost/visual-math-editor/releases/download/1.1.1/visual-math-editor-1.1.1.zip)** · **[Notas de la versión](https://github.com/oranipost/visual-math-editor/releases/tag/1.1.1)**
 
 ## Descripción general
 
@@ -10,12 +10,12 @@ Creé **Visual Math** para que puedas escribir apuntes de matemáticas, química
 
 Al abrir el editor dentro de una nota, puedes pulsar fracciones, raíces, integrales, sumatorios, matrices o sistemas de ecuaciones y rellenar las casillas directamente. Si ya conoces LaTeX, cambia al modo **LaTeX** o **Hybrid** para editar el código y la fórmula en paralelo. Pulsa `↵ Nueva línea` (`Shift+Enter`) cuando quieras escribir varias líneas dentro del mismo bloque de ecuación.
 
-Todo se guarda como Markdown estándar `$…$` o `$$…$$` en tu nota, y todas las fuentes, tablas de unidades y herramientas de gráficas funcionan localmente sin conexión.
+Todo se guarda como Markdown estándar `$…$` o `$$…$$` en tu nota, y todas las fuentes, tablas de unidades y herramientas de gráficas funcionan 100 % en local y sin conexión: sin IA, sin cuentas en la nube y sin suscripciones de pago.
 
 - **Sitio web y guía de funciones**: [oranipost.github.io/visual-math](https://oranipost.github.io/visual-math/)
 - **Tutoriales en vídeo**: [@VisualMathForObsidian en YouTube](https://www.youtube.com/@VisualMathForObsidian)
 
-![Visual Math 1.1.0 en Obsidian](docs/images/visual-math-demo.gif)
+![Visual Math 1.1.1 en Obsidian](docs/images/visual-math-demo.gif)
 
 ---
 
@@ -23,10 +23,10 @@ Todo se guarda como Markdown estándar `$…$` o `$$…$$` en tu nota, y todas l
 
 - **Edición Visual, LaTeX e Hybrid**: Edita con casillas visuales, código TeX directo o ambos a la vez. Incluye ecuaciones de varias líneas (`↵ Nueva línea`), historial para deshacer/rehacer e importación de fórmulas individuales en LaTeX.
 - **Matrices, sistemas, conjuntos y notación de cálculo**: Crea matrices de `1×1` a `6×6`, sistemas de `2–6` filas con llave izquierda, 19 símbolos de conjuntos y sucesiones, notación trigonométrica/geométrica y 9 plantillas de cálculo y vectores.
-- **Gráficas de funciones, polares, superficies 3D y plano complejo**: Grafica `y = f(x)` (con derivadas numéricas de 1.er y 2.º orden e integrales definidas), curvas polares `r = f(θ)`, superficies 3D `z = f(x, y)` y puntos complejos `Re / Im` justo debajo de la ecuación.
-- **Modelos geométricos 3D**: Gira y amplía 7 sólidos geométricos (esfera, cilindro, cono, pirámide, prisma, ortoedro y plano) y 3 escenas de intersección espacial (dos planos, recta y plano, esfera y plano).
-- **Química, física, unidades y tabla periódica**: Escribe reacciones químicas (`\ce`) con comprobación de ajuste, inserta fórmulas de física, convierte entre 63 unidades en 11 categorías (`\pu`) y consulta los 118 elementos.
-- **Sin conexión y trilingüe**: Funciona sin internet ni cuentas externas. Disponible en **Español**, **English** y **简体中文**.
+- **Gráficas de funciones, polares, superficies 3D y plano complejo**: Grafica `y = f(x)` (con derivadas numéricas de 1.er y 2.º orden e integrales definidas), curvas polares `r = f(θ)`, superficies 3D `z = f(x, y)` y puntos complejos `Re / Im` justo debajo de la ecuación, o copia cualquier gráfica como imagen PNG en un clic.
+- **Geometría 3D y sólidos compuestos**: Gira y amplía 9 figuras geométricas (esfera, semiesfera, cilindro, cono, tronco circular o poligonal, pirámide regular, prisma regular, ortoedro y plano), combina de `2 a 6` piezas en sólidos compuestos 3D (con plantillas de problemas, desplazamientos, rotaciones y estilos sólido/translúcido/malla) y explora 3 escenas de intersección espacial (dos planos, recta y plano, esfera y plano).
+- **Química, física, unidades y tabla periódica de 10 categorías**: Escribe reacciones químicas (`\ce`) con comprobación de ajuste, inserta 24 plantillas de física, convierte entre 66 unidades en 11 categorías (`\pu`, incluidos `eV`, `keV`, `MeV`) y consulta los 118 elementos clasificados en 10 familias químicas estándar.
+- **100 % local sin conexión y en 6 idiomas**: Funciona íntegramente sin internet, sin IA y sin cuentas externas. Disponible en **Español**, **English**, **简体中文**, **日本語**, **Deutsch** y **Français**.
 
 ---
 
@@ -46,9 +46,9 @@ Todo se guarda como Markdown estándar `$…$` o `$$…$$` en tu nota, y todas l
 2. Pulsa **Install** y luego **Enable** dentro de Obsidian.
 3. Abre cualquier nota Markdown y pulsa **∑**.
 
-### Instalación manual por ZIP (Versión de escritorio 1.1.0)
+### Instalación manual por ZIP (Versión de escritorio 1.1.1)
 
-Descarga **[visual-math-editor-1.1.0.zip](https://github.com/oranipost/visual-math-editor/releases/download/1.1.0/visual-math-editor-1.1.0.zip)** (archivo compilado; no descargues el archivo *Source code* de GitHub):
+Descarga **[visual-math-editor-1.1.1.zip](https://github.com/oranipost/visual-math-editor/releases/download/1.1.1/visual-math-editor-1.1.1.zip)** (archivo compilado; no descargues el archivo *Source code* de GitHub):
 
 1. Extrae la carpeta `visual-math-editor` dentro de `<tu-bóveda>/.obsidian/plugins/`.
 2. Comprueba que `main.js`, `manifest.json`, `styles.css` y los archivos de licencia estén directamente dentro de `.obsidian/plugins/visual-math-editor/`.
@@ -58,10 +58,10 @@ Consulta la [guía de instalación y actualización](docs/INSTALLATION.md) para 
 
 ---
 
-## Capturas de pantalla (v1.1.0)
+## Capturas de pantalla (v1.1.1)
 
 ### Modo Hybrid, ecuaciones multilínea y barra compacta
-![Modo Hybrid y edición multilínea en Visual Math 1.1.0](docs/images/vme-1.1-hybrid-multiline.png)
+![Modo Hybrid y edición multilínea en Visual Math 1.1.1](docs/images/vme-1.1-hybrid-multiline.png)
 
 ### Matrices visuales y sistemas de ecuaciones
 ![Editores visuales de matrices y sistemas con vista previa en vivo](docs/images/vme-1.1-matrix-system.png)
@@ -88,6 +88,7 @@ Consulta la [guía de instalación y actualización](docs/INSTALLATION.md) para 
 - **Gráficas y geometría**:
   - Funciones explícitas `y = f(x)` (hasta 500 caracteres), curvas polares `r = f(θ)` (intervalo de `θ` hasta `100π`), derivadas numéricas de 1.er/2.º orden e integrales definidas en intervalos continuos finitos, superficies 3D `z = f(x, y)` y hasta 20 puntos complejos (`a + bi`, hasta 1.000 caracteres).
   - Tras guardar, la fórmula (`$…$` / `$$…$$`) y el bloque `vme-plot` son independientes en la nota; utiliza **Editar gráfica** o **Guardar vista** para actualizar la vista guardada.
+- **Herramientas científicas**: La química (`\ce{…}`) y las unidades (`\pu{…}`) requieren compatibilidad con `mhchem` al exportarse fuera de Obsidian. La conversión sin conexión abarca 66 unidades en 11 categorías mediante constantes fijadas de Convert 8.0.2 y la definición exacta SI 2019 del electronvoltio. Los datos de elementos siguen las referencias de CIAAW y NIST.
 - **Compatibilidad**: Requiere **Obsidian 1.14.4+** en escritorio. Los registros de pruebas están en [TEST-REPORT.md](TEST-REPORT.md) y [CHANGELOG.md](CHANGELOG.md).
 
 ### Compilación desde el código fuente
@@ -105,6 +106,8 @@ Vista previa local para desarrollo (`http://127.0.0.1:8471`):
 ```sh
 npm run preview
 ```
+
+Consulta [CONTRIBUTING.md](CONTRIBUTING.md), [RELEASING.md](RELEASING.md), [LANGUAGE-SUPPORT.md](LANGUAGE-SUPPORT.md) y [third-party-sources/README.md](third-party-sources/README.md).
 
 </details>
 

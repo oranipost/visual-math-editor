@@ -1,20 +1,48 @@
 import { SPANISH_ELEMENT_NAMES, SPANISH_TRANSLATIONS } from './i18n-es';
+import { JAPANESE_ELEMENT_NAMES, JAPANESE_TRANSLATIONS } from './i18n-ja';
+import { GERMAN_ELEMENT_NAMES, GERMAN_TRANSLATIONS } from './i18n-de';
+import { FRENCH_ELEMENT_NAMES, FRENCH_TRANSLATIONS } from './i18n-fr';
 
-export type Language = 'system' | 'zh' | 'en' | 'es';
-export type ResolvedLanguage = 'zh' | 'en' | 'es';
+export type Language = 'system' | 'zh' | 'en' | 'es' | 'ja' | 'de' | 'fr';
+export type ResolvedLanguage = 'zh' | 'en' | 'es' | 'ja' | 'de' | 'fr';
 
 export function resolveLanguage(language: Language, systemLanguage = 'en'): ResolvedLanguage {
-  if (language === 'zh' || language === 'en' || language === 'es') return language;
+  if (language === 'zh' || language === 'en' || language === 'es' || language === 'ja' || language === 'de' || language === 'fr') return language;
   // The host passes Obsidian's configured language. Unknown saved preferences
   // and unsupported app locales use the same predictable English fallback.
   if (language !== 'system') return 'en';
   const locale = systemLanguage.trim();
   if (/^zh(?:[-_]|$)/i.test(locale)) return 'zh';
-  return /^es(?:[-_]|$)/i.test(locale) ? 'es' : 'en';
+  if (/^es(?:[-_]|$)/i.test(locale)) return 'es';
+  if (/^ja(?:[-_]|$)/i.test(locale)) return 'ja';
+  if (/^de(?:[-_]|$)/i.test(locale)) return 'de';
+  if (/^fr(?:[-_]|$)/i.test(locale)) return 'fr';
+  return 'en';
 }
 
 /** UI messages only. Formula source, note content and input values are never translated. */
 export const UI_TRANSLATIONS: Readonly<Record<string, string>> = {
+  '编辑模式显示': 'Editor mode display',
+  '控制公式编辑器顶部显示的模式切换范围。': 'Choose which editing modes appear in the equation editor.',
+  '显示全部模式（记住上次选择）': 'Show all modes (remember last used)',
+  '只显示 Visual（纯可视化）': 'Visual only',
+  '只显示 Hybrid（源码 + 可视化同步）': 'Hybrid only',
+  '只显示 LaTeX（纯源码）': 'LaTeX only',
+  '全部模式': 'All modes',
+  '只显示 Visual': 'Visual only',
+  '只显示 Hybrid': 'Hybrid only',
+  '只显示 LaTeX': 'LaTeX only',
+  '默认编辑模式': 'Default mode',
+  '显示全部模式时，新打开公式编辑器默认进入的模式；在编辑器内切换模式也会自动更新此项。': 'Initial mode when all modes are shown. Switching modes in the editor updates this automatically.',
+  '设置插件界面、提示与菜单的显示语言。': 'Set the language used for plugin controls, messages, and menus.',
+  '临时用源码模式查看': 'View in LaTeX source',
+  '仅在本次编辑中打开源码模式，不更改“只显示 Visual”设置': 'Open source mode for this session without changing your Visual-only setting',
+  '公式源码尚未完整，可临时用源码模式查看并修复。': 'This formula source is incomplete. Open it in LaTeX source to review and fix it.',
+  '公式超过 4096 字符，可视化预览已暂停，可临时用源码模式查看。': 'This formula exceeds 4096 characters and visual preview is paused. Open it in LaTeX source to edit or save.',
+  '当前可视化暂不支持此公式，源码完整保留，可临时用源码模式查看。': 'Visual editing does not support this formula yet. The source is preserved; open it in LaTeX source to continue.',
+  '点击“临时用源码模式查看”可编辑或按源码保存。': 'Click "View in LaTeX source" to edit or save the source.',
+  '公式超过 4096 字符；点击“临时用源码模式查看”可编辑或保存源码。': 'This formula exceeds 4096 characters. Click "View in LaTeX source" to edit or save the source.',
+  '无法保存编辑器设置': 'Unable to save editor settings',
   '公式超过 4096 个 UTF-16 代码单元，暂用 LaTeX 或 Hybrid 源码编辑；原文完整保留，缩短后可恢复可视化。': 'This formula exceeds 4096 UTF-16 code units. Continue in LaTeX or Hybrid source editing; the full source is preserved. Shorten it to restore visual editing.',
   '可视化预览已暂停，可继续编辑并保存源码。': 'Visual preview is paused. You can continue editing and saving the source.',
   // Local-only set, sequence and equation-system notation tools.
@@ -253,6 +281,7 @@ export const UI_TRANSLATIONS: Readonly<Record<string, string>> = {
   '极坐标': 'Polar graph', '三维曲面': '3D surface', '微积分图像': 'Calculus graph',
   '公式位置无效，请重新打开编辑器。': 'The equation position is invalid. Reopen the editor.',
   '此位置位于表格、列表或引用块。第一版请使用行内公式，或到普通空白段落插入独立公式。': 'This position is inside a table, list or quote. Use an inline equation here, or insert a display equation in an ordinary blank paragraph.',
+  '此位置位于表格、列表或引用块。请在此使用行内公式，或到普通空白段落插入独立公式。': 'This position is inside a table, list or quote. Use an inline equation here, or insert a display equation in an ordinary blank paragraph.',
   '表格内暂不支持含竖线的复杂环境，请在表格外编辑这个公式。': 'Complex environments containing vertical bars are not supported in tables yet. Edit this equation outside the table.',
   '修改只在保存图像后写入笔记。': 'Changes reach the note only when you save the graph.',
   '插入图像时，也会保存当前已完成的公式草稿。': 'Inserting a graph also saves your current completed equation draft.',
@@ -348,6 +377,7 @@ export const UI_TRANSLATIONS: Readonly<Record<string, string>> = {
   '插入化学式': 'Insert chemical formula', '插入单位': 'Insert units', '回填当前化学式': 'Load current chemical formula', '回填当前单位': 'Load current units',
   '更新当前化学式': 'Update current chemical formula', '更新当前单位': 'Update current units',
   '用普通写法编辑，上方生成预览，点击插入后才加入公式。暂不支持二维分子绘图或自动配平。': 'Use plain notation and check the preview above. Insert adds it to the equation. 2D molecular drawing and automatic balancing are not supported.',
+  '用普通写法编辑，上方生成预览，点击插入后才加入公式。暂不支持二维分子绘图。': 'Use ordinary notation and preview it above. It joins the equation only when you insert it. 2D molecular drawing is not supported.',
   '数值与单位保留在本机。支持复合单位和指数；不自动换算。': 'Values and units stay on your device. Compound units and powers are supported; insertion does not convert them.',
   '化学式预览': 'Chemical formula preview', '单位预览': 'Unit preview',
   '输入后显示化学式预览': 'Enter notation to preview the chemical formula', '输入后显示单位预览': 'Enter a quantity to preview the units',
@@ -407,6 +437,9 @@ export const UI_TRANSLATIONS: Readonly<Record<string, string>> = {
   '请在普通笔记正文中插入公式，代码、属性和链接地址内暂不支持。': 'Insert equations in regular note text. Code, properties and link destinations are not supported.',
   '笔记已变化，请重新选择公式。': 'The note has changed. Select the equation again.',
   '第一版请在 Obsidian 主窗口中编辑公式。': 'Use the main Obsidian window to edit equations in this version.',
+  '请在 Obsidian 主窗口中编辑公式。': 'Use the main Obsidian window to edit equations.',
+  '搜索公式源码或行号': 'Search equation source or line',
+  '没有匹配的公式。': 'No matching equations.',
   '请先保存或取消当前笔记内的公式草稿。': 'Save or cancel the current equation draft first.',
   '双击以可视化编辑公式': 'Double-click to edit the equation visually',
   '无法定位公式，请通过命令面板选择本笔记公式。': 'Unable to locate the equation. Choose an equation in this note from the command palette.',
@@ -466,6 +499,55 @@ export const UI_TRANSLATIONS: Readonly<Record<string, string>> = {
   '曲面过于复杂，请简化公式后再绘图。': 'The surface is too complex. Simplify the equation before plotting it.',
   '此范围内没有可显示的曲面，请检查公式或调整 X、Y、Z 范围。': 'No finite surface is visible. Check the equation or adjust the X, Y and Z ranges.',
   '暂时无法生成曲面，请检查公式后重试。': 'The surface could not be generated. Check the formula and try again.',
+  '检查配平': 'Check balance', '使用配平建议': 'Use balanced suggestion',
+  '仅检查元素与电荷守恒，不判断反应能否发生；未配平也可按原式插入。': 'Checks element and charge conservation, not whether a reaction can occur. You can insert an unbalanced equation as written.',
+  '可检查配平；不会自动修改原式。': 'Check balance without changing your equation.',
+  '已配平：元素与电荷守恒。': 'Balanced: elements and charge are conserved.',
+  '未配平；仍可按原式插入。': 'Unbalanced; you can still insert it as written.',
+  '按当前反应物和生成物无法配平；仍可插入原式。': 'Cannot balance the listed reactants and products; you can still insert the original.',
+  '暂时无法检查这种写法；仍可插入原式。': 'This notation cannot be checked yet; you can still insert the original.',
+  '未能确定唯一的配平建议；仍可插入原式。': 'A unique balancing suggestion could not be determined; you can still insert the original.',
+  '这是化学式；加入反应箭头后可检查配平。': 'This is a formula. Add a reaction arrow to check balance.',
+  '按原式插入': 'Insert as written', '按原式更新当前化学式': 'Update formula as written',
+  '数字超出支持范围，请缩小数值。': 'Numbers must be finite.',
+  '暂不支持此写法。请使用数字、x、算术运算及支持的函数。': 'Unsupported notation. Use numbers, x, arithmetic, and supported functions.',
+  '函数过于复杂，请简化后再绘图。': 'The expression is too complex. Simplify it before plotting.',
+  '请输入函数，例如 x^2 或 sin(x)。': 'Enter an expression such as x^2 or sin(x).',
+  '请检查运算符及括号。': 'Unexpected input. Check operators and parentheses.',
+  '括号或函数嵌套过深，请简化后再绘图。': 'The expression is nested too deeply.',
+  '函数尚未填写完整。': 'The expression is incomplete.',
+  '缺少右括号，请补全后再绘图。': 'A closing parenthesis is missing.',
+  '未知名称。支持 x、pi、e、sin、cos、tan、sqrt、abs、ln、log 和 exp。': 'Unknown name. Use x, pi, e, sin, cos, tan, sqrt, abs, ln, log, or exp.',
+  '函数的参数需要括号，例如 sin(x)。': 'Function arguments need parentheses, for example sin(x).',
+  '函数内容过长，请缩短到 500 个字符以内。': 'The expression is too long (maximum 500 characters).',
+  '暂时无法识别函数，请检查写法。': 'The expression could not be parsed.',
+  '缺少图像设置，请重新打开编辑器。': 'Graph settings are missing.',
+  '坐标边界须为 −1000000 至 1000000 之间的有效数值。': 'Axis bounds must be finite numbers between -1000000 and 1000000.',
+  '每个坐标轴的最小值须小于最大值。': 'Each axis minimum must be smaller than its maximum.',
+  '每个坐标轴的范围须至少为 0.000000001。': 'Each axis range must span at least 0.000000001.',
+  '坐标范围相对边界数值过窄，请扩大范围。': 'Axis ranges are too narrow for their magnitude.',
+  '图线过于复杂，请简化函数或缩小绘图范围。': 'The graph is too complex to sample. Simplify the expression or narrow the range.',
+  '此范围内没有可显示的图线，请检查函数或调整坐标范围。': 'No finite curve is visible in this range. Check the formula or adjust the axes.',
+  '暂时无法生成图像，请检查函数后重试。': 'The graph could not be generated.',
+  '请输入复数，例如 3+2i，每行一个。': 'Enter a complex number such as 3+2i, one per line.',
+  '复数内容过长，请缩短到 1000 个字符以内。': 'Complex-number input is too long (maximum 1000 characters).',
+  '最多支持 20 个复数，每行一个。': 'Use at most 20 complex numbers, one per line.',
+  '缺少复平面设置，请重新打开编辑器。': 'Complex-plane settings are missing.',
+  '暂时无法绘图，请检查输入及坐标范围。': 'Unable to plot. Check the input and axis bounds.',
+  '输入后自动预览；在图内拖动或滚轮缩放。点击插入或保存才写入笔记，也可按 Ctrl+Enter。': 'Previews automatically as you type; drag to pan or scroll to zoom. Insert or save (or press Ctrl+Enter) to update the note.',
+  '正在更新预览…也可直接点击插入或保存。': 'Updating preview… You can also insert or save directly.',
+  '长度': 'Length', '质量': 'Mass', '时间': 'Time', '温度': 'Temperature', '速度': 'Speed', '面积': 'Area', '体积': 'Volume', '压力': 'Pressure', '能量': 'Energy', '功率': 'Power', '角度': 'Angle',
+  '纳米': 'Nanometre', '微米': 'Micrometre', '毫米': 'Millimetre', '厘米': 'Centimetre', '米': 'Metre', '千米': 'Kilometre', '英寸': 'Inch', '英尺': 'Foot', '码': 'Yard', '英里': 'Mile', '海里': 'Nautical mile',
+  '毫克': 'Milligram', '克': 'Gram', '千克': 'Kilogram', '公吨': 'Metric tonne', '盎司（常衡）': 'Ounce (avoirdupois)', '磅（常衡）': 'Pound (avoirdupois)',
+  '毫秒': 'Millisecond', '秒': 'Second', '分钟': 'Minute', '小时': 'Hour', '天': 'Day',
+  '摄氏度': 'Degree Celsius', '华氏度': 'Degree Fahrenheit', '开尔文': 'Kelvin',
+  '米/秒': 'Metres per second', '千米/小时': 'Kilometres per hour', '英里/小时': 'Miles per hour', '英尺/秒': 'Feet per second', '节（海里/小时）': 'Knot (nautical mile per hour)',
+  '平方毫米': 'Square millimetre', '平方厘米': 'Square centimetre', '平方米': 'Square metre', '平方千米': 'Square kilometre', '公顷': 'Hectare', '英亩': 'Acre', '平方英尺': 'Square foot',
+  '毫升': 'Millilitre', '升': 'Litre', '立方厘米': 'Cubic centimetre', '立方米': 'Cubic metre', '立方英尺': 'Cubic foot', '美制液体加仑': 'US liquid gallon', '英制加仑': 'Imperial gallon', '美制液体盎司': 'US fluid ounce',
+  '帕斯卡': 'Pascal', '千帕': 'Kilopascal', '兆帕': 'Megapascal', '巴': 'Bar', '标准大气压': 'Standard atmosphere', '磅力/平方英寸': 'Pound-force per square inch',
+  '焦耳': 'Joule', '千焦': 'Kilojoule', '兆焦': 'Megajoule', '瓦时': 'Watt-hour', '千瓦时': 'Kilowatt-hour',
+  '瓦特': 'Watt', '千瓦': 'Kilowatt', '兆瓦': 'Megawatt', '机械马力': 'Mechanical horsepower',
+  '度': 'Degree', '弧度': 'Radian', '圈': 'Turn',
   '点击插入结构并填方框（仅排版，不计算或求解）。': 'Click to insert a structure and fill the boxes (typesetting only, no solving).',
   '点击插入结构并填写方框。': 'Click to insert a structure and fill the boxes.',
   '公式超过 4096 字符，已切换为源码编辑（缩短后恢复可视化）。': 'Formula exceeds 4096 characters; switched to source editing (shorten to restore visual editing).',
@@ -486,59 +568,290 @@ export const UI_TRANSLATIONS: Readonly<Record<string, string>> = {
   '导入公式': 'Import',
   '粘贴带 $、$$ 或环境的单条公式': 'Paste a single formula with $, $$, or environments',
   '扩展数学工具': 'Extended math tools',
+  '源码表达式': 'Raw expression',
+  '同时插入公式': 'Also insert equation',
+  '还有方框尚未填完，补全后自动更新预览。': 'Fill in the remaining boxes to update the preview.',
+  '暂不支持此二维公式写法，请检查变量、函数名称或括号。': 'This 2D formula cannot be plotted yet. Check variables, function names, and parentheses.',
+  '加入公式草稿': 'Add to draft',
+  '悬停查看质量与电子排布；点击元素固定详情并选择加入化学式或公式。': 'Hover an element for atomic weight and electron configuration; click to pin details and add to a formula or equation.',
+  '加入化学式': 'Add to formula',
+  '已加入化学式': 'Added to formula',
+  '插入符号到公式': 'Insert symbol',
+  '已插入符号': 'Symbol inserted',
+  '关闭': 'Close',
+  '选择示例（替换输入）': 'Choose an example (replaces input)',
+  '选择示例（替换输入）…': 'Choose an example (replaces input)…',
+  '复制图片': 'Copy image',
+  '复制高清 PNG 图片到剪贴板': 'Copy high-resolution PNG image to clipboard',
+  '图片已复制到剪贴板。': 'Image copied to clipboard.',
+  '当前环境不支持复制图片，已复制 SVG 源码。': 'Image copy is unavailable here; copied SVG source instead.',
+  '未能复制图片，请重试。': 'Could not copy the image. Try again.',
+  '插入公式（Ctrl/Cmd+Enter）': 'Insert equation (Ctrl/Cmd+Enter)',
+  '保存修改（Ctrl/Cmd+Enter）': 'Save changes (Ctrl/Cmd+Enter)',
+  '取消编辑（Esc）': 'Cancel editing (Esc)',
+  '撤销（Ctrl/Cmd+Z）': 'Undo (Ctrl/Cmd+Z)',
+  '重做（Ctrl+Y / Cmd+Shift+Z）': 'Redo (Ctrl+Y / Cmd+Shift+Z)',
+  '插入图像（Ctrl/Cmd+Enter）': 'Insert graph (Ctrl/Cmd+Enter)',
+  '保存图像（Ctrl/Cmd+Enter）': 'Save graph (Ctrl/Cmd+Enter)',
+  '立即刷新图像预览（Enter）': 'Refresh graph preview (Enter)',
+  '应用到当前公式（Ctrl/Cmd+Enter）': 'Apply to current equation (Ctrl/Cmd+Enter)',
+  '半球体': 'Hemisphere',
+  '圆台 / 正棱台': 'Frustum',
+  '组合几何体（多图形拼接）': 'Composite solid (multi-shape)',
+  '下底半径': 'Bottom radius',
+  '上底半径': 'Top radius',
+  '棱数（留空为圆台）': 'Sides (blank = circular)',
+  '圆台': 'Circular',
+  '组合题型模板': 'Problem templates',
+  '圆柱 + 圆锥': 'Cylinder + Cone',
+  '圆柱 + 半球': 'Cylinder + Hemisphere',
+  '球内接正方体': 'Cube in sphere',
+  '正方体内切球': 'Sphere in cube',
+  '圆锥内切球': 'Sphere in cone',
+  'L 型双长方体台阶': 'L-shaped steps',
+  '部件列表（2–6 个）': 'Parts (2–6)',
+  '+ 添加部件': '+ Add part',
+  '叠在上一部件上方': 'Stack on previous',
+  '居中对齐 (0,0,0)': 'Center (0,0,0)',
+  '删除': 'Remove',
+  '样式': 'Style',
+  '实心': 'Solid',
+  '半透明': 'Translucent',
+  '颜色': 'Color',
+  '靛蓝': 'Indigo',
+  '青绿': 'Teal',
+  '琥珀': 'Amber',
+  '玫红': 'Rose',
+  '岩灰': 'Slate',
+  '偏移 X': 'Offset X',
+  '偏移 Y': 'Offset Y',
+  '偏移 Z': 'Offset Z',
+  '旋转 X°': 'Rotate X°',
+  '旋转 Y°': 'Rotate Y°',
+  '旋转 Z°': 'Rotate Z°',
+  '选择组合题型模板，或逐个调整 2–6 个基本几何体的尺寸、偏移、旋转与半透明样式。': 'Choose a problem template, or adjust dimensions, offsets, rotations, and translucency for 2–6 primitive solids.',
+  '棱台边数须为 3 至 12 的整数；留空可绘制圆台。': 'Use 3 to 12 whole sides for a polygonal frustum.',
+  '组合几何体须包含 2 至 6 个部件。': 'Composite solids require between 2 and 6 parts.',
+  '组合几何体的每个部件都须选择受支持的基本几何体或平面。': 'Each composite part must use a supported primitive solid or plane.',
+  '部件偏移须为 −500 至 500 之间的有效数值。': 'Part offsets must be finite numbers between -500 and 500.',
+  '部件旋转角度须为 −180 至 180 度之间的有效数值。': 'Part rotation angles must be finite numbers between -180 and 180 degrees.',
+  '部件样式须为实心、半透明或线框。': 'Part style must be solid, translucent, or wireframe.',
+  '请选择受支持的部件颜色。': 'Choose a supported part color.',
+  '伽马': 'gamma',
+  '拉姆达': 'lambda',
+  '缪': 'mu',
+  '柔': 'rho',
+  '西格玛': 'sigma',
+  '斐': 'phi',
+  '艾普西隆': 'epsilon',
+  '欧米伽': 'omega',
+  '提示：空格或运算符后输入 rho、lambda、omega 等英文名可直接变希腊字母': 'Tip: after a space or operator, type rho, lambda, omega, etc. to enter Greek letters',
+  '电子伏特': 'Electronvolt',
+  '千电子伏特': 'Kiloelectronvolt',
+  '兆电子伏特': 'Megaelectronvolt',
+  '电子伏特 eV': 'Electronvolt eV',
+  '动能公式': 'Kinetic energy',
+  '动量 p=mv': 'Momentum p=mv',
+  '万有引力定律': 'Universal gravitation',
+  '简谐运动角频率': 'Harmonic frequency',
+  '库仑定律': 'Coulomb’s law',
+  '洛伦兹力': 'Lorentz force',
+  '法拉第电磁感应': 'Faraday’s law',
+  '理想气体状态方程': 'Ideal gas law',
+  '质能方程 E=mc²': 'Mass–energy E=mc²',
+  '洛伦兹因子 γ': 'Lorentz factor γ',
+  '光子能量 E=hν': 'Photon energy E=hν',
+  '薛定谔本征方程': 'Schrödinger equation',
+  '另一个插件已注册不兼容的 math-field 组件。请暂时关闭冲突插件并重启 Obsidian。': 'Another plugin registered an incompatible math-field element. Disable the conflicting plugin and restart Obsidian.',
 };
 
-/** Both names are searchable in every interface language; chemical symbols are unchanged. */
+const TRANSLATION_DICTIONARIES: Readonly<Record<Exclude<ResolvedLanguage, 'zh'>, Readonly<Record<string, string>>>> = {
+  en: UI_TRANSLATIONS,
+  es: SPANISH_TRANSLATIONS,
+  ja: JAPANESE_TRANSLATIONS,
+  de: GERMAN_TRANSLATIONS,
+  fr: FRENCH_TRANSLATIONS,
+};
+
+const ELEMENT_NAME_DICTIONARIES: Readonly<Partial<Record<Exclude<ResolvedLanguage, 'zh'>, Readonly<Record<string, string>>>>> = {
+  es: SPANISH_ELEMENT_NAMES,
+  ja: JAPANESE_ELEMENT_NAMES,
+  de: GERMAN_ELEMENT_NAMES,
+  fr: FRENCH_ELEMENT_NAMES,
+};
+
+/** Element names are searchable across all supported interface languages; chemical symbols are unchanged. */
 export function getElementSearchNames(englishName: string): string {
-  const spanish = Object.hasOwn(SPANISH_ELEMENT_NAMES, englishName) ? SPANISH_ELEMENT_NAMES[englishName] : '';
-  return `${englishName} ${spanish} ${spanish.normalize('NFD').replace(/\p{M}/gu, '')}`.trim();
+  if (!Object.hasOwn(SPANISH_ELEMENT_NAMES, englishName)) return englishName;
+  const spanish = SPANISH_ELEMENT_NAMES[englishName] ?? '';
+  const japanese = JAPANESE_ELEMENT_NAMES[englishName] ?? '';
+  const german = GERMAN_ELEMENT_NAMES[englishName] ?? '';
+  const french = FRENCH_ELEMENT_NAMES[englishName] ?? '';
+  const stripAccents = (value: string) => value.normalize('NFD').replace(/\p{M}/gu, '');
+  return [
+    englishName,
+    spanish.toLowerCase(),
+    stripAccents(spanish.toLowerCase()),
+    japanese,
+    german,
+    german.toLowerCase(),
+    stripAccents(german.toLowerCase()),
+    french.toLowerCase(),
+    stripAccents(french.toLowerCase()),
+  ].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
 }
 
 function translateCore(text: string, language: Exclude<ResolvedLanguage, 'zh'>): string {
-  const dictionary = language === 'es' ? SPANISH_TRANSLATIONS : UI_TRANSLATIONS;
+  const dictionary = TRANSLATION_DICTIONARIES[language];
   if (Object.hasOwn(dictionary, text)) return dictionary[text];
-  const spanish = language === 'es';
-  if (spanish && Object.hasOwn(SPANISH_ELEMENT_NAMES, text)) return SPANISH_ELEMENT_NAMES[text];
+  const elementNames = ELEMENT_NAME_DICTIONARIES[language];
+  if (elementNames && Object.hasOwn(elementNames, text)) return elementNames[text];
   let match: RegExpExecArray | null;
+  match = /^部件 (\d+)$/.exec(text);
+  if (match) {
+    const partWord = language === 'es' ? 'Pieza'
+      : language === 'ja' ? 'パーツ'
+      : language === 'de' ? 'Teil'
+      : language === 'fr' ? 'Pièce'
+      : 'Part';
+    return `${partWord} ${match[1]}`;
+  }
+  match = /^组合几何体（(\d+) 个部件）$/.exec(text);
+  if (match) {
+    if (language === 'es') return `Sólido compuesto (${match[1]} piezas)`;
+    if (language === 'ja') return `複合立体（${match[1]} パーツ）`;
+    if (language === 'de') return `Zusammengesetzter Körper (${match[1]} Teile)`;
+    if (language === 'fr') return `Solide composé (${match[1]} pièces)`;
+    return `Composite solid (${match[1]} parts)`;
+  }
+  match = /^几何模型 (\d+) · ([\s\S]+)$/.exec(text);
+  if (match) {
+    const prefix = language === 'es' ? 'Geometría'
+      : language === 'ja' ? '立体図形'
+      : language === 'de' ? 'Geometrie'
+      : language === 'fr' ? 'Géométrie'
+      : 'Geometry';
+    return `${prefix} ${match[1]} · ${translateCore(match[2], language)}`;
+  }
   match = /^(图像|复平面|极坐标|三维曲面|微积分图像) (\d+) ·(?: ([\s\S]*))?$/.exec(text);
   if (match) return `${dictionary[match[1]]} ${match[2]} ·${match[3] === undefined ? '' : ` ${match[3]}`}`;
   match = /^(X|Y|Z|Re|Im|θ) (最小值|最大值)$/.exec(text);
-  if (match) return `${match[1]} ${spanish ? match[2] === '最小值' ? 'mín.' : 'máx.' : match[2] === '最小值' ? 'min' : 'max'}`;
-  if (spanish) {
-    // Converter options combine a localized name and an invariant unit symbol.
-    match = /^(.+?) (\([^()]+\))$/.exec(text);
-    if (match && Object.hasOwn(dictionary, match[1])) return `${dictionary[match[1]]} ${match[2]}`;
+  if (match) {
+    const isMin = match[2] === '最小值';
+    const boundLabel = language === 'es' ? (isMin ? 'mín.' : 'máx.')
+      : language === 'ja' ? (isMin ? '最小' : '最大')
+      : language === 'de' ? (isMin ? 'Min.' : 'Max.')
+      : language === 'fr' ? (isMin ? 'min.' : 'max.')
+      : (isMin ? 'min' : 'max');
+    return `${match[1]} ${boundLabel}`;
+  }
+  // Converter options combine a localized name and an invariant unit symbol.
+  match = /^(.+?) (\([^()]+\))$/.exec(text);
+  if (match && Object.hasOwn(dictionary, match[1])) return `${dictionary[match[1]]} ${match[2]}`;
+  if (language !== 'en') {
     match = /^(\d+) ([a-z]+) ([A-Z][a-z]?)$/.exec(text);
-    if (match && Object.hasOwn(SPANISH_ELEMENT_NAMES, match[2])) return `${match[1]} ${SPANISH_ELEMENT_NAMES[match[2]]} ${match[3]}`;
+    if (match && elementNames && Object.hasOwn(elementNames, match[2])) return `${match[1]} ${elementNames[match[2]]} ${match[3]}`;
     match = /^(\d+) · ([A-Z][a-z]?) · ([a-z]+)$/.exec(text);
-    if (match && Object.hasOwn(SPANISH_ELEMENT_NAMES, match[3])) return `${match[1]} · ${match[2]} · ${SPANISH_ELEMENT_NAMES[match[3]]}`;
+    if (match && elementNames && Object.hasOwn(elementNames, match[3])) return `${match[1]} · ${match[2]} · ${elementNames[match[3]]}`;
     match = /^左侧 \/ 右侧：(.*)$/.exec(text);
-    if (match) return `Izquierda / derecha: ${match[1].replace(/电荷/g, 'carga')}`;
+    if (match) {
+      if (language === 'es') return `Izquierda / derecha: ${match[1].replace(/电荷/g, 'carga')}`;
+      if (language === 'ja') return `左辺 / 右辺: ${match[1].replace(/电荷/g, '電荷')}`;
+      if (language === 'de') return `Links / rechts: ${match[1].replace(/电荷/g, 'Ladung')}`;
+      if (language === 'fr') return `Gauche / droite : ${match[1].replace(/电荷/g, 'charge')}`;
+    }
     match = /^视图内 (\d+) \/ (\d+) 个点。点击保存才写入笔记。$/.exec(text);
-    if (match) return `${match[1]} / ${match[2]} puntos visibles. Guarda para actualizar la nota.`;
+    if (match) {
+      if (language === 'es') return `${match[1]} / ${match[2]} puntos visibles. Guarda para actualizar la nota.`;
+      if (language === 'ja') return `表示範囲内に ${match[1]} / ${match[2]} 点。保存するとノートに反映されます。`;
+      if (language === 'de') return `${match[1]} / ${match[2]} Punkte sichtbar. Speichern aktualisiert die Notiz.`;
+      if (language === 'fr') return `${match[1]} / ${match[2]} points visibles. Enregistrez pour mettre à jour la note.`;
+    }
     match = /^第 (\d+) 行：请输入 3\+2i、−i 或 4 这样的数值；暂不支持表达式或名称。$/.exec(text);
-    if (match) return `Línea ${match[1]}: introduce un número como 3+2i, −i o 4; aún no se admiten expresiones ni nombres.`;
+    if (match) {
+      if (language === 'es') return `Línea ${match[1]}: introduce un número como 3+2i, −i o 4; aún no se admiten expresiones ni nombres.`;
+      if (language === 'ja') return `${match[1]} 行目: 3+2i、−i、4 のような数値を入力してください（式や変数名は非対応）。`;
+      if (language === 'de') return `Zeile ${match[1]}: Bitte eine Zahl wie 3+2i, −i oder 4 eingeben; Ausdrücke sind nicht unterstützt.`;
+      if (language === 'fr') return `Ligne ${match[1]} : saisissez un nombre tel que 3+2i, −i ou 4 ; les expressions ne sont pas prises en charge.`;
+    }
     match = /^第 (\d+) 行：实部和虚部须为 −1000000 至 1000000 之间的有效数值。$/.exec(text);
-    if (match) return `Línea ${match[1]}: las partes real e imaginaria deben ser números válidos entre −1000000 y 1000000.`;
+    if (match) {
+      if (language === 'es') return `Línea ${match[1]}: las partes real e imaginaria deben ser números válidos entre −1000000 y 1000000.`;
+      if (language === 'ja') return `${match[1]} 行目: 実部と虚部は −1000000 から 1000000 の有効な数値にしてください。`;
+      if (language === 'de') return `Zeile ${match[1]}: Real- und Imaginärteil müssen zwischen −1000000 und 1000000 liegen.`;
+      if (language === 'fr') return `Ligne ${match[1]} : les parties réelle et imaginaire doivent être comprises entre −1000000 et 1000000.`;
+    }
   }
   match = /^(\d+) 个匹配元素；点击元素可插入$/.exec(text);
-  if (match) return spanish ? `${match[1]} ${Number(match[1]) === 1 ? 'elemento coincidente' : 'elementos coincidentes'}; haz clic en uno para insertarlo` : `${match[1]} matching elements; click an element to insert`;
+  if (match) {
+    const n = Number(match[1]);
+    if (language === 'es') return `${match[1]} ${n === 1 ? 'elemento coincidente' : 'elementos coincidentes'}; haz clic en uno para insertarlo`;
+    if (language === 'ja') return `${match[1]} 件の一致する元素（クリックで挿入）`;
+    if (language === 'de') return `${match[1]} ${n === 1 ? 'passendes Element' : 'passende Elemente'}; zum Einfügen anklicken`;
+    if (language === 'fr') return `${match[1]} ${n === 1 ? 'élément correspondant' : 'éléments correspondants'} ; cliquez pour insérer`;
+    return `${match[1]} matching elements; click an element to insert`;
+  }
   match = /^(\d+) 个元素$/.exec(text);
-  if (match) return spanish ? `${match[1]} ${Number(match[1]) === 1 ? 'elemento' : 'elementos'}` : `${match[1]} elements`;
+  if (match) {
+    const n = Number(match[1]);
+    if (language === 'es') return `${match[1]} ${n === 1 ? 'elemento' : 'elementos'}`;
+    if (language === 'ja') return `${match[1]} 元素`;
+    if (language === 'de') return `${match[1]} ${n === 1 ? 'Element' : 'Elemente'}`;
+    if (language === 'fr') return `${match[1]} ${n === 1 ? 'élément' : 'éléments'}`;
+    return `${match[1]} elements`;
+  }
   match = /^编辑第 (\d+) 个公式$/.exec(text);
-  if (match) return spanish ? `Editar ecuación ${match[1]}` : `Edit equation ${match[1]}`;
+  if (match) {
+    if (language === 'es') return `Editar ecuación ${match[1]}`;
+    if (language === 'ja') return `数式 ${match[1]} を編集`;
+    if (language === 'de') return `Formel ${match[1]} bearbeiten`;
+    if (language === 'fr') return `Modifier la formule ${match[1]}`;
+    return `Edit equation ${match[1]}`;
+  }
   match = /^第 (\d+) 行 · (独立公式|行内公式)$/.exec(text);
-  if (match) return `${spanish ? 'Línea' : 'Line'} ${match[1]} · ${dictionary[match[2]]}`;
+  if (match) {
+    const linePrefix = language === 'es' ? `Línea ${match[1]}`
+      : language === 'ja' ? `${match[1]} 行目`
+      : language === 'de' ? `Zeile ${match[1]}`
+      : language === 'fr' ? `Ligne ${match[1]}`
+      : `Line ${match[1]}`;
+    return `${linePrefix} · ${dictionary[match[2]]}`;
+  }
   match = /^此输入框暂不支持命令 (\\[A-Za-z]+)，请使用常用化学符号或单位。$/.exec(text);
-  if (match) return spanish ? `Esta entrada no admite ${match[1]}. Usa notación química o unidades comunes.` : `This input does not support ${match[1]}. Use common chemical notation or units.`;
+  if (match) {
+    if (language === 'es') return `Esta entrada no admite ${match[1]}. Usa notación química o unidades comunes.`;
+    if (language === 'ja') return `この入力欄ではコマンド ${match[1]} に対応していません。一般的な化学記号または単位を使用してください。`;
+    if (language === 'de') return `Dieses Feld unterstützt ${match[1]} nicht. Bitte übliche chemische Symbole oder Einheiten nutzen.`;
+    if (language === 'fr') return `Ce champ ne prend pas en charge ${match[1]}. Utilisez la notation chimique ou des unités courantes.`;
+    return `This input does not support ${match[1]}. Use common chemical notation or units.`;
+  }
   match = /^插入(.+?)；选中内容后可套用结构$/.exec(text);
-  if (match && Object.hasOwn(dictionary, match[1])) return spanish ? `Insertar ${dictionary[match[1]]}; selecciona contenido para aplicar la estructura` : `Insert ${dictionary[match[1]]}; select content to wrap it`;
+  if (match && Object.hasOwn(dictionary, match[1])) {
+    const item = dictionary[match[1]];
+    if (language === 'es') return `Insertar ${item}; selecciona contenido para aplicar la estructura`;
+    if (language === 'ja') return `${item}を挿入（選択範囲がある場合は囲みます）`;
+    if (language === 'de') return `${item} einfügen; Auswahl wird umschlossen`;
+    if (language === 'fr') return `Insérer ${item} ; entoure la sélection`;
+    return `Insert ${item}; select content to wrap it`;
+  }
   match = /^(插入|添加)(.+)$/.exec(text);
   if (match) {
+    const isInsert = match[1] === '插入';
     const label = match[2];
-    if (Object.hasOwn(dictionary, label)) return `${match[1] === '插入' ? (spanish ? 'Insertar' : 'Insert') : (spanish ? 'Añadir' : 'Add')} ${dictionary[label]}`;
-    const words = /^(阿尔法|贝塔|西塔|圆周率|德尔塔|无穷大|正负号|乘号|除号|不等于|小于或等于|大于或等于) (.+)$/.exec(label);
-    if (words) return `${spanish ? 'Insertar' : 'Insert'} ${dictionary[words[1]]} ${words[2]}`;
+    const formatVerb = (target: string) => {
+      if (language === 'es') return `${isInsert ? 'Insertar' : 'Añadir'} ${target}`;
+      if (language === 'ja') return `${target}を${isInsert ? '挿入' : '追加'}`;
+      if (language === 'de') return `${target} ${isInsert ? 'einfügen' : 'hinzufügen'}`;
+      if (language === 'fr') return `${isInsert ? 'Insérer' : 'Ajouter'} ${target}`;
+      return `${isInsert ? 'Insert' : 'Add'} ${target}`;
+    };
+    if (Object.hasOwn(dictionary, label)) return formatVerb(dictionary[label]);
+    const spaceIdx = label.lastIndexOf(' ');
+    if (spaceIdx > 0) {
+      const prefix = label.slice(0, spaceIdx);
+      const suffix = label.slice(spaceIdx + 1);
+      if (Object.hasOwn(dictionary, prefix)) return formatVerb(`${dictionary[prefix]} ${suffix}`);
+    }
   }
   return text;
 }
@@ -552,105 +865,233 @@ export function translateUiText(text: string, language: ResolvedLanguage): strin
 /** Only the renderer's fixed plot descriptions are translated; captured math stays verbatim. */
 export function translatePlotUiText(text: string, language: ResolvedLanguage): string {
   if (language === 'en') return text;
-  const spanish = language === 'es';
-  const spatialNames: Readonly<Record<string, [string, string]>> = {
-    'Two planes': ['两个平面', 'Dos planos'], 'Line and plane': ['直线与平面', 'Recta y plano'], 'Sphere and plane': ['球体与平面', 'Esfera y plano'],
+  type PlotLangTuple = [zh: string, es: string, ja: string, de: string, fr: string];
+  const pick = (tuple: PlotLangTuple): string =>
+    language === 'es' ? tuple[1]
+    : language === 'ja' ? tuple[2]
+    : language === 'de' ? tuple[3]
+    : language === 'fr' ? tuple[4]
+    : tuple[0];
+
+  const spatialNames: Readonly<Record<string, PlotLangTuple>> = {
+    'Two planes': ['两个平面', 'Dos planos', '2つの平面', 'Zwei Ebenen', 'Deux plans'],
+    'Line and plane': ['直线与平面', 'Recta y plano', '直線と平面', 'Gerade und Ebene', 'Droite et plan'],
+    'Sphere and plane': ['球体与平面', 'Esfera y plano', '球と平面', 'Kugel und Ebene', 'Sphère et plan'],
   };
   const spatialTitle = /^Spatial relations: (Two planes|Line and plane|Sphere and plane)$/.exec(text);
-  if (spatialTitle) return `${spanish ? 'Relaciones espaciales: ' : '空间关系：'}${spatialNames[spatialTitle[1]][spanish ? 1 : 0]}`;
-  const spatialFixed: Readonly<Record<string, [string, string]>> = {
-    'Fixed spatial-relation teaching scene. Conclusions describe infinite planes and lines; the displayed patches and line segments are finite. Equal-scale orthographic view. Curved surfaces are polygonal approximations.': ['固定的空间关系教学场景。关系结论针对无限平面和直线；画面中的平面片和线段为有限大小。采用等比例正交视图，曲面为多边形近似。', 'Escena didáctica fija de relaciones espaciales. Las conclusiones describen planos y rectas infinitos; las regiones y los segmentos mostrados son finitos. Vista ortográfica con escala uniforme. Las superficies curvas son aproximaciones poligonales.'],
-    'Planes intersect in a line.': ['两个平面相交于一条直线。', 'Los planos se intersectan en una recta.'],
-    'Planes are parallel and distinct.': ['两个平面平行且不重合。', 'Los planos son paralelos y distintos.'],
-    'Planes coincide.': ['两个平面重合。', 'Los planos coinciden.'],
-    'The line intersects the plane at one point.': ['直线与平面相交于一点。', 'La recta intersecta el plano en un punto.'],
-    'The line is parallel to and outside the plane.': ['直线与平面平行，且不在平面内。', 'La recta es paralela al plano y no está contenida en él.'],
-    'The line lies in the plane.': ['直线在平面内。', 'La recta está contenida en el plano.'],
-    'The plane cuts the sphere in a circle.': ['平面与球体相交成圆。', 'El plano corta la esfera en una circunferencia.'],
-    'The plane is tangent to the sphere at one point.': ['平面与球体相切于一点。', 'El plano es tangente a la esfera en un punto.'],
-    'The plane and sphere do not intersect.': ['平面与球体不相交。', 'El plano y la esfera no se intersectan.'],
-    'Near a critical case: the displayed relation is a numerical approximation; inputs were not snapped.': ['接近临界情况：显示关系为数值近似；输入数值未被吸附或改写。', 'Caso próximo a un límite: la relación mostrada es una aproximación numérica; los valores de entrada no se han ajustado.'],
-    'The intersection lies outside the shown view.': ['交点或交线位于当前画面之外。', 'La intersección está fuera de la vista mostrada.'],
-    'Infinite planes and lines; finite displayed patches.': ['无限平面与直线；画面只显示有限片段。', 'Planos y rectas infinitos; regiones mostradas finitas.'],
+  if (spatialTitle) {
+    const prefix = pick(['空间关系：', 'Relaciones espaciales: ', '空間関係：', 'Raumbeziehungen: ', 'Relations spatiales : ']);
+    return `${prefix}${pick(spatialNames[spatialTitle[1]])}`;
+  }
+  const spatialFixed: Readonly<Record<string, PlotLangTuple>> = {
+    'Fixed spatial-relation teaching scene. Conclusions describe infinite planes and lines; the displayed patches and line segments are finite. Equal-scale orthographic view. Curved surfaces are polygonal approximations.': [
+      '固定的空间关系教学场景。关系结论针对无限平面和直线；画面中的平面片和线段为有限大小。采用等比例正交视图，曲面为多边形近似。',
+      'Escena didáctica fija de relaciones espaciales. Las conclusiones describen planos y rectas infinitos; las regiones y los segmentos mostrados son finitos. Vista ortográfica con escala uniforme. Las superficies curvas son aproximaciones poligonales.',
+      '空間関係の学習用シーンです。結論は無限の平面と直線に対するもので、表示領域は有限です。等尺の平行投影で表示されます。',
+      'Lehrszene für Raumbeziehungen. Aussagen gelten für unendliche Ebenen und Geraden; dargestellt sind endliche Ausschnitte in maßstabsgetreuer orthografischer Projektion.',
+      'Scène pédagogique de relations spatiales. Les propriétés portent sur des plans et droites infinis ; les portions affichées sont bornées en projection orthographique.',
+    ],
+    'Planes intersect in a line.': ['两个平面相交于一条直线。', 'Los planos se intersectan en una recta.', '2つの平面は1本の直線で交わります。', 'Die Ebenen schneiden sich in einer Geraden.', 'Les deux plans se coupent selon une droite.'],
+    'Planes are parallel and distinct.': ['两个平面平行且不重合。', 'Los planos son paralelos y distintos.', '2つの平面は平行で一致しません。', 'Die Ebenen sind echt parallel.', 'Les deux plans sont strictement parallèles.'],
+    'Planes coincide.': ['两个平面重合。', 'Los planos coinciden.', '2つの平面は一致します。', 'Die Ebenen sind identisch.', 'Les deux plans sont confondus.'],
+    'The line intersects the plane at one point.': ['直线与平面相交于一点。', 'La recta intersecta el plano en un punto.', '直線と平面は1点で交わります。', 'Die Gerade schneidet die Ebene in einem Punkt.', 'La droite coupe le plan en un point.'],
+    'The line is parallel to and outside the plane.': ['直线与平面平行，且不在平面内。', 'La recta es paralela al plano y no está contenida en él.', '直線は平面に平行で、平面外にあります。', 'Die Gerade ist parallel zur Ebene und liegt außerhalb.', 'La droite est strictement parallèle au plan.'],
+    'The line lies in the plane.': ['直线在平面内。', 'La recta está contenida en el plano.', '直線は平面上にあります。', 'Die Gerade liegt in der Ebene.', 'La droite est incluse dans le plan.'],
+    'The plane cuts the sphere in a circle.': ['平面与球体相交成圆。', 'El plano corta la esfera en una circunferencia.', '平面と球は円で交わります。', 'Die Ebene schneidet die Kugel in einem Kreis.', 'Le plan coupe la sphère selon un cercle.'],
+    'The plane is tangent to the sphere at one point.': ['平面与球体相切于一点。', 'El plano es tangente a la esfera en un punto.', '平面と球は1点で接します。', 'Die Ebene berührt die Kugel in einem Punkt.', 'Le plan est tangent à la sphère en un point.'],
+    'The plane and sphere do not intersect.': ['平面与球体不相交。', 'El plano y la esfera no se intersectan.', '平面と球は交わりません。', 'Ebene und Kugel schneiden sich nicht.', 'Le plan et la sphère ne se coupent pas.'],
+    'Near a critical case: the displayed relation is a numerical approximation; inputs were not snapped.': ['接近临界情况：显示关系为数值近似；输入数值未被吸附或改写。', 'Caso próximo a un límite: la relación mostrada es una aproximación numérica; los valores de entrada no se han ajustado.', '境界付近：表示されている関係は数値近似です。入力値は自動補正されていません。', 'Nahe am Grenzfall: Die angezeigte Relation ist eine numerische Näherung; Eingaben wurden nicht verändert.', 'Proche d’un cas limite : la relation affichée est une approximation numérique ; les entrées n’ont pas été modifiées.'],
+    'The intersection lies outside the shown view.': ['交点或交线位于当前画面之外。', 'La intersección está fuera de la vista mostrada.', '交点または交線が表示範囲外にあります。', 'Der Schnitt liegt außerhalb des sichtbaren Ausschnitts.', 'L’intersection se situe hors de la vue affichée.'],
+    'Infinite planes and lines; finite displayed patches.': ['无限平面与直线；画面只显示有限片段。', 'Planos y rectas infinitos; regiones mostradas finitas.', '無限の平面と直線（有限領域を表示）。', 'Unendliche Ebenen und Geraden; endliche Ausschnitte.', 'Plans et droites infinis ; portions affichées finies.'],
   };
-  if (Object.hasOwn(spatialFixed, text)) return spatialFixed[text][spanish ? 1 : 0];
+  if (Object.hasOwn(spatialFixed, text)) return pick(spatialFixed[text]);
   const geometryDescription = 'Orthographic view with equal scale on X, Y and Z. Regular bases use the center-to-vertex radius. Curved surfaces are polygonal approximations.';
-  if (text === geometryDescription) return spanish
-    ? 'Vista ortográfica con la misma escala en X, Y y Z. Las bases regulares usan el radio del centro al vértice. Las superficies curvas son aproximaciones poligonales.'
-    : 'X、Y、Z 采用相同比例的正交视图。正多边形底面采用中心到顶点的半径。曲面为多边形近似。';
-  const geometryNames: Readonly<Record<string, [string, string]>> = {
-    Sphere: ['球体', 'Esfera'], Cylinder: ['圆柱体', 'Cilindro'], Cone: ['圆锥体', 'Cono'],
-    'Regular pyramid': ['正棱锥', 'Pirámide regular'], 'Regular prism': ['正棱柱', 'Prisma regular'],
-    Cuboid: ['长方体', 'Ortoedro'], Plane: ['平面片', 'Plano'],
+  if (text === geometryDescription) return pick([
+    'X、Y、Z 采用相同比例的正交视图。正多边形底面采用中心到顶点的半径。曲面为多边形近似。',
+    'Vista ortográfica con la misma escala en X, Y y Z. Las bases regulares usan el radio del centro al vértice. Las superficies curvas son aproximaciones poligonales.',
+    'X・Y・Z 等尺の平行投影です。正多角形の底面は中心から頂点までの半径を使用します。曲面は多角形による近似です。',
+    'Orthografische Ansicht mit gleichem Maßstab auf X, Y und Z. Regelmäßige Grundflächen nutzen den Umkreisradius; gekrümmte Flächen sind polygonal angenähert.',
+    'Vue orthographique à la même échelle sur X, Y et Z. Les bases régulières utilisent le rayon centre-sommet ; les surfaces courbes sont approximées par des polygones.',
+  ]);
+  const geometryNames: Readonly<Record<string, PlotLangTuple>> = {
+    Sphere: ['球体', 'Esfera', '球', 'Kugel', 'Sphère'],
+    Hemisphere: ['半球体', 'Semiesfera', '半球', 'Halbkugel', 'Hémisphère'],
+    Cylinder: ['圆柱体', 'Cilindro', '円柱', 'Zylinder', 'Cylindre'],
+    Cone: ['圆锥体', 'Cono', '円錐', 'Kegel', 'Cône'],
+    Frustum: ['圆台 / 正棱台', 'Tronco', '錐台', 'Stumpf', 'Tronc'],
+    'Regular pyramid': ['正棱锥', 'Pirámide regular', '正角錐', 'Regelmäßige Pyramide', 'Pyramide régulière'],
+    'Regular prism': ['正棱柱', 'Prisma regular', '正角柱', 'Regelmäßiges Prisma', 'Prisme régulier'],
+    Cuboid: ['长方体', 'Ortoedro', '直方体', 'Quader', 'Pavé droit'],
+    Plane: ['平面片', 'Plano', '平面パッチ', 'Ebene', 'Plan'],
   };
-  const geometryTitle = /^Geometry: (Sphere|Cylinder|Cone|Regular pyramid|Regular prism|Cuboid|Plane)$/.exec(text);
-  if (geometryTitle) return `${spanish ? 'Geometría: ' : '几何模型：'}${geometryNames[geometryTitle[1]][spanish ? 1 : 0]}`;
+  const geometryTitle = /^Geometry: (Sphere|Hemisphere|Cylinder|Cone|Frustum|Regular pyramid|Regular prism|Cuboid|Plane)$/.exec(text);
+  if (geometryTitle) return `${pick(['几何模型：', 'Geometría: ', '立体図形：', 'Geometrie: ', 'Géométrie : '])}${pick(geometryNames[geometryTitle[1]])}`;
+  const compositeTitle = /^Geometry: Composite solid \((\d+) parts\)$/.exec(text);
+  if (compositeTitle) {
+    const n = compositeTitle[1];
+    return pick([
+      `几何模型：组合几何体（${n} 个部件）`,
+      `Geometría: Sólido compuesto (${n} piezas)`,
+      `立体図形：複合立体（${n} パーツ）`,
+      `Geometrie: Zusammengesetzter Körper (${n} Teile)`,
+      `Géométrie : Solide composé (${n} pièces)`,
+    ]);
+  }
+  const compositeParts = text.split(' + ');
+  if (compositeParts.length >= 2 && compositeParts.every(part => Object.hasOwn(geometryNames, part))) {
+    return compositeParts.map(part => pick(geometryNames[part])).join(' + ');
+  }
   const geometryDimensions = text.split(' · ');
-  if (geometryDimensions.length && geometryDimensions.every(part => /^(Radius|Width|Depth|Height|Sides|Angle|Offset) = [+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?°?$/.test(part))) {
-    const labels: Readonly<Record<string, [string, string]>> = {
-      Radius: ['半径', 'Radio'], Width: ['宽度', 'Anchura'], Depth: ['深度', 'Profundidad'], Height: ['高度', 'Altura'], Sides: ['边数', 'Lados'], Angle: ['夹角', 'Ángulo'], Offset: ['偏移', 'Desplazamiento'],
+  if (geometryDimensions.length && geometryDimensions.every(part => /^(Radius|Bottom radius|Top radius|Width|Depth|Height|Sides|Angle|Offset) = [+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?°?$/.test(part))) {
+    const labels: Readonly<Record<string, PlotLangTuple>> = {
+      Radius: ['半径', 'Radio', '半径', 'Radius', 'Rayon'],
+      'Bottom radius': ['下底半径', 'Radio inferior', '下底半径', 'Unterer Radius', 'Rayon inférieur'],
+      'Top radius': ['上底半径', 'Radio superior', '上底半径', 'Oberer Radius', 'Rayon supérieur'],
+      Width: ['宽度', 'Anchura', '幅', 'Breite', 'Largeur'],
+      Depth: ['深度', 'Profundidad', '奥行', 'Tiefe', 'Profondeur'],
+      Height: ['高度', 'Altura', '高さ', 'Höhe', 'Hauteur'],
+      Sides: ['边数', 'Lados', '辺数', 'Seiten', 'Côtés'],
+      Angle: ['夹角', 'Ángulo', '角度', 'Winkel', 'Angle'],
+      Offset: ['偏移', 'Desplazamiento', 'オフセット', 'Versatz', 'Décalage'],
     };
     return geometryDimensions.map(part => {
       const [label, value] = part.split(' = ');
-      return `${labels[label][spanish ? 1 : 0]} = ${value}`;
+      return `${pick(labels[label])} = ${value}`;
     }).join(' · ');
   }
   const geometryView = /^View ([+\-\d.eE]+)° \/ ([+\-\d.eE]+)° · ([+\-\d.eE]+)×$/.exec(text);
-  if (geometryView) return `${spanish ? 'Vista' : '视角'} ${geometryView[1]}° / ${geometryView[2]}° · ${geometryView[3]}×`;
+  if (geometryView) return `${pick(['视角', 'Vista', '視点', 'Ansicht', 'Vue'])} ${geometryView[1]}° / ${geometryView[2]}° · ${geometryView[3]}×`;
   const description = 'Approximate numerical graph. The horizontal axis is X and the vertical axis is Y. Trigonometric arguments use radians. Domain gaps and unresolved discontinuities are omitted.';
-  if (text === description) return spanish
-    ? 'Gráfica numérica aproximada. El eje horizontal es X y el vertical es Y. Los argumentos trigonométricos usan radianes. Se omiten los huecos del dominio y las discontinuidades no resueltas.'
-    : '数值近似图像。横轴为 X，纵轴为 Y。三角函数参数采用弧度。省略定义域空缺和未能解析的间断。';
-  if (text === 'Complex plane') return spanish ? 'Plano complejo' : '复平面';
+  if (text === description) return pick([
+    '数值近似图像。横轴为 X，纵轴为 Y。三角函数参数采用弧度。省略定义域空缺和未能解析的间断。',
+    'Gráfica numérica aproximada. El eje horizontal es X y el vertical es Y. Los argumentos trigonométricos usan radianes. Se omiten los huecos del dominio y las discontinuidades no resueltas.',
+    '数値近似グラフ。横軸は X、縦軸は Y、三角関数はラジアンを使用します。定義域の欠落や不連続点は省略されます。',
+    'Numerische Näherungsgrafik. Horizontale Achse X, vertikale Achse Y, Winkel im Bogenmaß. Definitionslücken und Unstetigkeiten werden ausgelassen.',
+    'Graphique numérique approché. Axe horizontal X, axe vertical Y, arguments trigonométriques en radians. Les discontinuités sont omises.',
+  ]);
+  if (text === 'Complex plane') return pick(['复平面', 'Plano complejo', '複素平面', 'Komplexe Ebene', 'Plan complexe']);
   const surfaceDescription = 'Approximate numerical wireframe of z = f(x,y). Each axis is scaled independently to its displayed range. Trigonometric arguments use radians. Missing real values and unresolved discontinuities are omitted.';
-  if (text === surfaceDescription) return spanish
-    ? 'Malla numérica aproximada de z = f(x,y). Cada eje se escala de forma independiente según su intervalo visible. Los argumentos trigonométricos usan radianes. Se omiten los valores no reales y las discontinuidades no resueltas.'
-    : 'z = f(x,y) 的数值近似线框。各轴根据显示范围独立缩放。三角函数参数采用弧度。省略无实数值的区域和未能解析的间断。';
+  if (text === surfaceDescription) return pick([
+    'z = f(x,y) 的数值近似线框。各轴根据显示范围独立缩放。三角函数参数采用弧度。省略无实数值的区域和未能解析的间断。',
+    'Malla numérica aproximada de z = f(x,y). Cada eje se escala de forma independiente según su intervalo visible. Los argumentos trigonométricos usan radianes. Se omiten los valores no reales y las discontinuidades no resueltas.',
+    'z = f(x,y) の数値近似ワイヤーフレーム。各軸は表示範囲に応じて独立にスケーリングされます（ラジアン使用）。',
+    'Numerisches Drahtgittermodell von z = f(x,y). Jede Achse ist auf ihren Bereich skaliert; Winkel im Bogenmaß.',
+    'Maillage numérique approché de z = f(x,y). Chaque axe est mis à l’échelle selon sa plage visible ; angles en radians.',
+  ]);
   const surfaceMatch = /^3D surface: z = ([\s\S]*); X, Y and Z axes$/.exec(text);
-  if (surfaceMatch) return spanish
-    ? `Superficie 3D: z = ${surfaceMatch[1]}; ejes X, Y y Z`
-    : `三维曲面：z = ${surfaceMatch[1]}；X、Y 和 Z 轴`;
+  if (surfaceMatch) return pick([
+    `三维曲面：z = ${surfaceMatch[1]}；X、Y 和 Z 轴`,
+    `Superficie 3D: z = ${surfaceMatch[1]}; ejes X, Y y Z`,
+    `3D 曲面：z = ${surfaceMatch[1]}；X・Y・Z 軸`,
+    `3D-Fläche: z = ${surfaceMatch[1]}; X-, Y- und Z-Achse`,
+    `Surface 3D : z = ${surfaceMatch[1]} ; axes X, Y et Z`,
+  ]);
   const polarDescription = 'Approximate polar graph in radians. Equal distance has equal scale on X and Y. Domain gaps and unresolved discontinuities are omitted.';
-  if (text === polarDescription) return spanish
-    ? 'Gráfica polar aproximada en radianes. Las distancias tienen la misma escala en X e Y. Se omiten los huecos del dominio y las discontinuidades no resueltas.'
-    : '采用弧度的数值近似极坐标图。X 与 Y 轴每单位长度相同。省略定义域空缺和未能解析的间断。';
+  if (text === polarDescription) return pick([
+    '采用弧度的数值近似极坐标图。X 与 Y 轴每单位长度相同。省略定义域空缺和未能解析的间断。',
+    'Gráfica polar aproximada en radianes. Las distancias tienen la misma escala en X e Y. Se omiten los huecos del dominio y las discontinuidades no resueltas.',
+    'ラジアンによる数値近似の極座標グラフです。X 軸と Y 軸は等尺で、不連続点は省略されます。',
+    'Numerischer Polargraph im Bogenmaß mit gleichem Maßstab auf X- und Y-Achse.',
+    'Graphique polaire numérique approché en radians, avec la même échelle sur X et Y.',
+  ]);
   const derivativeDescription = 'Approximate numerical derivative from finite differences. Undefined points, detected cusps and unresolved discontinuities are omitted. This is not symbolic differentiation.';
-  if (text === derivativeDescription) return spanish
-    ? 'Derivada numérica aproximada mediante diferencias finitas. Se omiten los puntos no definidos, las cúspides detectadas y las discontinuidades no resueltas. No es una derivación simbólica.'
-    : '采用有限差分的数值近似导数。省略无定义点、检测到的尖点和未能解析的间断。这不是符号求导。';
+  if (text === derivativeDescription) return pick([
+    '采用有限差分的数值近似导数。省略无定义点、检测到的尖点和未能解析的间断。这不是符号求导。',
+    'Derivada numérica aproximada mediante diferencias finitas. Se omiten los puntos no definidos, las cúspides detectadas y las discontinuidades no resueltas. No es una derivación simbólica.',
+    '有限差分による数値近似導関数です。未定義点や不連続点は省略されます（記号微分ではありません）。',
+    'Numerische Ableitung mittels finiter Differenzen (keine symbolische Ableitung).',
+    'Dérivée numérique approchée par différences finies (ce n’est pas une dérivation formelle).',
+  ]);
   const integralDescription = 'Approximate signed definite integral of a real continuous function. Shading marks the selected interval within the viewport. Numerical estimates are not symbolic results or convergence proofs.';
-  if (text === integralDescription) return spanish
-    ? 'Integral definida con signo aproximada de una función real continua. El sombreado indica el intervalo seleccionado dentro de la vista. Las estimaciones numéricas no son resultados simbólicos ni pruebas de convergencia.'
-    : '实数连续函数的带符号定积分数值近似。阴影表示当前视图内的选定区间。数值估计不是符号结果或收敛证明。';
+  if (text === integralDescription) return pick([
+    '实数连续函数的带符号定积分数值近似。阴影表示当前视图内的选定区间。数值估计不是符号结果或收敛证明。',
+    'Integral definida con signo aproximada de una función real continua. El sombreado indica el intervalo seleccionado dentro de la vista. Las estimaciones numéricas no son resultados simbólicos ni pruebas de convergencia.',
+    '実連続関数の符号付き定積分の数値近似です。陰影は選択された積分区間を示します。',
+    'Numerische Näherung des vorzeichenbehafteten bestimmten Integrals; die Fläche markiert das gewählte Intervall.',
+    'Approximation numérique de l’intégrale définie signée ; la zone colorée indique l’intervalle sélectionné.',
+  ]);
   const polarTitle = /^Polar graph: r = ([\s\S]*)$/.exec(text);
-  if (polarTitle) return spanish ? `Gráfica polar: r = ${polarTitle[1]}` : `极坐标图：r = ${polarTitle[1]}`;
+  if (polarTitle) return pick([
+    `极坐标图：r = ${polarTitle[1]}`,
+    `Gráfica polar: r = ${polarTitle[1]}`,
+    `極座標グラフ：r = ${polarTitle[1]}`,
+    `Polargraph: r = ${polarTitle[1]}`,
+    `Graphique polaire : r = ${polarTitle[1]}`,
+  ]);
   const polarFooter = /^≈ · θ ([+\-\d.eE]+) to ([+\-\d.eE]+) rad · equal scale$/.exec(text);
-  if (polarFooter) return spanish
-    ? `≈ · θ ${polarFooter[1]} a ${polarFooter[2]} rad · misma escala`
-    : `≈ · θ ${polarFooter[1]} 至 ${polarFooter[2]} rad · 等比例坐标`;
+  if (polarFooter) return pick([
+    `≈ · θ ${polarFooter[1]} 至 ${polarFooter[2]} rad · 等比例坐标`,
+    `≈ · θ ${polarFooter[1]} a ${polarFooter[2]} rad · misma escala`,
+    `≈ · θ ${polarFooter[1]} 〜 ${polarFooter[2]} rad · 等尺`,
+    `≈ · θ ${polarFooter[1]} bis ${polarFooter[2]} rad · gleicher Maßstab`,
+    `≈ · θ ${polarFooter[1]} à ${polarFooter[2]} rad · même échelle`,
+  ]);
   const axisSuffix = '; horizontal axis X, vertical axis Y';
   const hasAxisSuffix = text.endsWith(axisSuffix);
   const calculusTitle = /^(Derivative|Second derivative|Definite integral): ([\s\S]*)$/.exec(hasAxisSuffix ? text.slice(0, -axisSuffix.length) : text);
   if (calculusTitle) {
-    const labels: Readonly<Record<string, [string, string]>> = {
-      Derivative: ['导数', 'Derivada'], 'Second derivative': ['二阶导数', 'Segunda derivada'], 'Definite integral': ['定积分', 'Integral definida'],
+    const labels: Readonly<Record<string, PlotLangTuple>> = {
+      Derivative: ['导数', 'Derivada', '導関数', 'Ableitung', 'Dérivée'],
+      'Second derivative': ['二阶导数', 'Segunda derivada', '二階導関数', 'Zweite Ableitung', 'Dérivée seconde'],
+      'Definite integral': ['定积分', 'Integral definida', '定積分', 'Bestimmtes Integral', 'Intégrale définie'],
     };
-    const title = `${labels[calculusTitle[1]][spanish ? 1 : 0]}${spanish ? ': ' : '：'}${calculusTitle[2]}`;
-    return title + (hasAxisSuffix ? spanish ? '; eje horizontal X, eje vertical Y' : '；横轴 X，纵轴 Y' : '');
+    const sep = pick(['：', ': ', '：', ': ', ' : ']);
+    const suffix = hasAxisSuffix ? pick([
+      '；横轴 X，纵轴 Y',
+      '; eje horizontal X, eje vertical Y',
+      '；横軸 X、縦軸 Y',
+      '; horizontale Achse X, vertikale Achse Y',
+      ' ; axe horizontal X, axe vertical Y',
+    ]) : '';
+    return `${pick(labels[calculusTitle[1]])}${sep}${calculusTitle[2]}${suffix}`;
   }
-  if (text === '≈ · finite differences · rad') return spanish ? '≈ · diferencias finitas · rad' : '≈ · 有限差分 · rad';
+  if (text === '≈ · finite differences · rad') return pick([
+    '≈ · 有限差分 · rad',
+    '≈ · diferencias finitas · rad',
+    '≈ · 有限差分 · rad',
+    '≈ · finite Differenzen · rad',
+    '≈ · différences finies · rad',
+  ]);
   const integralFooter = /^∫ (\[[+\-\d.eE]+, [+\-\d.eE]+\] ≈ [+\-\d.eE]+) · numerical estimate · rad$/.exec(text);
-  if (integralFooter) return spanish ? `∫ ${integralFooter[1]} · estimación numérica · rad` : `∫ ${integralFooter[1]} · 数值估计 · rad`;
+  if (integralFooter) return pick([
+    `∫ ${integralFooter[1]} · 数值估计 · rad`,
+    `∫ ${integralFooter[1]} · estimación numérica · rad`,
+    `∫ ${integralFooter[1]} · 数値近似 · rad`,
+    `∫ ${integralFooter[1]} · numerische Näherung · rad`,
+    `∫ ${integralFooter[1]} · estimation numérique · rad`,
+  ]);
   let match = /^Equation graph: y = ([\s\S]*); horizontal axis X, vertical axis Y$/.exec(text);
-  if (match) return spanish ? `Gráfica de ecuación: y = ${match[1]}; eje horizontal X, eje vertical Y` : `函数图像：y = ${match[1]}；横轴 X，纵轴 Y`;
+  if (match) return pick([
+    `函数图像：y = ${match[1]}；横轴 X，纵轴 Y`,
+    `Gráfica de ecuación: y = ${match[1]}; eje horizontal X, eje vertical Y`,
+    `関数グラフ：y = ${match[1]}；横軸 X、縦軸 Y`,
+    `Funktionsgraph: y = ${match[1]}; horizontale Achse X, vertikale Achse Y`,
+    `Courbe de fonction : y = ${match[1]} ; axe horizontal X, axe vertical Y`,
+  ]);
   match = /^Equation graph: y = ([\s\S]*)$/.exec(text);
-  if (match) return spanish ? `Gráfica de ecuación: y = ${match[1]}` : `函数图像：y = ${match[1]}`;
+  if (match) return pick([
+    `函数图像：y = ${match[1]}`,
+    `Gráfica de ecuación: y = ${match[1]}`,
+    `関数グラフ：y = ${match[1]}`,
+    `Funktionsgraph: y = ${match[1]}`,
+    `Courbe de fonction : y = ${match[1]}`,
+  ]);
   match = /^Horizontal real axis Re; vertical imaginary axis Im\. Equal unit lengths on both axes\. (\d+) of (\d+) points visible\. ([\s\S]*)\.$/.exec(text);
-  if (match) return spanish
-    ? `Eje real horizontal Re; eje imaginario vertical Im. Ambos ejes tienen la misma escala. ${match[1]} de ${match[2]} ${Number(match[2]) === 1 ? 'punto visible' : 'puntos visibles'}. ${match[3]}.`
-    : `横向实轴 Re；纵向虚轴 Im。两轴每单位长度相同。当前显示 ${match[1]} / ${match[2]} 个点。${match[3]}。`;
+  if (match) return pick([
+    `横向实轴 Re；纵向虚轴 Im。两轴每单位长度相同。当前显示 ${match[1]} / ${match[2]} 个点。${match[3]}。`,
+    `Eje real horizontal Re; eje imaginario vertical Im. Ambos ejes tienen la misma escala. ${match[1]} de ${match[2]} ${Number(match[2]) === 1 ? 'punto visible' : 'puntos visibles'}. ${match[3]}.`,
+    `横軸は実軸 Re、縦軸は虚軸 Im（等尺）。${match[2]} 点中 ${match[1]} 点を表示。${match[3]}。`,
+    `Horizontale reelle Achse Re; vertikale imaginäre Achse Im (gleicher Maßstab). ${match[1]} von ${match[2]} Punkten sichtbar. ${match[3]}.`,
+    `Axe réel horizontal Re ; axe imaginaire vertical Im (même échelle). ${match[1]} sur ${match[2]} points visibles. ${match[3]}.`,
+  ]);
   match = /^(\d+)\/(\d+) points · equal units$/.exec(text);
-  if (match) return spanish ? `${match[1]}/${match[2]} ${Number(match[2]) === 1 ? 'punto' : 'puntos'} · misma escala` : `${match[1]}/${match[2]} 个点 · 等比例坐标`;
+  if (match) return pick([
+    `${match[1]}/${match[2]} 个点 · 等比例坐标`,
+    `${match[1]}/${match[2]} ${Number(match[2]) === 1 ? 'punto' : 'puntos'} · misma escala`,
+    `${match[1]}/${match[2]} 点 · 等尺`,
+    `${match[1]}/${match[2]} Punkte · gleicher Maßstab`,
+    `${match[1]}/${match[2]} points · même échelle`,
+  ]);
   return text;
 }
 
@@ -788,7 +1229,7 @@ export function localizeEditor(root: HTMLElement, language: Language, systemLang
     }
     observer.observe(root, {
       childList: true, characterData: true, subtree: true, attributes: true,
-      attributeFilter: [...attributeNames, 'data-i18n-en', 'data-i18n-es', 'data-vme-plot', 'data-vme-plot-caption'],
+      attributeFilter: [...attributeNames, 'data-i18n-en', 'data-i18n-es', 'data-i18n-ja', 'data-i18n-de', 'data-i18n-fr', 'data-vme-plot', 'data-vme-plot-caption'],
     });
   }
 

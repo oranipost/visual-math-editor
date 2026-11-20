@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { findMathRanges, formatMath, isMathInsertionAllowed, mathAtSelection } from "../src/math-ranges";
+import { prepareSelectionDraft } from "../src/formula-import";
+import { extractConvertibleSelection, findMathRanges, formatMath, isMathInsertionAllowed, mathAtSelection } from "../src/math-ranges";
 
 test("returns exact exclusive offsets for multiple inline and multiline display equations", () => {
 	const text = "中文 $x^2$ plus $\\frac{a}{b}$\n$$\n\\sum_{i=1}^{n} i\n$$\n";
@@ -144,4 +145,68 @@ test("serializes native Markdown and round trips visual editor output", () => {
 	assert.throws(() => formatMath(" \n ", false), /empty/);
 	assert.throws(() => formatMath("$x$", false), /dollar/);
 	assert.equal(formatMath(String.raw`\text{\$5}`, false), String.raw`$\text{\$5}$`);
+});
+
+test("recognizes blockquoted multiline display equations only when quote depth matches across lines", () => {
+	const callout = "> [!tip]\n> $$\n> \\frac{a}{b}\n> $$\n> Done.";
+	const ranges = findMathRanges(callout);
+	assert.equal(ranges.length, 1);
+	assert.equal(ranges[0]!.display, true);
+	assert.equal(ranges[0]!.latex, "\n\\frac{a}{b}\n");
+	assert.equal(callout.slice(ranges[0]!.from, ranges[0]!.to), "$$\n> \\frac{a}{b}\n> $$");
+
+	// Mismatched quote depths across opening and closing `$$` must not match across container boundaries
+	assert.deepEqual(findMathRanges("> $$\nx\n$$"), []);
+	assert.deepEqual(findMathRanges("$$\n> x\n> $$"), []);
+	assert.deepEqual(findMathRanges(">> $$\n> x\n> $$"), []);
+});
+
+test("extractConvertibleSelection and prepareSelectionDraft convert safe single-line selections and reject unsafe syntax", () => {
+	const note = "Consider  x^2 + 2x + 1 = 0  in real numbers.";
+	const rawStart = note.indexOf("  x^2") + 1;
+	const rawEnd = note.indexOf("  in") + 1;
+	const extracted = extractConvertibleSelection(note, rawStart, rawEnd);
+	assert.deepEqual(extracted, {
+		from: note.indexOf("x^2"),
+		to: note.indexOf("  in"),
+		text: "x^2 + 2x + 1 = 0",
+	});
+	const draft = prepareSelectionDraft(extracted!.text, false, { modeDisplay: "all", preferredMode: "visual" });
+	assert.equal(draft.latex, "x^2 + 2x + 1 = 0");
+	assert.equal(draft.display, false);
+	assert.equal(draft.mode, "visual");
+
+	// Delimited \(...\) / \[...\] selections stage safely in Single-Formula Import
+	const delimited = prepareSelectionDraft(String.raw`\[ \frac{1}{x} \]`, false, { modeDisplay: "all", preferredMode: "visual" });
+	assert.equal(delimited.latex, "");
+	assert.equal(delimited.display, true);
+	assert.deepEqual(delimited.formulaImport, { original: String.raw`\[ \frac{1}{x} \]`, open: true });
+
+	// Unknown command in Visual-only mode enables temporary source fallback instead of blocking
+	const unknownVisual = prepareSelectionDraft(String.raw`\customop{x}`, false, { modeDisplay: "visual", preferredMode: "visual" });
+	assert.equal(unknownVisual.latex, String.raw`\customop{x}`);
+	assert.equal(unknownVisual.temporarySourceFallback, true);
+
+	// Selecting text inside a single table cell (without pipes) converts cleanly, while spanning `|` is rejected
+	const tableDoc = "| x^2 | y |\n| --- | --- |";
+	assert.deepEqual(extractConvertibleSelection(tableDoc, 2, 5), { from: 2, to: 5, text: "x^2" });
+
+	// Unsafe selections return null so normal cursor behavior applies
+	const unsafeCases: ReadonlyArray<[string, number, number]> = [
+		["", 0, 0],
+		["   ", 0, 3],
+		["$x^2$", 0, 5],
+		["a + $x$ + b", 0, 11],
+		["first\nsecond", 0, 12],
+		["use `x^2` here", 4, 9],
+		["see [x^2](https://example.com)", 4, 30],
+		["see [[Math Note]]", 4, 17],
+		["<span>x^2</span>", 0, 16],
+		[tableDoc, 2, 9],
+		["- x^2 + 1", 0, 9],
+		["## x^2 + 1", 0, 10],
+	];
+	for (const [doc, from, to] of unsafeCases) {
+		assert.equal(extractConvertibleSelection(doc, from, to), null, doc);
+	}
 });

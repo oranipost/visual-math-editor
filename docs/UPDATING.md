@@ -1,8 +1,8 @@
 # Updates / 更新机制
 
-**1.1.0:** adds in-box multi-line equation breaks (`↵ New line`), a unified compact secondary tool bar, live input-to-preview in the matrix, equation-system and formula-import panels, and decluttered trilingual labels. Save drafts, back up the plugin folder, retain `data.json`, replace only program files and restart. Existing notes remain intact; old keyword data is unused and not actively deleted. Exact validation is in [TEST-REPORT.md](../TEST-REPORT.md).
+**1.1.1:** adds 6-language UI localization (`en`, `zh`, `es`, `ja`, `de`, `fr`), 2D Graph formula bar, multi-solid 3D composite geometry modeling (`hemisphere`, `frustum`, 2–6 part composites), 1-click PNG graph copy, multi-cell TSV/Excel matrix paste, 10-category periodic table, and `eV`/`keV`/`MeV` energy conversions. Save drafts, back up the plugin folder, retain `data.json`, replace only program files and restart. Existing notes remain intact; old keyword data is unused and not actively deleted. Exact validation is in [TEST-REPORT.md](../TEST-REPORT.md).
 
-**1.1.0：** 新增公式框内多行换行（`↵ 换行`）、单行紧凑二级工具栏、矩阵/方程组/单式导入实时预览及三语界面精简。先保存草稿、备份插件目录，保留 `data.json`，只替换程序文件并重启。已有笔记保留，旧关键词数据不再使用且不主动删除。准确验收范围见 [TEST-REPORT.md](../TEST-REPORT.md)。
+**1.1.1：** 新增六国语言界面（中/英/西/日/德/法）、2D 图像公式输入栏、多图形 3D 组合几何体建模（含半球、圆台/正棱台与 2–6 部件自由组合）、一键复制高清 PNG 图像、Excel/TSV 多格矩阵粘贴、10 分区元素周期表及 `eV`/`keV`/`MeV` 能量单位换算。先保存草稿、备份插件目录，保留 `data.json`，只替换程序文件并重启。已有笔记保留，旧关键词数据不再使用且不主动删除。准确验收范围见 [TEST-REPORT.md](../TEST-REPORT.md)。
 
 New geometry blocks require 1.0.0 or later; downgrading retains their definitions in notes but an older build cannot render/edit that mode. Existing function, complex, polar, XYZ and calculus blocks remain supported. / 几何区块需要 1.0.0 及以上版本，降级后定义仍在笔记中，但旧版本无法渲染/编辑该模式。本版继续支持旧函数、复平面、极坐标、XYZ 和数值微积分区块。
 

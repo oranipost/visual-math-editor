@@ -10,6 +10,7 @@ import { checkAdvancedGraphs } from './advanced-graph-check';
 import { checkSpanishLocalization } from './spanish-check';
 import { checkInlineEquationGraph } from './inline-graph-check';
 import { mountEditor, type EditorMode, type EditorDraft } from "../src/editor-ui";
+import { PluginSettingsStore, resolveInitialEditorMode } from "../src/settings";
 import { configureMathLive, createPreview } from "../src/math-runtime";
 import { CHEMISTRY_TEMPLATES, UNIT_PRESETS, PHYSICS_TEMPLATES } from "../src/science-data";
 import { UNIT_CATEGORIES } from "../src/unit-conversion";
@@ -122,9 +123,14 @@ async function checkPlotTools(check: (condition: boolean, message: string) => vo
   const svg = () => fixture.querySelector<SVGElement>('[data-testid="plot-preview"] svg');
   const settle = async () => { await Promise.resolve(); await new Promise(resolve => setTimeout(resolve, 0)); };
   try {
+    const selectPreset = (presetId: string) => {
+      const presetSelect = fixture.querySelector<HTMLSelectElement>('[data-testid="plot-preset-select"]')!;
+      presetSelect.value = presetId;
+      presetSelect.dispatchEvent(new Event('change', { bubbles: true }));
+    };
     show();
     check(!button('plot-insert').disabled && writes === 0 && !svg(), '绘图初始不写笔记，用户可以直接插入并同步验证当前输入');
-    button('plot-preset-square').click();
+    selectPreset('square');
     await settle();
     check(svg() !== null && !button('plot-insert').disabled && graph!.getDraft().expression === 'x^2', '平方函数示例生成曲线并允许明确插入');
     check(writes === 0 && mounted!.getDraft().latex === initialFormula, '绘图预览与示例不改数学公式或笔记');
@@ -458,10 +464,15 @@ async function checkIntegratedPlot(check: (condition: boolean, message: string) 
     create(retained, false, true); await settle();
     check(mathControlsHidden(), '正文紧凑 Hybrid 恢复图像草稿后实际 CSS 仍隐藏数学区与数学保存按钮');
     check(root().dataset.subject === 'graph' && fixture.querySelector('[data-testid="plot-preview"] svg') !== null && editor!.getDraft().latex === original, '整套编辑器重挂载恢复图像学科、曲线和数学原文');
+    const selectGraphPreset = (presetId: string) => {
+      const presetSelect = fixture.querySelector<HTMLSelectElement>('[data-testid="plot-preset-select"]')!;
+      presetSelect.value = presetId;
+      presetSelect.dispatchEvent(new Event('change', { bubbles: true }));
+    };
     button('subject-math').click(); button('mode-latex').click();
     const source = fixture.querySelector<HTMLTextAreaElement>('[data-testid="latex-source"]')!;
     source.value = 'x^'; source.dispatchEvent(new Event('input', { bubbles: true }));
-    button('subject-graph').click(); button('plot-preset-square').click();
+    button('subject-graph').click(); selectGraphPreset('square');
     button('plot-insert').click(); await settle();
     check(graphWrites === 1 && editor!.getDraft().latex === 'x^' && fixture.querySelector<HTMLElement>('[data-testid="plot-status"]')!.dataset.state === 'error', '未完成数学草稿阻止图像提交并完整保留，避免静默丢失公式');
     check(!/[\u4e00-\u9fff]/.test(fixture.querySelector<HTMLElement>('[data-testid="plot-status"]')!.textContent ?? ''), '图像保存被数学草稿拦截时，英文界面的动态提示仍为英文');
@@ -470,7 +481,7 @@ async function checkIntegratedPlot(check: (condition: boolean, message: string) 
     button('plot-insert').click(); await settle();
     check(/完成或清空当前公式/.test(fixture.querySelector<HTMLElement>('[data-testid="plot-status"]')!.textContent ?? '') && graphWrites === 1, '中文图像保存提示明确说明先完成或清空公式，而非反复重试');
     create({ latex: '', display: true, mode: 'visual' });
-    button('subject-graph').click(); button('plot-preset-sine').click();
+    button('subject-graph').click(); selectGraphPreset('sine');
     button('plot-insert').click(); await settle();
     check(graphWrites === 2 && graphLatex === '' && mathWrites === 0, '空数学草稿允许单独插入图像，无需额外填写公式');
     const onlyGraph: EditorDraft = {
@@ -480,7 +491,10 @@ async function checkIntegratedPlot(check: (condition: boolean, message: string) 
     };
     create(onlyGraph, true); await settle();
     check(root().dataset.subject === 'graph' && button('subject-math').hidden && button('plot-use-current').hidden && button('save').hidden && !button('cancel').hidden, '重编已有图像仅显示图像操作，仍可取消');
-    check(document.activeElement === fixture.querySelector('[data-testid="plot-expression"]'), '重开图像后键盘焦点进入函数框，隐藏公式区不抢焦点');
+    const reopenedPlotField = fixture.querySelector<HTMLElement & { getValue: (f?: string) => string; hasFocus: () => boolean }>('[data-testid="plot-mathfield"]')!;
+    const hiddenMainField = fixture.querySelector<HTMLElement & { hasFocus: () => boolean }>('[data-testid="equation-field"]')!;
+    await new Promise(resolve => setTimeout(resolve, 75));
+    check(document.activeElement === reopenedPlotField && reopenedPlotField.hasFocus() && !hiddenMainField.hasFocus() && reopenedPlotField.getValue('latex-expanded') === '\\sqrt{x}', '重开图像后键盘焦点进入二维函数公式框并恢复二维根式，隐藏公式区不抢焦点');
     const language = fixture.querySelector<HTMLSelectElement>('[data-testid="interface-language"]')!;
     language.value = 'zh'; language.dispatchEvent(new Event('change', { bubbles: true })); await settle();
     check(button('plot-insert').textContent === '保存图像' && editor!.getDraft().plot?.expression === 'sqrt(x)', '图像工具支持中英文切换，重编保存标签明确且函数范围不被翻译');
@@ -1025,11 +1039,19 @@ document.getElementById("selftest")!.onclick = async () => {
     search.value = "26"; search.dispatchEvent(new Event("input", { bubbles: true }));
     check(host.querySelectorAll('.vme-element-button[data-dimmed="false"]').length === 1, "按原子序数检索只高亮匹配元素");
     click("element-26");
-    check(chemInput().value === "Fe" && host.querySelector<HTMLElement>('[data-action="subject-chemistry"]')!.getAttribute("aria-selected") === "true", "点击元素后插入化学输入框并切回化学工具");
+    const pinnedDetails = host.querySelector<HTMLElement>('[data-testid="element-details"]')!;
+    check(pinnedDetails.dataset.pinned === "true" && !pinnedDetails.hidden && host.querySelector<HTMLElement>('[data-action="subject-elements"]')!.getAttribute("aria-selected") === "true", "点击元素后留在元素表并固定详情卡片");
+    click("element-add-chemistry");
+    check(chemInput().value === "Fe" && host.querySelector<HTMLElement>('[data-action="subject-elements"]')!.getAttribute("aria-selected") === "true" && !host.querySelector<HTMLElement>('[data-testid="element-detail-feedback"]')!.hidden, "在元素表内直接加入化学式且不自动跳转标签页");
+    click("subject-chemistry");
     chemInput().setSelectionRange(0, 0);
     chemInput().dispatchEvent(new Event("select"));
-    click("subject-elements"); click("element-8");
+    click("subject-elements"); click("element-8"); click("element-add-chemistry");
     check(chemInput().value === "OFe", "元素按化学输入框保存的光标位置插入");
+    click("element-insert-symbol");
+    check(mounted!.getDraft().latex.includes("\\mathrm{O}"), "元素详情卡可直接将元素符号插入主公式");
+    click("element-detail-close");
+    check(pinnedDetails.hidden && !pinnedDetails.dataset.pinned, "关闭固定元素详情卡后恢复隐藏");
     const retained = "\\ce{H2O\\bond{bad}}";
     inputSource(retained);
     check(mounted!.getDraft().latex === retained, "主源码收到化学解析异常时仍保留用户输入");
@@ -1104,6 +1126,7 @@ document.getElementById("selftest")!.onclick = async () => {
     await checkAutomaticPlotPreview(check);
     await checkSavedPlotLocalization(check);
     await checkMultilineEditing(check);
+    await checkModeDisplayAndSettings(check);
     open("\\frac{-b\\pm\\sqrt{b^2-4ac}}{2a}", "hybrid", true, true);
     result.textContent = reports.join("\n") + `\n\n${reports.length} 项组件测试通过。`;
   } catch (error) { result.textContent = reports.join("\n") + "\n失败 · " + String(error); }
@@ -1176,6 +1199,109 @@ async function checkMultilineEditing(check: (condition: boolean, message: string
     await Promise.resolve();
     check(savedValue.includes("\\displaylines") && savedValue.includes("z=4") && !savedValue.endsWith("\\\\ }"), "Cmd+Enter 直接保存多行公式而不额外插入空行");
     check(instance!.field.getValue("latex-expanded").replace(/\s/g, "").includes("z=4"), "保存后的多行公式重开仍在同一个可视化框内可继续逐行编辑");
+  } finally {
+    instance?.destroy();
+    fixture.remove();
+  }
+}
+
+async function checkModeDisplayAndSettings(check: (condition: boolean, message: string) => void): Promise<void> {
+  const fixture = document.createElement("div");
+  document.body.append(fixture);
+  let instance: ReturnType<typeof mountEditor> | undefined;
+  let diskData: Record<string, unknown> = { customKey: "preserved" };
+  const store = new PluginSettingsStore({
+    loadData: async () => structuredClone(diskData),
+    saveData: async next => { diskData = structuredClone(next); },
+  });
+  await store.load();
+  try {
+    for (const singleMode of ["visual", "hybrid", "latex"] as const) {
+      await store.setModeDisplay(singleMode);
+      instance?.destroy();
+      instance = mountEditor(fixture, {
+        latex: "x^2+1",
+        editing: true,
+        initialMode: resolveInitialEditorMode(store.settings),
+        modeDisplay: store.modeDisplay,
+        preferredMode: store.preferredMode,
+        language: store.language,
+        onSave: () => undefined,
+        onCancel: () => undefined,
+      });
+      const modeTabs = fixture.querySelector<HTMLElement>(".vme-mode-tabs")!;
+      const modeDesc = fixture.querySelector<HTMLElement>(".vme-mode-description")!;
+      check(
+        modeTabs.hidden && getComputedStyle(modeTabs).display === "none" && modeDesc.hidden && getComputedStyle(modeDesc).display === "none",
+        `单模式锁定 ${singleMode} 在真实 CSS 下完全隐藏模式标签与模式说明`,
+      );
+      for (const subject of ["chemistry", "graph", "math"] as const) {
+        fixture.querySelector<HTMLButtonElement>(`[data-action="subject-${subject}"]`)!.click();
+      }
+      check(
+        modeTabs.hidden && getComputedStyle(modeTabs).display === "none" && modeDesc.hidden,
+        `单模式锁定 ${singleMode} 切换化学、图像与数学学科标签后模式切换栏仍保持隐藏`,
+      );
+    }
+
+    await store.setModeDisplay("all");
+    instance?.destroy();
+    instance = mountEditor(fixture, {
+      latex: "a+b",
+      editing: true,
+      initialMode: resolveInitialEditorMode(store.settings),
+      modeDisplay: store.modeDisplay,
+      preferredMode: store.preferredMode,
+      language: "en",
+      onModeDisplayChange: md => store.setModeDisplay(md),
+      onPreferredModeChange: pm => store.setPreferredMode(pm),
+      onLanguageChange: lang => store.setLanguage(lang),
+      onSave: () => undefined,
+      onCancel: () => undefined,
+    });
+    fixture.querySelector<HTMLButtonElement>('[data-action="mode-hybrid"]')!.click();
+    await new Promise(resolve => setTimeout(resolve, 0));
+    check(store.preferredMode === "hybrid" && diskData.preferredMode === "hybrid", "全部模式下点击 Hybrid 自动持久化上次选择的模式");
+    instance.destroy();
+    instance = mountEditor(fixture, {
+      latex: "c+d",
+      editing: true,
+      initialMode: resolveInitialEditorMode(store.settings),
+      modeDisplay: store.modeDisplay,
+      preferredMode: store.preferredMode,
+      language: "en",
+      onSave: () => undefined,
+      onCancel: () => undefined,
+    });
+    check(fixture.querySelector<HTMLElement>(".vme-editor")?.dataset.mode === "hybrid", "重新打开公式编辑器时自动进入上次记住的 Hybrid 模式");
+
+    await store.setModeDisplay("visual");
+    instance.destroy();
+    let savedFallback = "";
+    instance = mountEditor(fixture, {
+      latex: String.raw`\customMacro{x+1}`,
+      editing: true,
+      initialMode: resolveInitialEditorMode(store.settings),
+      modeDisplay: store.modeDisplay,
+      preferredMode: store.preferredMode,
+      language: "en",
+      onModeDisplayChange: md => store.setModeDisplay(md),
+      onSave: value => { savedFallback = value; },
+      onCancel: () => undefined,
+    });
+    const fallbackBtn = fixture.querySelector<HTMLButtonElement>('[data-testid="temporary-source-fallback"]')!;
+    check(
+      !fallbackBtn.hidden && getComputedStyle(fallbackBtn).display !== "none" && fixture.querySelector<HTMLElement>(".vme-mode-tabs")!.hidden,
+      "只显示 Visual 模式下遇到未知宏时显示临时源码逃生按钮且不暴露模式切换栏",
+    );
+    fallbackBtn.click();
+    await new Promise(resolve => setTimeout(resolve, 0));
+    fixture.querySelector<HTMLButtonElement>('[data-action="save"]')!.click();
+    await new Promise(resolve => setTimeout(resolve, 0));
+    check(
+      savedFallback === String.raw`\customMacro{x+1}` && store.modeDisplay === "visual" && diskData.modeDisplay === "visual" && diskData.customKey === "preserved",
+      "临时源码查看可在本次会话保存源码且不篡改 data.json 中的只显示 Visual 与其他字段",
+    );
   } finally {
     instance?.destroy();
     fixture.remove();

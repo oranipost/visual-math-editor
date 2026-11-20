@@ -2,6 +2,17 @@
 
 This file records version changes. Builds before 0.6.2 were local MVP releases; 0.6.2 prepares the first public desktop beta. Publication status is shown on GitHub Releases. Neither a local package nor a public GitHub release implies Obsidian community-directory approval.
 
+## 1.1.1 — 2026-11-20 · Desktop release
+
+### What's New in 1.1.1
+- **Composite 3D solids & new geometric primitives**: Added `hemisphere` and circular/polygonal `frustum` (`3–12` sides or circular) alongside a 100% offline **Composite 3D Solid** builder (`2–6` parts with per-part dimensions, XYZ offsets, `-180°–180°` rotations, `solid` / `translucent` / `wireframe` styles, 5-color palette, global faces/wireframe toggle, editable camera azimuth/elevation inputs, and 6 exam problem templates such as *Cube in sphere*, *Sphere in cone*, and *Cylinder + Cone*).
+- **Desmos-style 2D visual graph formula bar**: Function (`y =`), polar (`r =`), and 3D surface (`z =`) plots now use an interactive 2D `<math-field>` with `smartSuperscript` enabled (typing `x^2+1` returns to the baseline automatically), compact example selector, and support for `\log_{b}(x)` change-of-base, odd/nth roots `\sqrt[n]{x}`, MathLive `\operatorname{arsinh|arcosh|artanh}` / `\exponentialE`, and unparenthesized unary trig/log forms (`\sin x`, `\sin^2 x`, `\ln x`).
+- **One-click Copy Image (PNG) & cleaner graph layout**: Copy any editor preview or saved `vme-plot` block directly to the clipboard as a crisp 2× offline PNG image. Reordered the graph panel so the live preview and view toolbar sit directly below parameter inputs, and grouped saved-plot controls cleanly with `Save view` hidden until the view changes.
+- **Editor mode display customization & persistent preferences**: Choose whether to show all modes (`Visual / LaTeX / Hybrid`, remembering the last active mode) or lock the editor to `Visual only`, `Hybrid only`, or `LaTeX only`, synchronized between the editor header and Obsidian's plugin settings tab, with a non-destructive session fallback for source-only formulas.
+- **Matrix multi-cell TSV paste & 6 delimiter styles**: Paste multi-row/column cells copied from Excel, Numbers, Google Sheets, or Markdown tables into any matrix cell, and switch among parentheses, square brackets, braces, determinant bars, double bars, or bare `matrix`.
+- **Expanded Greek symbols, 24 physics templates, `eV` energy units & 10-family periodic table**: Added `\gamma`, `\varepsilon`, `\lambda`, `\mu`, `\rho`, `\sigma`, `\varphi`, `\omega` and an inline Greek typing tip to Visual mode; expanded physics templates to 24 across mechanics, electromagnetism, thermodynamics, relativity, and quantum notation; added exact 2019 SI `eV`, `keV`, and `MeV` conversions (66 preset units across 11 categories); and refined all 118 elements into 10 standard chemical families with pinned clickable detail cards.
+- **6-language interface & Obsidian host compatibility**: Added **Japanese (`ja`), German (`de`), and French (`fr`)** translations and READMEs alongside English, Simplified Chinese, and Spanish (including 6-language `EquationPicker` 3D geometry summaries and search). Fixed Reading View double-click equation editing on Obsidian's MathJax 4.1.3 renderer (which omits `<annotation encoding="application/x-tex">` by default) and hardened `<math-field>` custom-element coexistence when another plugin loads a compatible MathLive build.
+
 ## 1.1.0 — 2026-11-10 · Desktop release
 
 ### What's New in 1.1.0

@@ -226,13 +226,41 @@ function excludedRegions(text: string): { blocked: Uint8Array; indented: Uint8Ar
 	return { blocked, indented };
 }
 
-function makeRange(text: string, from: number, closing: number, width: number): MathRange {
+function lineQuotePrefix(text: string, lineStart: number, lineEnd: number): { depth: number; prefixEnd: number } {
+	let depth = 0;
+	let pos = lineStart;
+	while (pos < lineEnd) {
+		const slice = text.slice(pos, Math.min(lineEnd, pos + 6));
+		const match = /^ {0,3}>[ \t]?/.exec(slice);
+		if (!match) break;
+		depth++;
+		pos += match[0].length;
+	}
+	return { depth, prefixEnd: pos };
+}
+
+function stripQuoteDepth(line: string, depth: number): string {
+	let value = line;
+	for (let step = 0; step < depth; step++) {
+		const next = value.replace(/^ {0,3}>[ \t]?/, "");
+		if (next === value) break;
+		value = next;
+	}
+	return value;
+}
+
+function stripMultilineQuotePrefixes(rawContent: string, depth: number): string {
+	const parts = rawContent.split("\n");
+	return [parts[0], ...parts.slice(1).map(part => stripQuoteDepth(part, depth))].join("\n");
+}
+
+function makeRange(text: string, from: number, closing: number, width: number, latex: string): MathRange {
 	return {
 		from,
 		to: closing + width,
 		contentFrom: from + width,
 		contentTo: closing,
-		latex: text.slice(from + width, closing),
+		latex,
 		display: width === 2,
 	};
 }
@@ -260,10 +288,24 @@ export function findMathRanges(text: string): MathRange[] {
 			continue;
 		}
 
+		const openLineStart = i === 0 ? 0 : text.lastIndexOf("\n", i - 1) + 1;
+		const openLineBreak = text.indexOf("\n", i);
+		const openQuote = lineQuotePrefix(text, openLineStart, openLineBreak === -1 ? text.length : openLineBreak);
+
 		let cursor = i + width;
 		let closing = -1;
 		while (cursor < text.length && !blocked[cursor]) {
 			if (width === 1 && (text[cursor] === "\n" || text[cursor] === "\r")) break;
+			if (width === 2 && text[cursor - 1] === "\n") {
+				const curBreak = text.indexOf("\n", cursor);
+				const curEnd = curBreak === -1 ? text.length : curBreak;
+				const curQuote = lineQuotePrefix(text, cursor, curEnd);
+				if (curQuote.depth !== openQuote.depth) break;
+				if (cursor < curQuote.prefixEnd) {
+					cursor = curQuote.prefixEnd;
+					continue;
+				}
+			}
 			if (text[cursor] !== "$" || escaped(text, cursor)) {
 				cursor++;
 				continue;
@@ -280,15 +322,77 @@ export function findMathRanges(text: string): MathRange[] {
 			cursor += closingWidth;
 		}
 
-		if (closing !== -1 && text.slice(i + width, closing).trim().length > 0) {
-			const range = makeRange(text, i, closing, width);
-			ranges.push(range);
-			i = range.to;
-		} else {
-			i += width;
+		if (closing !== -1) {
+			const rawContent = text.slice(i + width, closing);
+			const extractedLatex = width === 2 && openQuote.depth > 0 && rawContent.includes("\n")
+				? stripMultilineQuotePrefixes(rawContent, openQuote.depth)
+				: rawContent;
+			if (extractedLatex.trim().length > 0) {
+				const range = makeRange(text, i, closing, width, extractedLatex);
+				ranges.push(range);
+				i = range.to;
+				continue;
+			}
 		}
+		i += width;
 	}
 	return ranges;
+}
+
+export interface ConvertibleSelection {
+	from: number;
+	to: number;
+	text: string;
+}
+
+/**
+ * Extract a safe single-line plain-text selection in ordinary prose so the user
+ * can convert selected text directly into a formatted equation.
+ */
+export function extractConvertibleSelection(text: string, from: number, to: number): ConvertibleSelection | null {
+	if (!Number.isInteger(from) || !Number.isInteger(to) || from < 0 || to <= from || to > text.length) {
+		return null;
+	}
+	let selFrom = from;
+	let selTo = to;
+	while (selFrom < selTo && /[ \t]/.test(text[selFrom])) selFrom++;
+	while (selTo > selFrom && /[ \t]/.test(text[selTo - 1])) selTo--;
+	if (selFrom >= selTo) return null;
+
+	const selected = text.slice(selFrom, selTo);
+	if (selected.length > 16384 || /[\r\n$`|]/.test(selected)) return null;
+	if (selected.includes("[[") || selected.includes("]]") || selected.includes("](")) return null;
+
+	let bracketDepth = 0;
+	for (let idx = 0; idx < selected.length; idx++) {
+		if (escaped(selected, idx)) continue;
+		if (selected[idx] === "[") bracketDepth++;
+		else if (selected[idx] === "]") {
+			bracketDepth--;
+			if (bracketDepth < 0) return null;
+		}
+	}
+	if (bracketDepth !== 0) return null;
+	if (selected.endsWith("]") && (text[selTo] === "(" || text[selTo] === "[")) return null;
+
+	const { blocked, indented } = excludedRegions(text);
+	for (let pos = selFrom; pos <= selTo; pos++) {
+		if (blocked[pos] || indented[pos]) return null;
+	}
+
+	const lineStart = selFrom === 0 ? 0 : text.lastIndexOf("\n", selFrom - 1) + 1;
+	const lineBreak = text.indexOf("\n", selFrom);
+	const lineEnd = lineBreak === -1 ? text.length : lineBreak;
+	const quotePrefix = lineQuotePrefix(text, lineStart, lineEnd);
+	if (selFrom < quotePrefix.prefixEnd) return null;
+
+	const beforeAfterQuotes = text.slice(quotePrefix.prefixEnd, selFrom);
+	if (/^[ \t]*$/.test(beforeAfterQuotes) && /^(?:#{1,6}[ \t]|(?:[-+*]|\d{1,9}[.)])[ \t])/.test(selected)) {
+		return null;
+	}
+
+	if (findMathRanges(text).some(range => selFrom < range.to && selTo > range.from)) return null;
+	return { from: selFrom, to: selTo, text: selected };
 }
 
 /**
@@ -323,4 +427,34 @@ export function formatMath(latex: string, display: boolean): string {
 		}
 	}
 	return display ? `$$\n${value}\n$$` : `$${value.replace(/[ \t]*\r?\n[ \t]*/g, " ")}$`;
+}
+
+export interface ReadingSectionBounds {
+	text: string;
+	lineStart: number;
+	lineEnd: number;
+}
+
+/**
+ * Resolve the exact note MathRange for a double-clicked Reading View `.math` node.
+ * Obsidian's MathJax 4.1.3 CHTML output omits `<annotation encoding="application/x-tex">`
+ * by default; when present we verify it, and when absent we rely on the verified
+ * section snapshot + 1-to-1 `.math` count bijection.
+ */
+export function resolveReadingMathCandidate(
+	snapshot: string,
+	section: ReadingSectionBounds | null | undefined,
+	mathsCount: number,
+	index: number,
+	annotationText: string | null,
+): MathRange | null {
+	if (!section || section.text !== snapshot || index < 0 || index >= mathsCount) return null;
+	const lines = snapshot.split("\n");
+	const start = lines.slice(0, section.lineStart).join("\n").length + (section.lineStart ? 1 : 0);
+	const end = lines.slice(0, section.lineEnd + 1).join("\n").length;
+	const candidates = findMathRanges(snapshot).filter((r) => r.from >= start && r.to <= end);
+	const target = candidates[index];
+	if (candidates.length !== mathsCount || !target) return null;
+	if (annotationText !== null && annotationText.trim() !== target.latex.trim()) return null;
+	return target;
 }

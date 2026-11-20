@@ -1,7 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { findMathRanges } from "../src/math-ranges";
-import { DocumentChangedError, planWrite, type WriteTarget } from "../src/write-plan";
+import {
+	assertTopLevelBlockContext,
+	defaultDisplayForContext,
+	DocumentChangedError,
+	planWrite,
+	type WriteTarget,
+} from "../src/write-plan";
 
 function apply(snapshot: string, from: number, to: number, latex: string, display: boolean): string {
 	return snapshot.slice(0, from) + planWrite(snapshot, { snapshot, from, to }, latex, display) + snapshot.slice(to);
@@ -106,12 +112,75 @@ test("pipes in ordinary prose formulas retain their mathematical source", () => 
 	assert.equal(planWrite(snapshot, { snapshot, from, to: from }, "|x|", false), "$|x|$");
 });
 
-test("display equations cannot split list, quote, or indented paragraphs", () => {
-	for (const snapshot of ["- here", "1. here", "> here", "> [!note]\n> here", "  here"]) {
+test("display equations cannot split list or indented paragraphs, including inside quotes", () => {
+	for (const snapshot of ["- here", "1. here", "  here", "> - here", "> 1. here", ">   here"]) {
 		const from = snapshot.indexOf("here");
 		assert.throws(() => planWrite(snapshot, { snapshot, from, to: from }, "x", true), /行内公式/);
 		assert.equal(planWrite(snapshot, { snapshot, from, to: from }, "x", false), "$x$");
 	}
+});
+
+test("pure blockquotes and Obsidian Callouts support multiline display equations and round-trip cleanly", () => {
+	// 1. Blank Callout line (bytes before `target.from` stay untouched; continuation lines carry `> `)
+	const callout = "> [!note] Pythagorean Theorem\n> ";
+	const afterCallout = apply(callout, callout.length, callout.length, "a^2 + b^2 = c^2", true);
+	assert.equal(afterCallout, "> [!note] Pythagorean Theorem\n> \n> $$\n> a^2 + b^2 = c^2\n> $$");
+	const calloutRanges = findMathRanges(afterCallout);
+	assert.equal(calloutRanges.length, 1);
+	assert.equal(calloutRanges[0]!.display, true);
+	assert.equal(calloutRanges[0]!.latex.trim(), "a^2 + b^2 = c^2");
+
+	// Re-editing an existing quoted display equation preserves quote prefixes without doubling `>`
+	const updatedCallout = apply(afterCallout, calloutRanges[0]!.from, calloutRanges[0]!.to, String.raw`\displaylines{x=1\\ y=2}`, true);
+	assert.equal(updatedCallout, "> [!note] Pythagorean Theorem\n> \n> $$\n> \\displaylines{x=1\\\\ y=2}\n> $$");
+	const updatedRanges = findMathRanges(updatedCallout);
+	assert.equal(updatedRanges.length, 1);
+	assert.equal(updatedRanges[0]!.latex.trim(), String.raw`\displaylines{x=1\\ y=2}`);
+
+	// 2. Splitting quoted prose keeps both halves inside the blockquote without modifying bytes before `from`
+	const quotedProse = "> BeforeAfter";
+	const at = quotedProse.indexOf("After");
+	const splitQuoted = apply(quotedProse, at, at, "E = mc^2", true);
+	assert.equal(splitQuoted, "> Before\n>\n> $$\n> E = mc^2\n> $$\n>\n> After");
+	const splitRanges = findMathRanges(splitQuoted);
+	assert.equal(splitRanges.length, 1);
+	assert.equal(splitRanges[0]!.latex.trim(), "E = mc^2");
+
+	// 3. Nested blockquote `>> ` and multiline source
+	const nestedQuote = ">> ";
+	const nestedSaved = apply(nestedQuote, nestedQuote.length, nestedQuote.length, "a = 1 \\\\\nb = 2", true);
+	assert.equal(nestedSaved, ">> $$\n>> a = 1 \\\\\n>> b = 2\n>> $$");
+	const nestedRanges = findMathRanges(nestedSaved);
+	assert.equal(nestedRanges.length, 1);
+	assert.equal(nestedRanges[0]!.latex.trim(), "a = 1 \\\\\nb = 2");
+
+	// 4. Quoted tables still forbid display equations while escaping inline pipes
+	const quotedTable = "> | A | B |\n> | --- | --- |\n> | here | v |";
+	const tablePos = quotedTable.indexOf("here");
+	assert.throws(() => planWrite(quotedTable, { snapshot: quotedTable, from: tablePos, to: tablePos }, "x", true), /行内公式/);
+	assert.equal(planWrite(quotedTable, { snapshot: quotedTable, from: tablePos, to: tablePos }, "|x|", false), "$\\vert{}x\\vert{}$");
+
+	// 5. Top-level fenced blocks (e.g. vme-plot) still reject blockquotes
+	assert.throws(() => assertTopLevelBlockContext(callout, { snapshot: callout, from: callout.length, to: callout.length }), /行内公式/);
+});
+
+test("defaultDisplayForContext picks inline on non-empty lines/lists/tables and display on blank or empty quote lines", () => {
+	assert.equal(defaultDisplayForContext("", 0), true);
+	assert.equal(defaultDisplayForContext("Heading\n\n", 9), true);
+	assert.equal(defaultDisplayForContext("> ", 2), true);
+	assert.equal(defaultDisplayForContext("> [!note] Title\n> ", 18), true);
+	assert.equal(defaultDisplayForContext(">>   ", 5), true);
+
+	assert.equal(defaultDisplayForContext("Given ", 6), false);
+	assert.equal(defaultDisplayForContext("Before  after", 7), false);
+	assert.equal(defaultDisplayForContext("> Given ", 8), false);
+	assert.equal(defaultDisplayForContext("> [!note] Title", 15), false);
+	assert.equal(defaultDisplayForContext("- ", 2), false);
+	assert.equal(defaultDisplayForContext("1. ", 3), false);
+	assert.equal(defaultDisplayForContext("> - ", 4), false);
+	assert.equal(defaultDisplayForContext("  ", 2), false);
+	const table = "|  | B |\n| --- | --- |";
+	assert.equal(defaultDisplayForContext(table, 2), false);
 });
 
 test("display insertion preserves lazy continuation list and quote paragraphs", () => {

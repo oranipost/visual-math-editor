@@ -1,3 +1,5 @@
+import { validateLatex } from 'mathlive';
+import { resolveInitialEditorMode, type EditorMode, type PluginSettings } from './settings';
 import { validateLatexSource } from './source-validation';
 
 /** Provisional local import budgets, evaluated before invoking a notation engine. */
@@ -171,4 +173,58 @@ export function analyzeFormulaImport(original: string): FormulaImportAnalysis {
   }
   result.issue = scanCandidate(result.candidate) ?? validateLatexSource(result.candidate);
   return result;
+}
+
+export interface SelectionDraftPlan {
+  latex: string;
+  display: boolean;
+  mode: EditorMode;
+  temporarySourceFallback?: boolean;
+  formulaImport?: { original: string; open: boolean };
+}
+
+/**
+ * Prepare an initial editor draft from a safe single-line plain-text selection.
+ * Standard math loads directly into the visual/preferred mode; wrapped `\(…\)` / `\[…\]`
+ * opens the Single-Formula Import review panel; unknown commands or incomplete TeX
+ * route directly to Hybrid/LaTeX source inspection.
+ */
+export function prepareSelectionDraft(
+  selectedText: string,
+  contextualDisplay: boolean,
+  settings: Pick<PluginSettings, 'modeDisplay' | 'preferredMode'>,
+): SelectionDraftPlan {
+  const trimmed = selectedText.trim();
+  const imported = analyzeFormulaImport(trimmed);
+  const initialMode = resolveInitialEditorMode(settings);
+  if (imported.wrapper !== 'bare') {
+    return {
+      latex: '',
+      display: imported.display ?? contextualDisplay,
+      mode: initialMode,
+      formulaImport: { original: trimmed, open: true },
+    };
+  }
+  let needsSourceInspection = Boolean(imported.issue || formulaVisualBudgetIssue(trimmed));
+  if (!needsSourceInspection) {
+    try {
+      needsSourceInspection = validateLatex(trimmed).length > 0;
+    } catch {
+      needsSourceInspection = true;
+    }
+  }
+  if (needsSourceInspection) {
+    const fallbackMode: EditorMode = settings.modeDisplay === 'latex' ? 'latex' : 'hybrid';
+    return {
+      latex: trimmed,
+      display: contextualDisplay,
+      mode: fallbackMode,
+      temporarySourceFallback: settings.modeDisplay === 'visual' ? true : undefined,
+    };
+  }
+  return {
+    latex: trimmed,
+    display: contextualDisplay,
+    mode: initialMode,
+  };
 }

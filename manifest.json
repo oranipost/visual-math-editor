@@ -1,9 +1,9 @@
 {
   "id": "visual-math-editor",
   "name": "Visual Math",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "minAppVersion": "1.14.4",
-  "description": "Write math, chemistry, and physics notes visually or in LaTeX. Build matrices, equation systems, 2D/3D graphs, and geometry scenes offline.",
+  "description": "Write math equations, formulas, chemistry, and physics visually or in LaTeX. Build matrices, equation systems, 2D/3D graphs, and 3D geometry models offline.",
   "author": "Oliver",
   "isDesktopOnly": true,
   "authorUrl": "https://github.com/oranipost"

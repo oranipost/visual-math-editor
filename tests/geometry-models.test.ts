@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import type { PlotSpec } from '../src/plot-engine';
-import type { GeometryModel, GeometryShape } from '../src/geometry-types';
-import { buildGeometryMesh, createGeometryPlot, DEFAULT_GEOMETRY_SPEC, GEOMETRY_LIMITS, projectGeometryPoint, rotateGeometryCamera, validateGeometrySpec, zoomGeometryView, type GeometryMesh } from '../src/geometry-models';
+import type { CompositeGeometryPart, GeometryModel, GeometryShape } from '../src/geometry-types';
+import { buildGeometryMesh, computeCompositeStackOffsetZ, createGeometryPlot, DEFAULT_GEOMETRY_SPEC, GEOMETRY_LIMITS, projectGeometryPoint, rotateGeometryCamera, rotatePoint3D, validateGeometrySpec, zoomGeometryView, type GeometryMesh } from '../src/geometry-models';
+import { COMPOSITE_TEMPLATES } from '../src/plot-ui';
 
 const shapes: GeometryShape[] = ['sphere', 'cylinder', 'cone', 'pyramid', 'prism', 'cuboid', 'plane'];
 function geometry(shape: GeometryShape = 'sphere', dimensions: Partial<GeometryModel> = {}, extra: Partial<PlotSpec> = {}) {
@@ -197,4 +198,109 @@ test('separate geometry SVGs own distinct safe clip paths and reference only the
     assert.doesNotMatch(svg, /url\((?:https?:|data:|javascript:)/i);
   }
   assert.equal(new Set(ids).size, 3, 'two different shapes and a rerender must not share a document fragment ID');
+});
+
+test('hemisphere and circular/polygonal frustum are closed outward-oriented manifolds with exact analytical volumes', () => {
+  const hemisphere = geometry('hemisphere', { radius: 2 });
+  const circularFrustum = geometry('frustum', { radius: 2, topRadius: 1, height: 3 });
+  const squareFrustum = geometry('frustum', { radius: 2, topRadius: 1, height: 3, sides: 4 });
+
+  for (const [label, result] of [
+    ['hemisphere', hemisphere],
+    ['circular frustum', circularFrustum],
+    ['square frustum', squareFrustum],
+  ] as const) {
+    const edges = triangleEdges(result.mesh);
+    assert.ok([...edges.values()].every(count => count === 2), `${label} must have closed manifold edges`);
+    assert.equal(result.mesh.vertices.length - edges.size + result.mesh.triangles.length, 2, `${label} Euler characteristic`);
+    assert.ok(volume(result.mesh) > 0, `${label} outward orientation`);
+    assert.match(result.svg, /data-vme-plot="geometry"/);
+    assert.doesNotMatch(result.svg, /NaN|Infinity|<script|<foreignObject/);
+  }
+
+  near(volume(hemisphere.mesh), (16 / 3) * Math.PI, 0.02);
+  near(volume(circularFrustum.mesh), 7 * Math.PI, 0.01);
+  near(volume(squareFrustum.mesh), 14, 1e-10);
+  assert.equal(circularFrustum.spec.geometry.sides, undefined, 'circular frustum omits sides');
+  assert.equal(squareFrustum.spec.geometry.sides, 4);
+
+  // Reject invalid frustum & hemisphere fields
+  for (const bad of [
+    { shape: 'hemisphere', radius: 1, height: 2 },
+    { shape: 'hemisphere', radius: 1, topRadius: 0.5 },
+    { shape: 'frustum', radius: 2, topRadius: 0, height: 3 },
+    { shape: 'frustum', radius: 2, topRadius: 1, height: 3, sides: 2 },
+    { shape: 'frustum', radius: 2, topRadius: 1, height: 3, sides: 13 },
+    { shape: 'frustum', radius: 2, topRadius: 1, height: 3, sides: 4.5 },
+    { shape: 'frustum', radius: 0.001, topRadius: 1000, height: 2 },
+  ]) {
+    assert.equal(validateGeometrySpec({ ...DEFAULT_GEOMETRY_SPEC, geometry: bad as GeometryModel }).ok, false, JSON.stringify(bad));
+  }
+});
+
+test('composite 3D solids validate 2..6 bounded parts, render translucent/wireframe/solid styles, and support all 6 math templates', () => {
+  for (const tpl of COMPOSITE_TEMPLATES) {
+    const result = geometry('composite', { parts: tpl.parts.map(part => ({ ...part })) });
+    assert.equal(result.spec.geometry.shape, 'composite');
+    assert.ok((result.spec.geometry.parts?.length ?? 0) >= GEOMETRY_LIMITS.minimumParts);
+    assert.match(result.svg, /data-vme-plot="geometry"/);
+    assert.match(result.svg, /Composite solid/);
+    assert.doesNotMatch(result.svg, /NaN|Infinity|<script|<foreignObject/);
+  }
+
+  // Cube-in-sphere uses translucent outer sphere (fill-opacity="0.22") + solid inner cube
+  const cubeInSphere = geometry('composite', { parts: COMPOSITE_TEMPLATES.find(t => t.id === 'cube-in-sphere')!.parts.map(p => ({ ...p })) });
+  assert.match(cubeInSphere.svg, /fill-opacity="0\.22"/);
+  assert.match(cubeInSphere.svg, /data-geometry-part="0"/);
+  assert.match(cubeInSphere.svg, /data-geometry-part="1"/);
+
+  // Wireframe part emits dashed hidden lines without faces for that part
+  const mixed = geometry('composite', {
+    parts: [
+      { shape: 'cuboid', width: 3, depth: 3, height: 3, style: 'wireframe', color: 'slate' },
+      { shape: 'cone', radius: 1, height: 2, rotation: { x: 180, y: 0, z: 0 }, style: 'solid', color: 'rose' },
+    ],
+  });
+  assert.match(mixed.svg, /stroke-dasharray="3 3"/);
+  assert.doesNotMatch(mixed.svg, /<polygon data-geometry-face="[^"]*" data-geometry-part="0"/);
+  assert.match(mixed.svg, /<polygon data-geometry-face="[^"]*" data-geometry-part="1"/);
+
+  // Stack helper aligns bottom of upper part (including inverted cone / horizontal cylinder) flush with top of lower part
+  const baseCylinder: CompositeGeometryPart = { shape: 'cylinder', radius: 1.5, height: 4, offset: { x: 0, y: 0, z: 1 } };
+  const invertedCone: CompositeGeometryPart = { shape: 'cone', radius: 1.5, height: 2, rotation: { x: 180 } };
+  // Base cylinder spans z in [-1, 3]; inverted cone local z spans [-1, 1], so z offset should place minZ at 3 -> offsetZ = 4
+  near(computeCompositeStackOffsetZ(baseCylinder, invertedCone), 4, 1e-6);
+
+  const rotatedY = rotatePoint3D({ x: 0, y: 0, z: 2 }, { y: 90 });
+  near(rotatedY.x, 2, 1e-9);
+  near(rotatedY.z, 0, 1e-9);
+
+  // Validation rejects <2 or >6 parts, nested composite/spatial shapes, out-of-range offsets/rotations, sparse arrays, and getters
+  const validPart: CompositeGeometryPart = { shape: 'sphere', radius: 1 };
+  let getterRuns = 0;
+  const partWithGetter = { shape: 'sphere' };
+  Object.defineProperty(partWithGetter, 'radius', { get() { getterRuns++; return 1; }, enumerable: true });
+  const sparseParts: unknown[] = [];
+  sparseParts[0] = validPart;
+  sparseParts[2] = validPart;
+
+  const badComposites: unknown[] = [
+    { shape: 'composite' },
+    { shape: 'composite', parts: [] },
+    { shape: 'composite', parts: [validPart] },
+    { shape: 'composite', parts: Array.from({ length: 7 }, () => ({ ...validPart })) },
+    { shape: 'composite', parts: [validPart, validPart], radius: 1 },
+    { shape: 'composite', parts: [validPart, { shape: 'composite', parts: [validPart, validPart] }] },
+    { shape: 'composite', parts: [validPart, { shape: 'planes', angle: 45, offset: 0 }] },
+    { shape: 'composite', parts: [validPart, { shape: 'sphere', radius: 1, offset: { x: 500.1, y: 0, z: 0 } }] },
+    { shape: 'composite', parts: [validPart, { shape: 'sphere', radius: 1, rotation: { x: 181 } }] },
+    { shape: 'composite', parts: [validPart, { shape: 'sphere', radius: 1, style: 'glass' }] },
+    { shape: 'composite', parts: [validPart, { shape: 'sphere', radius: 1, color: 'neon' }] },
+    { shape: 'composite', parts: [validPart, partWithGetter] },
+    { shape: 'composite', parts: sparseParts },
+  ];
+  for (let idx = 0; idx < badComposites.length; idx++) {
+    assert.equal(validateGeometrySpec({ ...DEFAULT_GEOMETRY_SPEC, geometry: badComposites[idx] as GeometryModel }).ok, false, `badComposite[${idx}]`);
+  }
+  assert.equal(getterRuns, 0);
 });

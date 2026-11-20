@@ -66,7 +66,7 @@ async function fixture(): Promise<string> {
   await write(root, 'versions.json', { [version]: '1.5.0' });
   await write(root, 'dist/manifest.json', manifest);
   for (const file of ['main.js', 'styles.css', 'MATHLIVE-LICENSE.txt']) await write(root, `dist/${file}`, 'build fixture');
-  for (const file of ['README.md', 'README.zh-CN.md', 'README.en.md', 'README.es.md', 'MVP.md', 'TEST-REPORT.md', 'LICENSE', 'MATHLIVE-LICENSE.txt', 'KATEX-FONTS-LICENSE.txt', 'MHCHEM-LICENSE.txt', 'CONVERT-LICENSE.txt', 'THIRD-PARTY-NOTICES.md', 'CONTRIBUTING.md', 'SECURITY.md', 'CHANGELOG.md', 'RELEASING.md', 'LANGUAGE-SUPPORT.md', 'ELEMENT-DATA-SOURCES.json', 'tsconfig.json', 'styles.css', '.gitignore', 'docs/INSTALLATION.md', 'docs/COMMUNITY-SUBMISSION.md', 'docs/images/example.jpg']) {
+  for (const file of ['README.md', 'README.zh-CN.md', 'README.en.md', 'README.es.md', 'README.ja.md', 'README.de.md', 'README.fr.md', 'MVP.md', 'TEST-REPORT.md', 'LICENSE', 'MATHLIVE-LICENSE.txt', 'KATEX-FONTS-LICENSE.txt', 'MHCHEM-LICENSE.txt', 'CONVERT-LICENSE.txt', 'THIRD-PARTY-NOTICES.md', 'CONTRIBUTING.md', 'SECURITY.md', 'CHANGELOG.md', 'RELEASING.md', 'LANGUAGE-SUPPORT.md', 'ELEMENT-DATA-SOURCES.json', 'tsconfig.json', 'styles.css', '.gitignore', 'docs/INSTALLATION.md', 'docs/COMMUNITY-SUBMISSION.md', 'docs/images/example.jpg']) {
     await write(root, file, 'source fixture');
   }
   await write(root, 'LICENSING.md', projectLicense);

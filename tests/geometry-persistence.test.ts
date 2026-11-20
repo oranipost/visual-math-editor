@@ -231,3 +231,54 @@ test('spatial schemas reject unrelated fields, malformed values and out-of-bound
   for (const replacement of ['"angle":1e999', '"angle":-1e999']) assert.throws(() => parsePlotSpec(payload(geometry({ shape: 'planes', angle: 45, offset: 0 })).replace('"angle":45', replacement)));
   for (const replacement of ['"offset":1e999', '"offset":-1e999']) assert.throws(() => parsePlotSpec(payload(geometry({ shape: 'planes', angle: 45, offset: 0 })).replace('"offset":0', replacement)));
 });
+
+test('hemisphere, frustum, and multi-part composite 3D models round-trip cleanly through vme-plot blocks and reject malformed composite JSON', () => {
+  const validModels: GeometryModel[] = [
+    { shape: 'hemisphere', radius: 2.5, faces: true },
+    { shape: 'frustum', radius: 2.2, topRadius: 1.1, height: 3, faces: true },
+    { shape: 'frustum', radius: 2, topRadius: 0.8, height: 2.5, sides: 6, faces: false },
+    {
+      shape: 'composite',
+      faces: true,
+      parts: [
+        { shape: 'cone', radius: 3, height: 4, offset: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, style: 'translucent', color: 'indigo' },
+        { shape: 'sphere', radius: 1.5, offset: { x: 0, y: 0, z: -0.5 }, rotation: { x: 0, y: 0, z: 0 }, style: 'solid', color: 'rose' },
+        { shape: 'frustum', radius: 1.4, topRadius: 0.7, height: 1.2, offset: { x: 0, y: 0, z: 2.6 }, rotation: { x: 180, y: 0, z: 0 }, style: 'wireframe', color: 'teal' },
+      ],
+    },
+  ];
+
+  for (const model of validModels) {
+    const spec = geometry(model, { azimuth: 138, elevation: 42, geometryZoom: 1.4 });
+    const parsed = parsePlotSpec(payload(spec));
+    assert.deepEqual(parsed.geometry, model);
+    assert.equal(parsed.azimuth, 138);
+    assert.equal(parsed.elevation, 42);
+    assert.equal(parsed.geometryZoom, 1.4);
+
+    const blockText = serializePlot(parsed);
+    const prefix = '题目 1\r\n\r\n';
+    const suffix = '\r\n\r\n解答完毕\r\n';
+    const note = prefix + blockText.replace(/\n/g, '\r\n') + suffix;
+    const [found] = findPlotBlocks(note);
+    assert.deepEqual(found.spec, parsed);
+    const target = { snapshot: note, from: found.from, to: found.to };
+    assert.equal(replace(note, target, planGraphUpdate(note, target, found.spec)), note, 'unchanged composite/primitive save preserves raw CRLF bytes');
+
+    const rendered = createGraph(parsed);
+    assert.equal(rendered.ok, true);
+  }
+
+  for (const badGeometry of [
+    { shape: 'composite', parts: [] },
+    { shape: 'composite', parts: [{ shape: 'sphere', radius: 1 }] },
+    { shape: 'composite', parts: Array.from({ length: 7 }, () => ({ shape: 'sphere', radius: 1 })) },
+    { shape: 'composite', parts: [{ shape: 'sphere', radius: 1 }, { shape: 'sphere', radius: 1, unknownKey: 1 }] },
+    { shape: 'composite', parts: [{ shape: 'sphere', radius: 1 }, { shape: 'sphere', radius: 1, offset: { x: 999, y: 0, z: 0 } }] },
+    { shape: 'frustum', radius: 2, topRadius: -1, height: 3 },
+  ]) {
+    const badJson = JSON.stringify({ version: 1, ...geometry(), geometry: badGeometry });
+    assert.throws(() => parsePlotSpec(badJson), JSON.stringify(badGeometry));
+    assert.deepEqual(findPlotBlocks('```vme-plot\n' + badJson + '\n```'), []);
+  }
+});

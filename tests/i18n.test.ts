@@ -2,18 +2,27 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { getElementSearchNames, resolveLanguage, translatePlotUiText, translateUiText, UI_TRANSLATIONS, type Language } from '../src/i18n';
 import { SPANISH_ELEMENT_NAMES, SPANISH_TRANSLATIONS } from '../src/i18n-es';
+import { JAPANESE_ELEMENT_NAMES, JAPANESE_TRANSLATIONS } from '../src/i18n-ja';
+import { GERMAN_ELEMENT_NAMES, GERMAN_TRANSLATIONS } from '../src/i18n-de';
+import { FRENCH_ELEMENT_NAMES, FRENCH_TRANSLATIONS } from '../src/i18n-fr';
 import { CHEMISTRY_TEMPLATES, PHYSICS_TEMPLATES, UNIT_PRESETS, PERIODIC_ELEMENTS } from '../src/science-data';
 import { UNIT_CATEGORIES } from '../src/unit-conversion';
 import { createGraph } from '../src/graph-render';
 import { DEFAULT_PLOT_SPEC, type PlotSpec } from '../src/plot-engine';
 
-test('the host app language follows Chinese and Spanish locales with an English fallback', () => {
+test('the host app language follows Chinese, Spanish, Japanese, German and French locales with an English fallback', () => {
   for (const locale of ['zh', 'zh-CN', 'zh-TW', 'zh-Hans', 'ZH_hant_HK', ' zh ']) assert.equal(resolveLanguage('system', locale), 'zh', locale);
   for (const locale of ['es', 'es-ES', 'es-MX', 'es_MX', 'ES_ar', ' es-419 ']) assert.equal(resolveLanguage('system', locale), 'es', locale);
-  for (const locale of ['en-US', 'en-GB', 'fr', 'ja-JP', 'de-DE', 'pt-BR', 'ko', 'ar', '', 'zhfake', 'esfake']) assert.equal(resolveLanguage('system', locale), 'en', locale);
+  for (const locale of ['ja', 'ja-JP', 'ja_JP', 'JA-jp', ' ja ']) assert.equal(resolveLanguage('system', locale), 'ja', locale);
+  for (const locale of ['de', 'de-DE', 'de-AT', 'de_CH', ' de ']) assert.equal(resolveLanguage('system', locale), 'de', locale);
+  for (const locale of ['fr', 'fr-FR', 'fr-CA', 'fr_BE', ' fr ']) assert.equal(resolveLanguage('system', locale), 'fr', locale);
+  for (const locale of ['en-US', 'en-GB', 'pt-BR', 'ko', 'ar', '', 'zhfake', 'esfake', 'jafake', 'defake', 'frfake']) assert.equal(resolveLanguage('system', locale), 'en', locale);
   assert.equal(resolveLanguage('zh', 'en-US'), 'zh');
   assert.equal(resolveLanguage('en', 'zh-CN'), 'en');
   assert.equal(resolveLanguage('es', 'zh-CN'), 'es');
+  assert.equal(resolveLanguage('ja', 'en-US'), 'ja');
+  assert.equal(resolveLanguage('de', 'en-US'), 'de');
+  assert.equal(resolveLanguage('fr', 'en-US'), 'fr');
   assert.equal(resolveLanguage('en', 'es-ES'), 'en');
   assert.equal(resolveLanguage('outdated-preference' as Language, 'zh'), 'en');
 });
@@ -292,6 +301,27 @@ test('insertion failures give actionable English messages instead of untranslate
     '换行',
     '换行继续输入',
     '换行继续输入（Shift+Enter）',
+    '编辑模式显示',
+    '控制公式编辑器顶部显示的模式切换范围。',
+    '显示全部模式（记住上次选择）',
+    '只显示 Visual（纯可视化）',
+    '只显示 Hybrid（源码 + 可视化同步）',
+    '只显示 LaTeX（纯源码）',
+    '全部模式',
+    '只显示 Visual',
+    '只显示 Hybrid',
+    '只显示 LaTeX',
+    '默认编辑模式',
+    '显示全部模式时，新打开公式编辑器默认进入的模式；在编辑器内切换模式也会自动更新此项。',
+    '设置插件界面、提示与菜单的显示语言。',
+    '临时用源码模式查看',
+    '仅在本次编辑中打开源码模式，不更改“只显示 Visual”设置',
+    '公式源码尚未完整，可临时用源码模式查看并修复。',
+    '公式超过 4096 字符，可视化预览已暂停，可临时用源码模式查看。',
+    '当前可视化暂不支持此公式，源码完整保留，可临时用源码模式查看。',
+    '点击“临时用源码模式查看”可编辑或按源码保存。',
+    '公式超过 4096 字符；点击“临时用源码模式查看”可编辑或保存源码。',
+    '无法保存编辑器设置',
   ]) {
     for (const lang of ['en', 'es'] as const) {
       const translated = translateUiText(zh, lang);
@@ -303,4 +333,122 @@ test('insertion failures give actionable English messages instead of untranslate
   assert.equal(translateUiText('↵ 换行', 'es'), '↵ Nueva línea');
   assert.equal(translateUiText('换行继续输入（Shift+Enter）', 'en'), 'New line (Shift+Enter)');
   assert.equal(translateUiText('换行继续输入（Shift+Enter）', 'es'), 'Nueva línea (Shift+Enter)');
+  assert.equal(translateUiText('临时用源码模式查看', 'en'), 'View in LaTeX source');
+  assert.equal(translateUiText('临时用源码模式查看', 'es'), 'Ver en código LaTeX');
+  assert.equal(translateUiText('编辑模式显示', 'en'), 'Editor mode display');
+  assert.equal(translateUiText('编辑模式显示', 'es'), 'Visualización de modos del editor');
+});
+
+test('Japanese, German and French cover every fixed UI key, 118 elements, dynamic labels and plot accessibility', () => {
+  const packs = [
+    ['ja', JAPANESE_TRANSLATIONS, JAPANESE_ELEMENT_NAMES],
+    ['de', GERMAN_TRANSLATIONS, GERMAN_ELEMENT_NAMES],
+    ['fr', FRENCH_TRANSLATIONS, FRENCH_ELEMENT_NAMES],
+  ] as const;
+
+  for (const [lang, dict, elements] of packs) {
+    for (const key of Object.keys(UI_TRANSLATIONS)) {
+      assert.ok(Object.hasOwn(dict, key), `${lang} missing key: ${key}`);
+      const translated = translateUiText(key, lang);
+      assert.ok(translated.length > 0, `${lang} empty translation: ${key}`);
+      if (lang !== 'ja') {
+        assert.doesNotMatch(translated, /[\p{Script=Han}]/u, `${lang} contains Han: ${key} -> ${translated}`);
+      }
+    }
+    assert.equal(Object.keys(elements).length, 118, `${lang} element count`);
+    for (const item of PERIODIC_ELEMENTS) {
+      const name = elements[item.name];
+      assert.ok(name, `${lang} element ${item.name}`);
+      assert.equal(translateUiText(item.name, lang), name);
+      assert.equal(translateUiText(`${item.number} · ${item.symbol} · ${item.name}`, lang), `${item.number} · ${item.symbol} · ${name}`);
+      assert.ok(getElementSearchNames(item.name).includes(name.toLowerCase()));
+    }
+  }
+
+  assert.equal(translateUiText('保存修改', 'ja'), '変更を保存');
+  assert.equal(translateUiText('保存修改', 'de'), 'Speichern');
+  assert.equal(translateUiText('保存修改', 'fr'), 'Enregistrer');
+  assert.equal(translateUiText('绘制此公式', 'ja'), 'この数式をグラフ化');
+  assert.equal(translateUiText('绘制此公式', 'de'), 'Diese Formel zeichnen');
+  assert.equal(translateUiText('绘制此公式', 'fr'), 'Tracer cette formule');
+
+  // Dynamic patterns in ja, de, fr
+  assert.equal(translateUiText('118 个元素', 'ja'), '118 元素');
+  assert.equal(translateUiText('118 个元素', 'de'), '118 Elemente');
+  assert.equal(translateUiText('118 个元素', 'fr'), '118 éléments');
+  assert.equal(translateUiText('第 21 行 · 行内公式', 'ja'), '21 行目 · インライン数式');
+  assert.equal(translateUiText('第 21 行 · 行内公式', 'de'), 'Zeile 21 · Inline-Formel');
+  assert.equal(translateUiText('第 21 行 · 行内公式', 'fr'), 'Ligne 21 · En ligne');
+  assert.equal(translateUiText('插入矩阵；选中内容后可套用结构', 'ja'), '行列を挿入（選択範囲がある場合は囲みます）');
+  assert.equal(translateUiText('插入矩阵；选中内容后可套用结构', 'de'), 'Matrix einfügen; Auswahl wird umschlossen');
+  assert.equal(translateUiText('插入矩阵；选中内容后可套用结构', 'fr'), 'Insérer Matrice ; entoure la sélection');
+
+  // Plot accessibility descriptions in ja, de, fr
+  const aria = 'Equation graph: y = sin(x); horizontal axis X, vertical axis Y';
+  for (const lang of ['ja', 'de', 'fr'] as const) {
+    const out = translatePlotUiText(aria, lang);
+    assert.notEqual(out, aria, lang);
+    assert.ok(out.includes('y = sin(x)'), lang);
+  }
+
+  // 3D Geometry picker rows, composite part labels, and SVG captions in all 6 languages
+  for (const lang of ['en', 'es', 'ja', 'de', 'fr'] as const) {
+    for (const sample of [
+      '部件 1',
+      '组合几何体（3 个部件）',
+      '几何模型 1 · 球体',
+      '几何模型 2 · 半球体',
+      '几何模型 3 · 圆台 / 正棱台',
+      '几何模型 4 · 组合几何体（2 个部件）',
+    ]) {
+      const out = translateUiText(sample, lang);
+      assert.notEqual(out, sample, `${lang}: ${sample}`);
+      if (lang !== 'ja') {
+        assert.doesNotMatch(out, /[\p{Script=Han}]/u, `${lang} contains Han in ${sample} -> ${out}`);
+      }
+    }
+    for (const plotText of [
+      'Geometry: Hemisphere',
+      'Geometry: Frustum',
+      'Bottom radius = 1.4 · Top radius = 0.8 · Height = 2',
+      'Geometry: Composite solid (2 parts)',
+      'Cylinder + Cone',
+    ]) {
+      const out = translatePlotUiText(plotText, lang);
+      if (lang !== 'en') assert.notEqual(out, plotText, `${lang}: ${plotText}`);
+      if (lang !== 'ja') {
+        assert.doesNotMatch(out, /[\p{Script=Han}]/u, `${lang} contains Han in ${plotText} -> ${out}`);
+      }
+    }
+  }
+  assert.equal(translateUiText('几何模型 1 · 球体', 'zh'), '几何模型 1 · 球体');
+  assert.equal(translateUiText('几何模型 1 · 球体', 'en'), 'Geometry 1 · Sphere');
+  assert.equal(translateUiText('几何模型 2 · 组合几何体（3 个部件）', 'en'), 'Geometry 2 · Composite solid (3 parts)');
+  assert.equal(translatePlotUiText('Geometry: Composite solid (2 parts)', 'zh'), '几何模型：组合几何体（2 个部件）');
+  assert.equal(translatePlotUiText('Cylinder + Cone', 'zh'), '圆柱体 + 圆锥体');
+
+  // Expanded Greek symbol tooltips & eV / keV / MeV units across all 5 translated locales
+  for (const lang of ['en', 'es', 'ja', 'de', 'fr'] as const) {
+    for (const greekAndEv of [
+      '插入伽马 γ',
+      '插入拉姆达 λ',
+      '插入缪 μ',
+      '插入柔 ρ',
+      '插入西格玛 σ',
+      '插入斐 φ',
+      '插入艾普西隆 ε',
+      '插入欧米伽 ω',
+      '提示：空格或运算符后输入 rho、lambda、omega 等英文名可直接变希腊字母',
+      '电子伏特 (eV)',
+      '千电子伏特 (keV)',
+      '兆电子伏特 (MeV)',
+      '电子伏特 eV',
+    ]) {
+      const out = translateUiText(greekAndEv, lang);
+      assert.notEqual(out, greekAndEv, `${lang}: ${greekAndEv}`);
+      if (lang !== 'ja') {
+        assert.doesNotMatch(out, /[\p{Script=Han}]/u, `${lang} contains Han in ${greekAndEv} -> ${out}`);
+      }
+    }
+  }
 });

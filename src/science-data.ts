@@ -172,17 +172,29 @@ export const CHEMISTRY_TEMPLATES: { id: string; label: string; input: string }[]
 
 export const PHYSICS_TEMPLATES: { id: string; label: string; latex: string }[] = [
   { id: 'force', label: '牛顿第二定律', latex: String.raw`\vec{F}=m\vec{a}` },
+  { id: 'kinetic-energy', label: '动能公式', latex: String.raw`E_{\mathrm{k}}=\frac{1}{2}mv^{2}` },
+  { id: 'momentum', label: '动量 p=mv', latex: String.raw`\vec{p}=m\vec{v}` },
+  { id: 'gravitation', label: '万有引力定律', latex: String.raw`F=G\frac{m_{1}m_{2}}{r^{2}}` },
+  { id: 'harmonic', label: '简谐运动角频率', latex: String.raw`\omega=\sqrt{\frac{k}{m}}` },
   { id: 'vector', label: '速度向量', latex: String.raw`\vec{v}` },
   { id: 'gradient', label: '梯度 ∇f', latex: String.raw`\nabla f` },
   { id: 'divergence', label: '散度 ∇·E', latex: String.raw`\nabla\cdot\vec{E}` },
   { id: 'curl', label: '旋度 ∇×B', latex: String.raw`\nabla\times\vec{B}` },
   { id: 'partial', label: '偏导数', latex: String.raw`\frac{\partial f}{\partial t}` },
+  { id: 'coulomb', label: '库仑定律', latex: String.raw`F=k_{\mathrm{e}}\frac{q_{1}q_{2}}{r^{2}}` },
+  { id: 'lorentz-force', label: '洛伦兹力', latex: String.raw`\vec{F}=q\left(\vec{E}+\vec{v}\times\vec{B}\right)` },
+  { id: 'faraday', label: '法拉第电磁感应', latex: String.raw`\mathcal{E}=-\frac{\mathrm{d}\Phi_{B}}{\mathrm{d}t}` },
+  { id: 'ohm-law', label: '欧姆定律', latex: 'V=IR' },
+  { id: 'ideal-gas', label: '理想气体状态方程', latex: 'PV=nRT' },
+  { id: 'mass-energy', label: '质能方程 E=mc²', latex: String.raw`E=mc^{2}` },
+  { id: 'lorentz-factor', label: '洛伦兹因子 γ', latex: String.raw`\gamma=\frac{1}{\sqrt{1-\frac{v^{2}}{c^{2}}}}` },
+  { id: 'photon-energy', label: '光子能量 E=hν', latex: String.raw`E=h\nu=\frac{hc}{\lambda}` },
+  { id: 'schrodinger', label: '薛定谔本征方程', latex: String.raw`\hat{H}\lvert\psi\rangle=E\lvert\psi\rangle` },
   { id: 'hbar', label: '约化普朗克常量 ℏ', latex: String.raw`\hbar` },
   { id: 'greek', label: '希腊字母', latex: String.raw`\alpha\quad\beta\quad\gamma\quad\omega` },
   { id: 'sigma', label: '标准差 σ', latex: String.raw`\sigma` },
   { id: 'angle', label: '角度 θ', latex: String.raw`\theta` },
   { id: 'degrees', label: '30 度', latex: String.raw`30^{\circ}` },
-  { id: 'ohm-law', label: '欧姆定律', latex: 'V=IR' },
 ];
 
 export const UNIT_PRESETS: { id: string; label: string; input: string }[] = [
@@ -193,6 +205,7 @@ export const UNIT_PRESETS: { id: string; label: string; input: string }[] = [
   { id: 'newton', label: '牛顿 N', input: '1 N' },
   { id: 'pascal', label: '帕斯卡 Pa', input: '1 Pa' },
   { id: 'joule', label: '焦耳 J', input: '1 J' },
+  { id: 'electronvolt', label: '电子伏特 eV', input: '1 eV' },
   { id: 'watt', label: '瓦特 W', input: '1 W' },
   { id: 'coulomb', label: '库仑 C', input: '1 C' },
   { id: 'volt', label: '伏特 V', input: '1 V' },

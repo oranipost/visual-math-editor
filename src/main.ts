@@ -1,14 +1,16 @@
 import { EditorView } from "@codemirror/view";
 import {
-  editorInfoField, getLanguage, MarkdownRenderChild, MarkdownView, Modal, Notice, Plugin,
-  type Editor, type MarkdownPostProcessorContext,
+  editorInfoField, getLanguage, MarkdownRenderChild, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting,
+  type Command, type Editor, type MarkdownPostProcessorContext,
 } from "obsidian";
-import { mountEditor } from "./editor-ui";
+import { mountEditor, type EditorMode, type ModeDisplay, type MountedEditor } from "./editor-ui";
+import { prepareSelectionDraft } from "./formula-import";
 import { configureMathLive, createPreview } from "./math-runtime";
-import { findMathRanges, isMathInsertionAllowed, mathAtSelection, type MathRange } from "./math-ranges";
-import { planWrite, type WriteTarget } from "./write-plan";
+import { extractConvertibleSelection, findMathRanges, isMathInsertionAllowed, mathAtSelection, resolveReadingMathCandidate, type MathRange } from "./math-ranges";
+import { defaultDisplayForContext, planWrite, type WriteTarget } from "./write-plan";
 import { focusInlineEditor, hideInlineEditor, inlineEditorField, showInlineEditor, type InlineDraft, type InlineSession } from "./inline-editor";
 import { localizeEditor, resolveLanguage, translateUiText, type Language } from "./i18n";
+import { PluginSettingsStore, renderPluginSettings, resolveInitialEditorMode, type PluginSettings } from "./settings";
 import type { PlotSpec } from "./plot-engine";
 import { createGraph } from "./graph-render";
 import { mountOrbitInteraction, zoomOrbitView } from "./orbit-interaction";
@@ -16,47 +18,34 @@ import { controlIcon, type ControlIcon } from "./ui-icons";
 import { formatComplex, parseComplexNumbers } from "./complex-plane";
 import { mountPlotInteraction, zoomPlotBounds, type PlotBounds } from "./plot-interaction";
 import { canAppendAfterGraph, findPlotBlocks, parsePlotSpec, planGraphInsert, planGraphUpdate, type PlotBlock } from "./plot-markdown";
-import type { PlotDraft } from "./plot-ui";
+import { copyPlotImage } from "./plot-clipboard";
+import { formatPickerGraphRow, graphDraftFromSpec, matchesPickerGraphSearch, type PlotDraft } from "./plot-ui";
 
-function graphDraft(spec: PlotSpec): PlotDraft {
-  const draft: PlotDraft = {
-    mode: spec.mode ?? 'function', expression: spec.expression,
-    xMin: String(spec.xMin), xMax: String(spec.xMax),
-    yMin: String(spec.yMin), yMax: String(spec.yMax),
-    calculus: spec.calculus, previewed: true,
-  };
-  for (const key of ['thetaMin', 'thetaMax', 'integralMin', 'integralMax', 'zMin', 'zMax', 'azimuth', 'elevation', 'geometryZoom'] as const) {
-    if (spec[key] !== undefined) draft[key] = String(spec[key]);
-  }
-  if (spec.geometry) {
-    draft.geometry = { shape: spec.geometry.shape, faces: spec.geometry.faces };
-    for (const key of ['radius', 'width', 'depth', 'height', 'sides', 'angle', 'offset'] as const) {
-      if (spec.geometry[key] !== undefined) draft.geometry[key] = String(spec.geometry[key]);
-    }
-  }
-  return draft;
-}
+const graphDraft = graphDraftFromSpec;
 
 class AboutVisualMath extends Modal {
+  private localization?: ReturnType<typeof localizeEditor>;
   constructor(private plugin: VisualMathEditor) { super(plugin.app); }
   onOpen(): void {
     this.setTitle('Visual Math');
     this.contentEl.createEl('p', { text: `${this.plugin.manifest.name} ${this.plugin.manifest.version} · ${this.plugin.manifest.author}` });
     this.contentEl.createEl('p', { text: 'Copyright (c) 2026 Dongfang Wang' });
-    this.contentEl.createEl('p', { text: this.plugin.text('本插件采用 GNU GPLv3 许可，不提供任何担保。你可按许可使用、修改与再分发。笔记内容不受此许可约束。') });
-    const license = this.contentEl.createEl('a', { text: this.plugin.text('查看许可与第三方声明') });
+    this.contentEl.createEl('p', { text: '本插件采用 GNU GPLv3 许可，不提供任何担保。你可按许可使用、修改与再分发。笔记内容不受此许可约束。' });
+    const license = this.contentEl.createEl('a', { text: '查看许可与第三方声明' });
     license.href = `https://github.com/oranipost/visual-math-editor/blob/${this.plugin.manifest.version}/THIRD-PARTY-NOTICES.md`;
     license.target = '_blank'; license.rel = 'noopener noreferrer';
     this.contentEl.createEl('br');
-    const source = this.contentEl.createEl('a', { text: this.plugin.text('下载此版本源码') });
+    const source = this.contentEl.createEl('a', { text: '下载此版本源码' });
     source.href = `https://github.com/oranipost/visual-math-editor/releases/tag/${this.plugin.manifest.version}`;
     source.target = '_blank'; source.rel = 'noopener noreferrer';
+    this.localization = this.plugin.localize(this.contentEl);
   }
-  onClose(): void { this.contentEl.empty(); this.plugin.modals.delete(this); }
+  onClose(): void { this.localization?.destroy(); this.contentEl.empty(); this.plugin.modals.delete(this); }
 }
 
 class EquationModal extends Modal {
   private cleanup?: () => void;
+  private unregisterEditor?: () => void;
   private pluginPath: string | undefined;
   constructor(private plugin: VisualMathEditor, private view: MarkdownView, private target: WriteTarget, private range?: MathRange, private draft?: InlineDraft) {
     super(plugin.app);
@@ -64,22 +53,31 @@ class EquationModal extends Modal {
   }
   onOpen(): void {
     this.modalEl.addClass("vme-modal");
-    this.setTitle(this.plugin.text(this.range ? "编辑公式" : "插入公式"));
-    this.cleanup = mountEditor(this.contentEl, {
+    const updateTitle = () => this.setTitle(this.plugin.text(this.range ? "编辑公式" : "插入公式"));
+    updateTitle();
+    const initialMode = resolveInitialEditorMode(this.plugin.editorSettings, this.draft?.mode, this.draft?.temporarySourceFallback);
+    const mounted = mountEditor(this.contentEl, {
       latex: this.draft?.latex ?? this.range?.latex,
-      display: this.draft?.display ?? this.range?.display ?? true,
-      initialMode: this.draft?.mode,
+      display: this.draft?.display ?? this.range?.display ?? defaultDisplayForContext(this.target.snapshot, this.target.from, this.target.to),
+      initialMode,
+      modeDisplay: this.plugin.modeDisplay,
+      preferredMode: this.plugin.preferredMode,
+      temporarySourceFallback: this.draft?.temporarySourceFallback,
       scienceDraft: this.draft?.science,
       plotDraft: this.draft?.plot,
+      alsoInsertGraphEquation: this.plugin.alsoInsertGraphEquation,
       formulaImportDraft: this.draft?.formulaImport, matrixDraft: this.draft?.matrix, systemDraft: this.draft?.system,
       editing: !!this.range,
       language: this.plugin.language,
       systemLanguage: this.plugin.systemLanguage(),
       onLanguageChange: language => {
         const saved = this.plugin.setLanguage(language);
-        this.setTitle(this.plugin.text(this.range ? "编辑公式" : "插入公式"));
+        updateTitle();
         return saved;
       },
+      onModeDisplayChange: modeDisplay => this.plugin.setModeDisplay(modeDisplay),
+      onPreferredModeChange: preferredMode => this.plugin.setPreferredMode(preferredMode),
+      onAlsoInsertGraphEquationChange: enabled => this.plugin.setAlsoInsertGraphEquation(enabled),
       onCancel: () => this.close(),
       onSaveGraph: (spec, latex, display) => {
         if (!this.plugin.isLoaded || this.view.file?.path !== this.pluginPath || this.view.getMode() !== "source" || !this.view.containerEl.isConnected) throw new Error("原笔记已关闭或切换，请取消后重新打开公式。");
@@ -110,72 +108,180 @@ class EquationModal extends Modal {
         this.close();
         editor.focus();
       },
-    }).destroy;
+    });
+    this.cleanup = mounted.destroy;
+    this.unregisterEditor = this.plugin.registerActiveEditor(mounted, updateTitle);
   }
-  onClose(): void { this.cleanup?.(); this.contentEl.empty(); this.plugin.modals.delete(this); }
+  onClose(): void { this.unregisterEditor?.(); this.cleanup?.(); this.contentEl.empty(); this.plugin.modals.delete(this); }
 }
 
 class EquationPicker extends Modal {
   private page = 0;
+  private searchQuery = "";
+  private listHost?: HTMLElement;
   private localization?: ReturnType<typeof localizeEditor>;
+  private unregisterTitle?: () => void;
   constructor(private plugin: VisualMathEditor, private view: MarkdownView, private snapshot: string, private ranges: MathRange[]) { super(plugin.app); }
   onOpen(): void {
     this.modalEl.addClass("vme-modal");
-    this.setTitle(this.plugin.text("选择要编辑的公式"));
-    this.render();
+    const updateTitle = () => this.setTitle(this.plugin.text("选择要编辑的公式"));
+    updateTitle();
+    this.unregisterTitle = this.plugin.registerModalTitle(updateTitle);
+    this.renderShell();
     this.localization = this.plugin.localize(this.contentEl);
   }
-  private render(): void {
+  private renderShell(): void {
     this.contentEl.empty();
     const insert = this.contentEl.createEl("button", { text: "＋ 在笔记末尾插入公式", cls: "mod-cta" });
     insert.onclick = () => { this.close(); void this.plugin.insertAtEnd(this.view, this.snapshot); };
     const hint = this.contentEl.createEl("p", { text: "点击公式重新编辑。公式按笔记中的位置排列。", cls: "vme-muted" });
     const graphs = findPlotBlocks(this.snapshot);
     if (!this.ranges.length && !graphs.length) { hint.textContent = "这篇笔记还没有公式，点击上方按钮开始。"; return; }
-    const list = this.contentEl.createDiv({ cls: "vme-picker" });
+    const search = this.contentEl.createEl("input", {
+      type: "search",
+      cls: "vme-picker-search",
+      placeholder: "搜索公式源码或行号",
+    });
+    search.dataset.testid = "picker-search";
+    search.setAttribute("aria-label", "搜索公式源码或行号");
+    search.value = this.searchQuery;
+    search.addEventListener("input", () => {
+      this.searchQuery = search.value;
+      this.page = 0;
+      this.renderList(graphs);
+    });
+    this.listHost = this.contentEl.createDiv({ cls: "vme-picker-host" });
+    this.renderList(graphs);
+  }
+  private renderList(graphs = findPlotBlocks(this.snapshot)): void {
+    if (!this.listHost) return;
+    this.listHost.empty();
+    const query = this.searchQuery.trim().toLowerCase();
+    const indexedRanges = this.ranges.map((range, index) => {
+      const line = this.snapshot.slice(0, range.from).split("\n").length;
+      return { range, index, line };
+    }).filter(({ range, index, line }) => {
+      if (!query) return true;
+      return range.latex.toLowerCase().includes(query)
+        || String(line).includes(query)
+        || String(index + 1).includes(query);
+    });
+    const indexedGraphs = graphs.map((graph, index) => ({ graph, index })).filter(({ graph, index }) =>
+      matchesPickerGraphSearch(graph.spec, index, query),
+    );
+    if (!indexedRanges.length && !indexedGraphs.length) {
+      this.listHost.createEl("p", { text: "没有匹配的公式。", cls: "vme-muted" });
+      return;
+    }
+    const list = this.listHost.createDiv({ cls: "vme-picker" });
     const size = 12;
-    this.ranges.slice(this.page * size, (this.page + 1) * size).forEach((range, index) => {
+    indexedRanges.slice(this.page * size, (this.page + 1) * size).forEach(({ range, index, line }) => {
       const row = list.createEl("button", { cls: "vme-picker-row" });
-      row.setAttribute("aria-label", `编辑第 ${this.page * size + index + 1} 个公式`);
-      row.createSpan({ text: `${this.page * size + index + 1}`, cls: "vme-picker-number" });
+      row.setAttribute("aria-label", `编辑第 ${index + 1} 个公式`);
+      row.createSpan({ text: `${index + 1}`, cls: "vme-picker-number" });
       try {
         const preview = createPreview(range.latex, row);
         if (preview.errors.length) throw new Error("Unsupported formula");
       } catch {
         row.querySelector("math-field")?.remove();
-        row.createSpan({ text: "暂不支持的公式（原文保留）" });
+        const fallbackWrap = row.createSpan({ cls: "vme-picker-unsupported" });
+        fallbackWrap.createSpan({ text: "暂不支持的公式（原文保留）" });
+        const snippetText = range.latex.replace(/\s+/g, " ").trim();
+        if (snippetText) {
+          const code = fallbackWrap.createEl("code", {
+            text: snippetText.length > 72 ? `${snippetText.slice(0, 72)}…` : snippetText,
+            cls: "vme-picker-unsupported-code",
+          });
+          code.setAttribute("data-no-i18n", "");
+        }
       }
-      const line = this.snapshot.slice(0, range.from).split("\n").length;
       row.createSpan({ text: `第 ${line} 行 · ${range.display ? "独立公式" : "行内公式"}`, cls: "vme-picker-location" });
       row.addEventListener("click", () => { this.close(); void this.plugin.editRange(this.view, this.snapshot, range); });
     });
-    if (this.page === 0) graphs.forEach((graph, index) => {
+    if (this.page === 0) indexedGraphs.forEach(({ graph, index }) => {
       const row = list.createEl('button', { cls: 'vme-picker-row' });
-      const summary = graph.spec.mode === 'complex' ? graph.spec.expression.replace(/\n/g, '; ') : `${graph.spec.mode === 'surface' ? 'z' : graph.spec.mode === 'polar' ? 'r' : 'y'} = ${graph.spec.expression}`;
-      row.textContent = `${graph.spec.mode === 'complex' ? '复平面' : '图像'} ${index + 1} · ${summary}`;
-      row.dataset.i18nEn = `${graph.spec.mode === 'complex' ? 'Complex plane' : 'Graph'} ${index + 1} · ${summary}`;
+      row.textContent = formatPickerGraphRow(graph.spec, index);
       row.addEventListener('click', () => { this.close(); void this.plugin.editPlot(this.view, this.snapshot, graph); });
     });
-    if (this.ranges.length > size) {
-      const footer = this.contentEl.createDiv({ cls: "vme-picker-pages" });
+    if (indexedRanges.length > size) {
+      const footer = this.listHost.createDiv({ cls: "vme-picker-pages" });
       const prev = footer.createEl("button", { text: "上一页" });
       prev.disabled = this.page === 0;
-      prev.onclick = () => { this.page--; this.render(); };
-      footer.createSpan({ text: `${this.page + 1} / ${Math.ceil(this.ranges.length / size)}` });
+      prev.onclick = () => { this.page--; this.renderList(graphs); };
+      footer.createSpan({ text: `${this.page + 1} / ${Math.ceil(indexedRanges.length / size)}` });
       const next = footer.createEl("button", { text: "下一页" });
-      next.disabled = (this.page + 1) * size >= this.ranges.length;
-      next.onclick = () => { this.page++; this.render(); };
+      next.disabled = (this.page + 1) * size >= indexedRanges.length;
+      next.onclick = () => { this.page++; this.renderList(graphs); };
     }
   }
-  onClose(): void { this.localization?.destroy(); this.contentEl.empty(); this.plugin.modals.delete(this); }
+  onClose(): void { this.unregisterTitle?.(); this.localization?.destroy(); this.contentEl.empty(); this.plugin.modals.delete(this); }
+}
+
+class VisualMathSettingTab extends PluginSettingTab {
+  private isOpen = false;
+  private renderedAllMode = true;
+  constructor(private plugin: VisualMathEditor) { super(plugin.app, plugin); }
+  display(): void {
+    this.isOpen = true;
+    this.renderedAllMode = this.plugin.modeDisplay === 'all';
+    const activeElement = this.containerEl.ownerDocument.activeElement;
+    const activeTestId = activeElement instanceof HTMLElement ? activeElement.dataset.testid : undefined;
+    renderPluginSettings({
+      clear: () => this.containerEl.empty(),
+      addDropdownSetting: ({ name, desc, setup }) => {
+        new Setting(this.containerEl)
+          .setName(name)
+          .setDesc(desc)
+          .addDropdown(dropdown => {
+            setup({
+              setTestId: testId => { dropdown.selectEl.dataset.testid = testId; },
+              addOption: (value, label) => { dropdown.addOption(value, label); },
+              setValue: value => { dropdown.setValue(value); },
+              onChange: handler => { dropdown.onChange(handler); },
+            });
+          });
+      },
+    }, {
+      settings: this.plugin.editorSettings,
+      translate: message => this.plugin.text(message),
+      onModeDisplayChange: modeDisplay => { void this.plugin.setModeDisplay(modeDisplay); },
+      onPreferredModeChange: preferredMode => { void this.plugin.setPreferredMode(preferredMode); },
+      onLanguageChange: language => { void this.plugin.setLanguage(language); },
+    });
+    if (activeTestId) {
+      this.containerEl.querySelector<HTMLElement>(`[data-testid="${activeTestId}"]`)?.focus();
+    }
+  }
+  hide(): void {
+    this.isOpen = false;
+    this.containerEl.empty();
+  }
+  refreshIfOpen(rebuild: boolean): void {
+    if (!this.isOpen || !this.containerEl.isConnected) return;
+    if (rebuild || this.renderedAllMode !== (this.plugin.modeDisplay === 'all')) {
+      this.display();
+      return;
+    }
+    const modeDisplaySelect = this.containerEl.querySelector<HTMLSelectElement>('[data-testid="setting-mode-display"]');
+    if (modeDisplaySelect && modeDisplaySelect.value !== this.plugin.modeDisplay) modeDisplaySelect.value = this.plugin.modeDisplay;
+    const preferredModeSelect = this.containerEl.querySelector<HTMLSelectElement>('[data-testid="setting-preferred-mode"]');
+    if (preferredModeSelect && preferredModeSelect.value !== this.plugin.preferredMode) preferredModeSelect.value = this.plugin.preferredMode;
+    const languageSelect = this.containerEl.querySelector<HTMLSelectElement>('[data-testid="setting-language"]');
+    if (languageSelect && languageSelect.value !== this.plugin.language) languageSelect.value = this.plugin.language;
+  }
 }
 
 export default class VisualMathEditor extends Plugin {
   modals = new Set<Modal>();
   isLoaded = false;
-  language: Language = "system";
-  private settingsQueue: Promise<void> = Promise.resolve();
-  private pluginSettings: Record<string, unknown> = {};
+  private readonly settingsStore = new PluginSettingsStore({
+    loadData: () => this.loadData(),
+    saveData: data => this.saveData(data),
+  });
+  private settingTab?: VisualMathSettingTab;
+  private activeEditors = new Map<MountedEditor, (() => void) | undefined>();
+  private modalTitleRefreshers = new Set<() => void>();
+  private registeredCommands: { command: Command; label: string }[] = [];
   private inline?: EditorView;
   private inlineView?: MarkdownView;
   private headerActions = new Map<MarkdownView, HTMLElement>();
@@ -187,12 +293,23 @@ export default class VisualMathEditor extends Plugin {
   private readingTitleRefreshers = new Set<() => void>();
   private ribbonAction?: HTMLElement;
 
+  get editorSettings(): Readonly<PluginSettings> { return this.settingsStore.settings; }
+  get language(): Language { return this.settingsStore.language; }
+  get modeDisplay(): ModeDisplay { return this.settingsStore.modeDisplay; }
+  get preferredMode(): EditorMode { return this.settingsStore.preferredMode; }
+  get alsoInsertGraphEquation(): boolean { return this.settingsStore.alsoInsertGraphEquation; }
+
+  private registerLocalizedCommand(label: string, config: Omit<Command, 'name'>): void {
+    const command = this.addCommand({ ...config, name: this.text(label) });
+    this.registeredCommands.push({ command, label });
+  }
+
   async onload(): Promise<void> {
-    const data: unknown = await this.loadData();
-    if (data && typeof data === "object" && !Array.isArray(data)) this.pluginSettings = data as Record<string, unknown>;
-    if (["system", "zh", "en", "es"].includes(String(this.pluginSettings.language))) this.language = this.pluginSettings.language as Language;
+    await this.settingsStore.load();
     try { configureMathLive(); } catch (error) { this.notify(String(error)); throw error; }
     this.isLoaded = true;
+    this.settingTab = new VisualMathSettingTab(this);
+    this.addSettingTab(this.settingTab);
     this.ribbonAction = this.addRibbonIcon("sigma", this.text("Visual Math：插入或编辑公式"), () => {
       const view = this.app.workspace.getActiveViewOfType(MarkdownView);
       if (!view?.file) { this.notify("请先打开一篇 Markdown 笔记。"); return; }
@@ -201,25 +318,25 @@ export default class VisualMathEditor extends Plugin {
     this.app.workspace.onLayoutReady(() => this.refreshHeaderActions());
     this.registerEvent(this.app.workspace.on("layout-change", () => this.refreshHeaderActions()));
     this.registerEvent(this.app.workspace.on("active-leaf-change", () => this.refreshHeaderActions()));
-    this.addCommand({
-      id: 'about', name: this.text('关于与许可'),
+    this.registerLocalizedCommand('关于与许可', {
+      id: 'about',
       callback: () => this.present(new AboutVisualMath(this)),
     });
-    this.addCommand({
-      id: "insert-or-edit-equation", name: this.text("插入或编辑公式 / Insert or edit equation"),
+    this.registerLocalizedCommand("插入或编辑公式 / Insert or edit equation", {
+      id: "insert-or-edit-equation",
       editorCallback: (editor, context) => {
         if (context instanceof MarkdownView) this.openAtCursor(editor, context);
         else this.notify("请在普通 Markdown 笔记中使用公式编辑器。");
       },
     });
-    this.addCommand({
-      id: "open-equation-dialog", name: this.text("在弹窗中插入或编辑公式 / Open equation dialog"),
+    this.registerLocalizedCommand("在弹窗中插入或编辑公式 / Open equation dialog", {
+      id: "open-equation-dialog",
       editorCallback: (editor, context) => {
         if (context instanceof MarkdownView) this.openAtCursor(editor, context, true);
       },
     });
-    this.addCommand({
-      id: "recover-equation-draft", name: this.text("恢复公式草稿 / Recover equation draft"),
+    this.registerLocalizedCommand("恢复公式草稿 / Recover equation draft", {
+      id: "recover-equation-draft",
       editorCallback: (editor, context) => {
         if (!(context instanceof MarkdownView) || !this.recoveredDraft) { this.notify("没有暂存的公式草稿。"); return; }
         const snapshot = editor.getValue();
@@ -239,8 +356,8 @@ export default class VisualMathEditor extends Plugin {
         this.notify("公式草稿已暂存。可用“恢复公式草稿”命令在新位置继续编辑；重启前请保存。");
       }
     }));
-    this.addCommand({
-      id: "choose-equation", name: this.text("编辑本笔记公式 / Choose equation to edit"),
+    this.registerLocalizedCommand("编辑本笔记公式 / Choose equation to edit", {
+      id: "choose-equation",
       checkCallback: (checking) => {
         const view = this.app.workspace.getActiveViewOfType(MarkdownView);
         if (!view?.file) return false;
@@ -276,6 +393,10 @@ export default class VisualMathEditor extends Plugin {
     if (this.inline) hideInlineEditor(this.inline);
     this.inline = undefined;
     this.inlineView = undefined;
+    this.inlineSession = undefined;
+    this.activeEditors.clear();
+    this.modalTitleRefreshers.clear();
+    this.registeredCommands = [];
     for (const action of this.headerActions.values()) action.remove();
     this.headerActions.clear();
     for (const modal of [...this.modals]) modal.close();
@@ -302,27 +423,67 @@ export default class VisualMathEditor extends Plugin {
     };
   }
 
+  registerActiveEditor(mounted: MountedEditor, refreshHost?: () => void): () => void {
+    this.activeEditors.set(mounted, refreshHost);
+    return () => { this.activeEditors.delete(mounted); };
+  }
+
+  registerModalTitle(refreshTitle: () => void): () => void {
+    this.modalTitleRefreshers.add(refreshTitle);
+    return () => { this.modalTitleRefreshers.delete(refreshTitle); };
+  }
+
   private notify(message: string): void { new Notice(this.text(message)); }
 
   async setLanguage(language: Language): Promise<void> {
-    this.language = language;
-    this.pluginSettings.language = language;
+    const pending = this.settingsStore.setLanguage(language);
+    if (this.inlineSession) this.inlineSession.language = language;
+    for (const [editor, refreshHost] of this.activeEditors) {
+      editor.setLanguage(language);
+      refreshHost?.();
+    }
     this.refreshHeaderActions();
-    this.ribbonAction?.setAttribute('aria-label', this.text('Visual Math：插入或编辑公式'));
+    const actionLabel = this.text('Visual Math：插入或编辑公式');
+    this.ribbonAction?.setAttribute('aria-label', actionLabel);
+    for (const entry of this.registeredCommands) entry.command.name = this.text(entry.label);
+    for (const refreshTitle of this.modalTitleRefreshers) refreshTitle();
     for (const localization of this.localizations) localization.setLanguage(language);
     for (const refresh of this.readingTitleRefreshers) refresh();
-    try { await this.persistSettings({ language }); }
+    this.settingTab?.refreshIfOpen(true);
+    try { await pending; }
     catch { this.notify("无法保存语言偏好 / Unable to save language preference"); }
   }
 
-  private persistSettings(patch: Record<string, unknown>): Promise<void> {
-    const operation = this.settingsQueue.catch(() => undefined).then(async () => {
-      const next = { ...this.pluginSettings, ...patch };
-      await this.saveData(next);
-      this.pluginSettings = next;
-    });
-    this.settingsQueue = operation;
-    return operation;
+  async setModeDisplay(modeDisplay: ModeDisplay): Promise<void> {
+    const pending = this.settingsStore.setModeDisplay(modeDisplay);
+    if (this.inlineSession) {
+      this.inlineSession.modeDisplay = modeDisplay;
+      this.inlineSession.draft.temporarySourceFallback = undefined;
+      this.inlineSession.draft.mode = modeDisplay === 'all' ? this.preferredMode : modeDisplay;
+    }
+    for (const [editor] of this.activeEditors) editor.setModeDisplay(modeDisplay);
+    this.settingTab?.refreshIfOpen(false);
+    try { await pending; }
+    catch { this.notify("无法保存编辑器设置"); }
+  }
+
+  async setPreferredMode(preferredMode: EditorMode): Promise<void> {
+    const pending = this.settingsStore.setPreferredMode(preferredMode);
+    if (this.inlineSession) {
+      this.inlineSession.preferredMode = preferredMode;
+      if (this.modeDisplay === 'all') this.inlineSession.draft.mode = preferredMode;
+    }
+    for (const [editor] of this.activeEditors) editor.setPreferredMode(preferredMode);
+    this.settingTab?.refreshIfOpen(false);
+    try { await pending; }
+    catch { this.notify("无法保存编辑器设置"); }
+  }
+
+  async setAlsoInsertGraphEquation(enabled: boolean): Promise<void> {
+    const pending = this.settingsStore.setAlsoInsertGraphEquation(enabled);
+    if (this.inlineSession) this.inlineSession.alsoInsertGraphEquation = enabled;
+    try { await pending; }
+    catch { this.notify("无法保存编辑器设置"); }
   }
 
   private present(modal: Modal): void { this.modals.add(modal); modal.open(); }
@@ -386,7 +547,17 @@ export default class VisualMathEditor extends Plugin {
     const graph = findPlotBlocks(snapshot).find(block => from >= block.from && to <= block.to);
     if (graph) { void this.editPlot(view, snapshot, graph); return; }
     if (range) { void this.editRange(view, snapshot, range, dialog); return; }
-    if (from !== to) { this.notify("请选择一个已有公式，或先点击要插入公式的位置。"); return; }
+    if (from !== to) {
+      const convertible = extractConvertibleSelection(snapshot, from, to);
+      if (!convertible) {
+        this.notify("请选择一个已有公式，或先点击要插入公式的位置。");
+        return;
+      }
+      const contextualDisplay = defaultDisplayForContext(snapshot, convertible.from, convertible.to);
+      const selectionDraft = prepareSelectionDraft(convertible.text, contextualDisplay, this.editorSettings);
+      this.openEditor(view, { snapshot, from: convertible.from, to: convertible.to }, undefined, dialog, selectionDraft);
+      return;
+    }
     if (!isMathInsertionAllowed(snapshot, from)) { this.notify("请在普通笔记正文中插入公式，代码、属性和链接地址内暂不支持。"); return; }
     this.openEditor(view, { snapshot, from, to }, undefined, dialog);
   }
@@ -411,7 +582,14 @@ export default class VisualMathEditor extends Plugin {
     if (view.file?.path !== path || view.editor.getValue() !== snapshot) { this.notify("笔记已变化，请重新选择公式。"); return; }
     if (!isMathInsertionAllowed(snapshot, snapshot.length) && !canAppendAfterGraph(snapshot, snapshot.length)) { this.notify("请在普通笔记正文中插入公式，代码、属性和链接地址内暂不支持。"); return; }
     view.editor.setCursor(view.editor.offsetToPos(snapshot.length));
-    this.openEditor(view, { snapshot, from: snapshot.length, to: snapshot.length });
+    let endDisplay = true;
+    try { planWrite(snapshot, { snapshot, from: snapshot.length, to: snapshot.length }, "x", true); }
+    catch { endDisplay = false; }
+    this.openEditor(view, { snapshot, from: snapshot.length, to: snapshot.length }, undefined, false, {
+      latex: "",
+      display: endDisplay,
+      mode: resolveInitialEditorMode(this.editorSettings),
+    });
   }
 
   async editRange(view: MarkdownView, snapshot: string, range: MathRange, dialog = false): Promise<void> {
@@ -431,7 +609,7 @@ export default class VisualMathEditor extends Plugin {
   private openEditor(view: MarkdownView, target: WriteTarget, range?: MathRange, dialog = false, draft?: InlineDraft, plot?: PlotBlock): void {
     const cm = (view.editor as Editor & { cm?: EditorView }).cm;
     if (cm && cm.dom.ownerDocument !== document) {
-      this.notify("第一版请在 Obsidian 主窗口中编辑公式。"); return;
+      this.notify("请在 Obsidian 主窗口中编辑公式。"); return;
     }
     if (this.inline && this.resumeInline()) return;
     if (dialog || !cm || !cm.state.field(inlineEditorField, false)) {
@@ -443,12 +621,22 @@ export default class VisualMathEditor extends Plugin {
     this.inline = cm;
     this.inlineView = view;
     this.inlinePath = path;
+    const initialMode = resolveInitialEditorMode(this.editorSettings, draft?.mode, draft?.temporarySourceFallback);
     const session: InlineSession = {
       id: this.nextSessionId++, editing: !!range, graphOnly: Boolean(plot),
       language: this.language,
+      modeDisplay: this.modeDisplay,
+      preferredMode: this.preferredMode,
+      alsoInsertGraphEquation: this.alsoInsertGraphEquation,
       systemLanguage: this.systemLanguage(),
       onLanguageChange: language => this.setLanguage(language),
-      draft: draft ? { ...draft } : { latex: range?.latex ?? "", display: range?.display ?? true, mode: "visual" },
+      onModeDisplayChange: modeDisplay => this.setModeDisplay(modeDisplay),
+      onPreferredModeChange: preferredMode => this.setPreferredMode(preferredMode),
+      onAlsoInsertGraphEquationChange: enabled => this.setAlsoInsertGraphEquation(enabled),
+      registerEditor: (mounted, refreshHost) => this.registerActiveEditor(mounted, refreshHost),
+      draft: draft
+        ? { ...draft, mode: initialMode }
+        : { latex: range?.latex ?? "", display: range?.display ?? defaultDisplayForContext(target.snapshot, target.from, target.to), mode: initialMode },
       onCancel: () => { hideInlineEditor(cm); this.inline = undefined; this.inlineView = undefined; this.inlineSession = undefined; cm.focus(); },
       onSave: (latex, display) => {
         if (plot) throw new Error('Use Save graph to update this graph.');
@@ -503,25 +691,32 @@ export default class VisualMathEditor extends Plugin {
     try {
       const original = parsePlotSpec(source);
       let viewSpec: PlotSpec = { ...original };
+      let currentSvgMarkup = '';
       const viewport = element.createDiv({ cls: 'vme-saved-plot-viewport' });
       viewport.dataset.testid = 'saved-plot-viewport';
       const toolbar = element.createDiv({ cls: 'vme-plot-actions' });
       toolbar.setAttribute('role', 'group');
       toolbar.setAttribute('aria-label', '图像操作');
+      const viewGroup = toolbar.createDiv({ cls: 'vme-saved-plot-view-group' });
+      viewGroup.dataset.testid = 'saved-plot-view-group';
+      const actionGroup = toolbar.createDiv({ cls: 'vme-saved-plot-action-group' });
+      actionGroup.dataset.testid = 'saved-plot-action-group';
       const status = element.createEl('p', { cls: 'vme-plot-note' });
       status.dataset.testid = 'saved-plot-status';
       status.setAttribute('role', 'status');
       status.setAttribute('aria-live', 'polite');
       const boundsChanged = (): boolean => ['xMin', 'xMax', 'yMin', 'yMax', 'zMin', 'zMax', 'azimuth', 'elevation', 'geometryZoom'].some(key => viewSpec[key as keyof PlotSpec] !== original[key as keyof PlotSpec]);
       const controls: HTMLButtonElement[] = [];
-      const makeButton = (label: string, testid: string, action: () => void): HTMLButtonElement => {
-        const node = toolbar.createEl('button', { text: label, cls: 'vme-science-button' });
+      const makeButton = (container: HTMLElement, label: string, testid: string, action: () => void, tooltip?: string): HTMLButtonElement => {
+        const node = container.createEl('button', { text: label, cls: 'vme-science-button' });
         node.type = 'button';
         node.dataset.testid = testid;
         node.setAttribute('aria-label', label);
+        if (tooltip) node.title = tooltip;
         const iconNames: Record<string, ControlIcon> = {
           'saved-plot-zoom-in': 'zoom-in', 'saved-plot-zoom-out': 'zoom-out',
-          'saved-plot-reset': 'reset', 'edit-saved-graph': 'edit', 'save-saved-plot-view': 'save',
+          'saved-plot-reset': 'reset', 'saved-plot-copy-image': 'copy',
+          'edit-saved-graph': 'edit', 'save-saved-plot-view': 'save',
         };
         if (iconNames[testid]) node.prepend(controlIcon(iconNames[testid], element.ownerDocument));
         child.registerDomEvent(node, 'mousedown', event => { event.preventDefault(); event.stopPropagation(); });
@@ -534,9 +729,12 @@ export default class VisualMathEditor extends Plugin {
       };
       const refresh = (): void => {
         if (disposed) return;
+        const dirty = boundsChanged();
+        element.dataset.dirty = String(dirty);
         for (const control of controls) control.disabled = busy || committed;
-        save.disabled = busy || committed || !boundsChanged();
-        reset.disabled = busy || committed || !boundsChanged();
+        save.disabled = busy || committed || !dirty;
+        save.hidden = !dirty;
+        reset.disabled = busy || committed || !dirty;
         interaction?.setDisabled(busy || committed);
       };
       const render = (next: PlotSpec): boolean => {
@@ -548,6 +746,7 @@ export default class VisualMathEditor extends Plugin {
         }
         const svg = new DOMParser().parseFromString(result.svg, 'image/svg+xml').documentElement;
         if (svg.localName !== 'svg') throw new Error('Unable to render this graph.');
+        currentSvgMarkup = result.svg;
         viewport.replaceChildren(element.ownerDocument.importNode(svg, true));
         viewSpec = { ...result.spec };
         status.textContent = boundsChanged()
@@ -568,16 +767,32 @@ export default class VisualMathEditor extends Plugin {
           refresh();
         }
       };
-      makeButton('放大', 'saved-plot-zoom-in', () => { interaction?.setDisabled(true); changeView((viewSpec.mode === 'surface' || viewSpec.mode === 'geometry') ? zoomOrbitView(viewSpec, 0.8) : zoomPlotBounds(viewSpec, 0.8)); refresh(); });
-      makeButton('缩小', 'saved-plot-zoom-out', () => { interaction?.setDisabled(true); changeView((viewSpec.mode === 'surface' || viewSpec.mode === 'geometry') ? zoomOrbitView(viewSpec, 1.25) : zoomPlotBounds(viewSpec, 1.25)); refresh(); });
-      const reset = makeButton('重置视图', 'saved-plot-reset', () => {
+      makeButton(viewGroup, '放大', 'saved-plot-zoom-in', () => { interaction?.setDisabled(true); changeView((viewSpec.mode === 'surface' || viewSpec.mode === 'geometry') ? zoomOrbitView(viewSpec, 0.8) : zoomPlotBounds(viewSpec, 0.8)); refresh(); });
+      makeButton(viewGroup, '缩小', 'saved-plot-zoom-out', () => { interaction?.setDisabled(true); changeView((viewSpec.mode === 'surface' || viewSpec.mode === 'geometry') ? zoomOrbitView(viewSpec, 1.25) : zoomPlotBounds(viewSpec, 1.25)); refresh(); });
+      const reset = makeButton(viewGroup, '重置视图', 'saved-plot-reset', () => {
         // Reset deliberately discards a queued gesture so it cannot undo the explicit button action.
         interaction?.setDisabled(true);
         changeView(original);
         refresh();
       });
-      makeButton('编辑图像', 'edit-saved-graph', () => { void act('edit'); });
-      const save = makeButton('保存视图', 'save-saved-plot-view', () => { void act('save'); });
+      makeButton(actionGroup, '复制图片', 'saved-plot-copy-image', () => {
+        const svgNode = viewport.querySelector<SVGElement>('svg');
+        if (!svgNode) return;
+        void copyPlotImage(svgNode, { scale: 2, fallbackSvgMarkup: currentSvgMarkup }).then(
+          (format) => {
+            if (disposed) return;
+            status.textContent = format === 'png'
+              ? '图片已复制到剪贴板。'
+              : '当前环境不支持复制图片，已复制 SVG 源码。';
+          },
+          () => {
+            if (disposed) return;
+            status.textContent = '未能复制图片，请重试。';
+          },
+        );
+      }, '复制高清 PNG 图片到剪贴板');
+      makeButton(actionGroup, '编辑图像', 'edit-saved-graph', () => { void act('edit'); });
+      const save = makeButton(actionGroup, '保存视图', 'save-saved-plot-view', () => { void act('save'); });
       save.classList.add('vme-science-primary');
       if (!render(original)) throw new Error('Unable to render this graph.');
       if (original.mode === 'complex') {
@@ -713,17 +928,12 @@ export default class VisualMathEditor extends Plugin {
           const file = view.file;
           if (!file) return;
           const snapshot = view.getMode() === "source" ? view.editor.getValue() : await this.app.vault.read(file);
-          if (!section || section.text !== snapshot || view.file?.path !== context.sourcePath) { await this.showPicker(view); return; }
-          const lines = snapshot.split("\n");
-          const start = lines.slice(0, section.lineStart).join("\n").length + (section.lineStart ? 1 : 0);
-          const end = lines.slice(0, section.lineEnd + 1).join("\n").length;
-          const candidates = findMathRanges(snapshot).filter(r => r.from >= start && r.to <= end);
-          if (candidates.length !== maths.length || !candidates[index]) { await this.showPicker(view); return; }
-          // A rendered section can be stale or reordered by another plugin.
-          // Without a matching TeX annotation the chooser is the safe fallback.
-          const annotation = math.querySelector('annotation[encoding="application/x-tex"]')?.textContent?.trim();
-          if (!annotation || annotation !== candidates[index].latex.trim()) { await this.showPicker(view); return; }
-          await this.editRange(view, snapshot, candidates[index]);
+          if (view.file?.path !== context.sourcePath) { await this.showPicker(view); return; }
+          const annotationNode = math.querySelector('annotation[encoding="application/x-tex"]');
+          const annotationText = annotationNode !== null ? (annotationNode.textContent ?? "") : null;
+          const matched = resolveReadingMathCandidate(snapshot, section, maths.length, index, annotationText);
+          if (!matched) { await this.showPicker(view); return; }
+          await this.editRange(view, snapshot, matched);
         })().catch(() => this.notify("无法定位公式，请通过命令面板选择本笔记公式。"));
       });
     });

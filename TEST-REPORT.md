@@ -1,5 +1,22 @@
 # Test report / 测试记录
 
+## 1.1.1 — pre-publication validation (2026-11-20)
+
+**Prepared version: Visual Math 1.1.1 / Oliver, desktop release.** The plugin ID remains `visual-math-editor` (minimum Obsidian `1.14.4`, desktop only). Older sections below retain their original build identities and dates.
+
+### Completed local checks
+
+- **307 automated tests passed** (`npm run check`), with TypeScript `tsc --noEmit` (`0` errors, `0` warnings) and the production build (`dist/main.js`, `dist/manifest.json`, `dist/styles.css`) passing. Coverage includes:
+  - 9 primitive 3D solids (`hemisphere` and circular/polygonal `frustum` added) and `2–6` part **Composite 3D Solids** (`solid` / `translucent` / `wireframe` styles, 5 colors, camera azimuth/elevation inputs, global faces/wireframe preservation, and 6 exam problem templates);
+  - Desmos-style 2D visual graph `<math-field>` (`smartSuperscript`, `\log_{b}(x)` change-of-base, odd/nth roots `\sqrt[n]{x}`, MathLive `\operatorname{arsinh|arcosh|artanh}` / `\exponentialE`, and unparenthesized unary trig/log forms `\sin x`, `\sin^2 x`, `\ln x`);
+  - 1-click offline 2× PNG image clipboard copy (`preparePlotSvgForExport` / `copyPlotImage`), graph layout ordering, and saved-plot toolbar grouping;
+  - Editor mode display customization (`all` / `visual` / `hybrid` / `latex`), persistent `preferredMode` and `language` in `data.json`, and Obsidian plugin settings tab synchronization;
+  - Matrix multi-cell TSV paste (`1×1`–`6×6`), 6 matrix delimiter styles, expanded Greek symbol buttons/typing tip, 24 physics templates, exact 2019 SI `eV / keV / MeV` conversions (66 preset units across 11 categories), 10-family periodic table classification, 6-language UI (`en`, `zh`, `es`, `ja`, `de`, `fr`) with zero Han-script leakage in `en`/`es`/`de`/`fr`, MathJax 4.1.3 Reading View double-click resolution without `<annotation>`, and cross-plugin `math-field` coexistence.
+- **1,278 browser component checks across six suites + 24 live Headless Chrome Shadow DOM/Canvas/layout assertions passed** (`397` editor/science/graph/multiline/settings checks, `181` import checks, `115` matrix/advanced checks, `258` geometry checks, `69` trig/geometry symbol checks, and `258` system/set/sequence checks).
+- **Packaging validation passed (`npm run package`)**: produced `release/visual-math-editor-1.1.1.zip`, `release/visual-math-editor-source-1.1.1.zip` (retaining full GPLv3 + Obsidian linking exception notices, 6-language READMEs, and all four pinned dependency archives in `third-party-sources/`), and `release/SHA256SUMS.txt`.
+
+1.1.1 发布前本地验收：`npm run check` 全部通过（TypeScript 零报错零警告、**307 项自动化测试**通过、生产构建与预览构建通过），六套真实 Headless Chrome 组件回归共 **1,278 项检查 + 24 项实时 Shadow DOM / 2× PNG 导出 / 组合几何体校验**全部通过，`npm run package` 安装包与源码包校验通过。Windows、Linux、移动端、分离窗口及任意第三方主题/插件组合仍未纳入验证声明范围。
+
 ## 1.1.0 — pre-publication validation (2026-11-10)
 
 **Prepared version: Visual Math 1.1.0 / Oliver, desktop release.** The plugin ID remains `visual-math-editor` (minimum Obsidian `1.14.4`, desktop only). The following are local pre-publication checks; hosted CI, GitHub artifact attestations, public GitHub release and Obsidian community directory review are separate steps. Older sections below retain their original build identities and dates.

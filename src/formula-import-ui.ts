@@ -40,6 +40,7 @@ export function mountFormulaImport(container: HTMLElement, options: {
     );
   });
   const review = action('检查并预览', 'import-preview-button', inspect);
+  review.className = 'vme-subpanel-secondary';
   const candidateDetails = element('details'); candidateDetails.className = 'vme-import-candidate-details';
   const candidateSummary = element('summary', '候选源码（不含外包装）'); candidateSummary.className = 'vme-import-candidate-summary';
   const candidate = element('textarea'); candidate.dataset.testid = 'import-candidate'; candidate.readOnly = true;
@@ -59,6 +60,8 @@ export function mountFormulaImport(container: HTMLElement, options: {
       status.dataset.state = 'error'; apply.disabled = true;
     }
   });
+  apply.className = 'vme-save-button vme-subpanel-primary';
+  apply.title = '应用到当前公式（Ctrl/Cmd+Enter）';
   const cancel = action('取消', 'import-cancel', close);
   const actions = element('div'); actions.className = 'vme-import-actions'; actions.append(useCurrent, copyOriginal, review, apply, cancel);
   // Wrapping labels avoids duplicate ids across dialog and inline editor instances.
@@ -146,6 +149,11 @@ export function mountFormulaImport(container: HTMLElement, options: {
     },
     close,
     isOpen: () => !panel.hidden,
+    tryApply: (): boolean => {
+      if (panel.hidden || disabled || apply.disabled) return false;
+      apply.click();
+      return panel.hidden;
+    },
     getOriginal: () => originalText,
     getDraft: (): FormulaImportDraft | undefined => openedOnce ? { original: originalText, open: !panel.hidden } : undefined,
     setDisabled: (value: boolean) => {

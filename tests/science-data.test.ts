@@ -97,6 +97,8 @@ test('re-edit extraction accepts one complete balanced science atom only', () =>
 });
 
 test('every shipped chemistry, physics and unit preset parses and renders offline', () => {
+  assert.equal(CHEMISTRY_TEMPLATES.length, 12);
+  assert.equal(PHYSICS_TEMPLATES.length, 24);
   const latexSamples = [
     ...CHEMISTRY_TEMPLATES.map(({ input }) => buildChemicalLatex(input)),
     ...PHYSICS_TEMPLATES.map(({ latex }) => latex),

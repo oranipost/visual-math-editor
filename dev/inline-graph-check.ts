@@ -48,7 +48,7 @@ export async function checkInlineEquationGraph(check: (condition: boolean, messa
     source(String.raw`y=\frac{1}{x}`);
     check(!svg(), '公式修改后立即移除过时曲线');
     await settle(350);
-    check(Boolean(svg()) && editor!.getDraft().plot?.expression === '(1)/(x)'
+    check(Boolean(svg()) && editor!.getDraft().plot?.expression === '1/x'
       && editor!.getDraft().plot?.xMin === '-5' && editor!.getDraft().plot?.xMax === '5', '公式自动更新曲线，并保留用户调整的坐标范围');
 
     source('x^2+y^2=1'); await settle();

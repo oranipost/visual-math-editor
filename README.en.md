@@ -1,8 +1,8 @@
 # Visual Math for Obsidian
 
-**English** · [简体中文](README.zh-CN.md) · [Español](README.es.md)
+**English** · [简体中文](README.zh-CN.md) · [Español](README.es.md) · [日本語](README.ja.md) · [Deutsch](README.de.md) · [Français](README.fr.md)
 
-**[Install in Obsidian](https://community.obsidian.md/plugins/visual-math-editor)** · **[Official Website](https://oranipost.github.io/visual-math/)** · **[YouTube Tutorials](https://www.youtube.com/@VisualMathForObsidian)** · **[Download 1.1.0 ZIP](https://github.com/oranipost/visual-math-editor/releases/download/1.1.0/visual-math-editor-1.1.0.zip)** · **[Release Notes](https://github.com/oranipost/visual-math-editor/releases/tag/1.1.0)**
+**[Install in Obsidian](https://community.obsidian.md/plugins/visual-math-editor)** · **[Official Website](https://oranipost.github.io/visual-math/)** · **[YouTube Tutorials](https://www.youtube.com/@VisualMathForObsidian)** · **[Download 1.1.1 ZIP](https://github.com/oranipost/visual-math-editor/releases/download/1.1.1/visual-math-editor-1.1.1.zip)** · **[Release Notes](https://github.com/oranipost/visual-math-editor/releases/tag/1.1.1)**
 
 ## Overview
 
@@ -10,12 +10,12 @@ I built **Visual Math** so you can write math, chemistry, and physics notes in O
 
 When you open the editor inside a note, you can click fractions, roots, integrals, sums, matrices, or equation systems and fill in the boxes directly. If you already know LaTeX, switch to **LaTeX** or **Hybrid** mode to edit the code and the rendered formula side by side. Press `↵ New line` (`Shift+Enter`) whenever you want multiple lines inside the same equation block.
 
-Everything saves as standard `$…$` or `$$…$$` Markdown in your note, and all fonts, unit tables, and graphing tools run locally offline.
+Everything saves as standard `$…$` or `$$…$$` Markdown in your note. All fonts, unit tables, and graphing tools run 100% locally offline — no AI, no cloud accounts, and no paid subscriptions.
 
 - **Website & Feature Guide**: [oranipost.github.io/visual-math](https://oranipost.github.io/visual-math/)
 - **Video Walkthroughs**: [@VisualMathForObsidian on YouTube](https://www.youtube.com/@VisualMathForObsidian)
 
-![Visual Math 1.1.0 in Obsidian](docs/images/visual-math-demo.gif)
+![Visual Math 1.1.1 in Obsidian](docs/images/visual-math-demo.gif)
 
 ---
 
@@ -23,10 +23,10 @@ Everything saves as standard `$…$` or `$$…$$` Markdown in your note, and all
 
 - **Visual, LaTeX, and Hybrid editing**: Edit with visual placeholders, raw TeX source, or both at once. Includes multi-line equations (`↵ New line`), undo/redo history, and single-formula LaTeX import.
 - **Matrices, systems, sets, and calculus notation**: Build `1×1` to `6×6` matrices, `2–6` row equation systems with a left brace, 19 set/sequence symbols, trig/geometry notation, and 9 calculus/vector templates.
-- **Function, polar, 3D surface, and complex graphs**: Plot `y = f(x)` (with numerical 1st/2nd derivatives and definite integrals), polar curves `r = f(θ)`, 3D surfaces `z = f(x, y)`, and `Re / Im` complex points right below your equation.
-- **3D geometry models**: Rotate and zoom 7 geometric solids (sphere, cylinder, cone, pyramid, prism, cuboid, plane) and 3 spatial intersection scenes (two planes, line–plane, sphere–plane).
-- **Chemistry, physics, units, and periodic table**: Write chemical reactions (`\ce`) with balance checks, insert physics formulas, convert across 63 units in 11 categories (`\pu`), and look up all 118 elements.
-- **Offline and trilingual**: Works without internet or external accounts. Available in **English**, **简体中文**, and **Español**.
+- **Function, polar, 3D surface, and complex graphs**: Plot `y = f(x)` (with numerical 1st/2nd derivatives and definite integrals), polar curves `r = f(θ)`, 3D surfaces `z = f(x, y)`, and `Re / Im` complex points right below your equation, or copy any graph as a PNG image in one click.
+- **3D geometry & multi-solid composite modeling**: Rotate and zoom 9 geometric primitives (sphere, hemisphere, cylinder, cone, circular/polygonal frustum, regular pyramid, regular prism, cuboid, plane), combine `2–6` solids into composite 3D figures (with problem templates, per-part offsets/rotations, and solid/translucent/wireframe styles), and explore 3 spatial intersection scenes (two planes, line–plane, sphere–plane).
+- **Chemistry, physics, units, and 10-category periodic table**: Write chemical reactions (`\ce`) with balance checks, insert 24 physics templates, convert across 66 units in 11 categories (`\pu`, including `eV`, `keV`, `MeV`), and look up all 118 elements across 10 standard chemical families.
+- **100% local offline & 6 languages**: Runs completely offline with zero AI, zero cloud dependencies, and no subscriptions. Available in **English**, **简体中文**, **Español**, **日本語**, **Deutsch**, and **Français**.
 
 ---
 
@@ -46,9 +46,9 @@ Everything saves as standard `$…$` or `$$…$$` Markdown in your note, and all
 2. Click **Install**, then **Enable** inside Obsidian.
 3. Open any Markdown note and click **∑**.
 
-### Manual ZIP Installation (1.1.0 Desktop Release)
+### Manual ZIP Installation (1.1.1 Desktop Release)
 
-Download **[visual-math-editor-1.1.0.zip](https://github.com/oranipost/visual-math-editor/releases/download/1.1.0/visual-math-editor-1.1.0.zip)** (compiled release archive; do not download GitHub's *Source code* archive):
+Download **[visual-math-editor-1.1.1.zip](https://github.com/oranipost/visual-math-editor/releases/download/1.1.1/visual-math-editor-1.1.1.zip)** (compiled release archive; do not download GitHub's *Source code* archive):
 
 1. Extract the `visual-math-editor` folder into `<your-vault>/.obsidian/plugins/`.
 2. Check that `main.js`, `manifest.json`, `styles.css`, and the license files sit directly inside `.obsidian/plugins/visual-math-editor/`.
@@ -58,10 +58,10 @@ See the [Installation & Updating Guide](docs/INSTALLATION.md#english) for full i
 
 ---
 
-## Screenshots (v1.1.0)
+## Screenshots (v1.1.1)
 
 ### Hybrid Mode, Multi-Line Equations & Compact Tool Bar
-![Hybrid mode and multi-line editing in Visual Math 1.1.0](docs/images/vme-1.1-hybrid-multiline.png)
+![Hybrid mode and multi-line editing in Visual Math 1.1.1](docs/images/vme-1.1-hybrid-multiline.png)
 
 ### Visual Matrices & Equation Systems
 ![Visual matrix and equation system builders with live preview](docs/images/vme-1.1-matrix-system.png)
@@ -88,7 +88,7 @@ See the [Installation & Updating Guide](docs/INSTALLATION.md#english) for full i
 - **Graphs and geometry**:
   - Explicit functions `y = f(x)` (up to 500 characters), polar curves `r = f(θ)` (`θ` span up to `100π`), numerical 1st/2nd derivatives and definite integrals on finite continuous intervals, 3D wireframe surfaces `z = f(x, y)`, and up to 20 rectangular complex points (`a + bi`, up to 1,000 characters).
   - Saved equation blocks (`$…$` / `$$…$$`) and graph blocks (`vme-plot`) are separate blocks in the note after saving; use **Edit graph** or **Save view** on a graph block to update its stored view.
-- **Science tools**: Chemistry (`\ce{…}`) and units (`\pu{…}`) require host `mhchem` support when exported outside Obsidian. Offline unit conversion covers 63 preset units across 11 categories using pinned Convert 8.0.2 constants. Element details follow CIAAW and NIST reference data.
+- **Science tools**: Chemistry (`\ce{…}`) and units (`\pu{…}`) require host `mhchem` support when exported outside Obsidian. Offline unit conversion covers 66 preset units across 11 categories using pinned Convert 8.0.2 constants and exact 2019 SI electronvolt definitions. Element details follow CIAAW and NIST reference data.
 - **Compatibility**: Requires **Obsidian 1.14.4+** on desktop. Verification records are maintained in [TEST-REPORT.md](TEST-REPORT.md) and [CHANGELOG.md](CHANGELOG.md).
 
 ### Build From Source

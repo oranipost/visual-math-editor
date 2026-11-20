@@ -80,6 +80,7 @@ export function mountMatrixTools(container: HTMLElement, options: {
   const preview = node('div'); preview.className = 'vme-matrix-preview'; preview.dataset.testid = 'matrix-preview'; preview.setAttribute('aria-label', '矩阵预览');
   const status = node('p'); status.dataset.testid = 'matrix-status'; status.setAttribute('role', 'status'); status.className = 'vme-hint';
   const review = action('预览矩阵', 'matrix-preview', inspect);
+  review.className = 'vme-subpanel-secondary';
   const apply = action('插入矩阵', 'matrix-apply', () => {
     if (!candidate) return;
     try {
@@ -91,6 +92,8 @@ export function mountMatrixTools(container: HTMLElement, options: {
       setOpen(false); status.textContent = '矩阵已加入公式草稿；保存后才更新笔记。';
     } catch { status.textContent = '矩阵未插入；请检查单元格和当前公式。'; status.dataset.state = 'error'; }
   });
+  apply.className = 'vme-save-button vme-subpanel-primary';
+  apply.title = '应用到当前公式（Ctrl/Cmd+Enter）';
   const cancel = action('取消', 'matrix-cancel', () => setOpen(false));
   const actions = node('div'); actions.className = 'vme-import-actions'; actions.append(review, apply, cancel);
   cancel.title = '取消不会修改当前公式';
@@ -128,16 +131,53 @@ export function mountMatrixTools(container: HTMLElement, options: {
   }
   function validCell(text: string): boolean {
     const analysis = analyzeFormulaImport(text);
-    return !analysis.issue && !hasIncompleteSlots(analysis.candidate) && validateLatex(analysis.candidate).length === 0
+    return !analysis.issue && !/\\(?:href|url)\b/.test(analysis.candidate) && !hasIncompleteSlots(analysis.candidate) && validateLatex(analysis.candidate).length === 0
       && !convertLatexToMarkup(analysis.candidate).includes('ML__error');
+  }
+  function validatePastedCellCandidate(rawCell: string): string {
+    const checked = analyzeFormulaImport(rawCell);
+    if (!validCell(rawCell)) throw new Error('Unsupported cell');
+    // Reuse full matrix validation to reject a top-level & or row separator.
+    buildMatrix({ kind: 'matrix', rows: 1, columns: 1, cells: [[checked.candidate]] });
+    return checked.candidate;
+  }
+  function parsePastedCellGrid(original: string, startRow: number, startColumn: number): string[][] {
+    if (!/[\t\r\n]/.test(original)) {
+      return [[validatePastedCellCandidate(original)]];
+    }
+    const withoutTrailingBreak = original.replace(/\r?\n$/, '');
+    if (!withoutTrailingBreak) throw new Error('Empty paste');
+    const rawRows = withoutTrailingBreak.split(/\r?\n/);
+    const hasTabs = withoutTrailingBreak.includes('\t');
+    const rawGrid = rawRows.map(line => line.split('\t'));
+    const gridRows = rawGrid.length;
+    const gridCols = Math.max(0, ...rawGrid.map(line => line.length));
+    if (gridRows < 1 || gridCols < 1) throw new Error('Empty grid');
+    if (startRow + gridRows > 6 || startColumn + gridCols > 6) throw new Error('Grid exceeds 6x6 bound');
+    let nonEmptyCount = 0;
+    const validatedGrid = rawGrid.map((line) => {
+      const padded = hasTabs && line.length < gridCols
+        ? [...line, ...Array.from({ length: gridCols - line.length }, () => '')]
+        : line;
+      if (padded.length !== gridCols) throw new Error('Ragged grid');
+      return padded.map((rawCell) => {
+        if (hasTabs && rawCell.trim() === '') return '';
+        nonEmptyCount += 1;
+        return validatePastedCellCandidate(rawCell);
+      });
+    });
+    if (nonEmptyCount === 0) throw new Error('All cells empty');
+    return validatedGrid;
   }
   function renderGrid(): void {
     grid.replaceChildren(); fields.length = 0; activeCell = undefined;
+    grid.dataset.kind = kind;
     for (let r = 0; r < rows; r++) {
       const row = node('div'); row.className = 'vme-matrix-grid-row'; grid.append(row);
       for (let c = 0; c < columns; c++) {
         const box = node('div'); box.className = 'vme-matrix-cell';
         const label = node('label'); label.id = `vme-cell-${Math.random().toString(36).slice(2)}`;
+        label.className = 'vme-visually-hidden';
         const word = node('span', '单元格'); word.className = 'vme-visually-hidden';
         label.append(word, node('span', ` (${r + 1}, ${c + 1})`));
         const field = createHtml('math-field', doc); field.className = 'vme-matrix-cell-field';
@@ -157,19 +197,52 @@ export function mountMatrixTools(container: HTMLElement, options: {
         field.addEventListener('paste', (event: ClipboardEvent) => {
           event.preventDefault(); event.stopImmediatePropagation(); if (disabled) return;
           const original = event.clipboardData?.getData('text/plain'); if (!original) return;
+          syncCells();
           try {
-            const checked = analyzeFormulaImport(original);
-            if (!validCell(original)) throw new Error('Unsupported cell');
-            // Reuse full matrix validation to reject a top-level & or row separator.
-            buildMatrix({ kind: 'matrix', rows: 1, columns: 1, cells: [[checked.candidate]] });
-            cells[r][c] = checked.candidate; renderGrid(); autoInspect();
+            const pastedGrid = parsePastedCellGrid(original, r, c);
+            const nextRows = Math.max(rows, r + pastedGrid.length);
+            const nextColumns = Math.max(columns, c + pastedGrid[0].length);
+            for (let dr = 0; dr < pastedGrid.length; dr++) {
+              for (let dc = 0; dc < pastedGrid[dr].length; dc++) {
+                cells[r + dr][c + dc] = pastedGrid[dr][dc];
+              }
+            }
+            if (nextRows !== rows) {
+              rows = nextRows;
+              rowInput.value = String(rows);
+            }
+            if (nextColumns !== columns) {
+              columns = nextColumns;
+              columnInput.value = String(columns);
+            }
+            rejectedOriginal = '';
+            rejected.value = '';
+            rejectedLabel.hidden = copy.hidden = true;
+            renderGrid();
+            autoInspect();
+            const restored = fields.find(item => item.row === r && item.column === c)?.field;
+            if (restored) {
+              activeCell = restored;
+              restored.focus();
+            }
           } catch {
             invalidate();
             rejectedOriginal = original; rejected.value = original; rejectedLabel.hidden = copy.hidden = false;
             status.textContent = '单元格暂不支持这段内容；原始粘贴内容保留在下方，当前矩阵未改动。'; status.dataset.state = 'error';
           }
         }, true);
-        field.addEventListener('keydown', event => { if (event.key === '\\') { event.preventDefault(); event.stopImmediatePropagation(); } }, true);
+        field.addEventListener('keydown', event => {
+          if (event.key === '\\') { event.preventDefault(); event.stopImmediatePropagation(); return; }
+          if (event.key === 'Enter' && !event.ctrlKey && !event.metaKey && !event.altKey && !event.shiftKey) {
+            event.preventDefault(); event.stopImmediatePropagation();
+            const currentIndex = fields.findIndex(item => item.field === field);
+            if (currentIndex >= 0 && fields.length > 0) {
+              const nextField = fields[(currentIndex + 1) % fields.length]?.field;
+              activeCell = nextField;
+              nextField?.focus();
+            }
+          }
+        }, true);
         field.addEventListener('beforeinput', event => { if (event.data === '\\') { event.preventDefault(); event.stopImmediatePropagation(); } }, true);
       }
     }
@@ -203,12 +276,17 @@ export function mountMatrixTools(container: HTMLElement, options: {
   }
   rowInput.addEventListener('change', () => { syncCells(); rows = Number(rowInput.value); renderGrid(); autoInspect(); });
   columnInput.addEventListener('change', () => { syncCells(); columns = Number(columnInput.value); renderGrid(); autoInspect(); });
-  kindInput.addEventListener('change', () => { kind = kindInput.value as MatrixKind; autoInspect(); });
+  kindInput.addEventListener('change', () => { kind = kindInput.value as MatrixKind; grid.dataset.kind = kind; autoInspect(); });
   toggle.setAttribute('aria-expanded', String(open));
   if (open) { renderGrid(); autoInspect(); } else apply.disabled = true;
   return {
     isOpen: () => open,
     close: () => { if (open) setOpen(false); },
+    tryApply: (): boolean => {
+      if (!open || disabled || apply.disabled) return false;
+      apply.click();
+      return !open;
+    },
     getDraft: (): MatrixDraft => { syncCells(); return { open, rows, columns, kind, cells: cells.map(row => [...row]), loadedSource, rejectedOriginal }; },
     setDisabled(value: boolean) {
       disabled = value; for (const item of [toggle, rowInput, columnInput, kindInput, load, zero, review, cancel, copy, ...cellTools.querySelectorAll<HTMLButtonElement>('button')]) item.disabled = value;

@@ -1,6 +1,6 @@
 import { StateEffect, StateField } from "@codemirror/state";
 import { Decoration, EditorView, WidgetType, type DecorationSet } from "@codemirror/view";
-import { mountEditor, type EditorDraft } from "./editor-ui";
+import { mountEditor, type EditorDraft, type EditorMode, type ModeDisplay, type MountedEditor } from "./editor-ui";
 import { resolveLanguage, translateUiText, type Language } from "./i18n";
 import type { PlotSpec } from "./plot-engine";
 import { createHtml } from "./dom";
@@ -12,8 +12,15 @@ export interface InlineSession {
   editing: boolean;
   graphOnly?: boolean;
   language: Language;
+  modeDisplay?: ModeDisplay;
+  preferredMode?: EditorMode;
+  alsoInsertGraphEquation?: boolean;
   systemLanguage?: string;
   onLanguageChange: (language: Language) => void | Promise<void>;
+  onModeDisplayChange?: (modeDisplay: ModeDisplay) => void | Promise<void>;
+  onPreferredModeChange?: (preferredMode: EditorMode) => void | Promise<void>;
+  onAlsoInsertGraphEquationChange?: (enabled: boolean) => void | Promise<void>;
+  registerEditor?: (mounted: MountedEditor, refreshHost?: () => void) => () => void;
   onSave: (latex: string, display: boolean) => void;
   onSaveGraph: (spec: PlotSpec, latex: string, display: boolean) => void;
   onCancel: () => void;
@@ -22,7 +29,8 @@ const openPanel = StateEffect.define<{ anchor: number; session: InlineSession }>
 const closePanel = StateEffect.define<null>();
 
 class EquationWidget extends WidgetType {
-  private mounted?: ReturnType<typeof mountEditor>;
+  private mounted?: MountedEditor;
+  private unregisterEditor?: () => void;
   private frame?: number;
   private observer?: ResizeObserver;
   constructor(private session: InlineSession) { super(); }
@@ -45,8 +53,12 @@ class EquationWidget extends WidgetType {
         latex: this.session.draft.latex,
         display: this.session.draft.display,
         initialMode: this.session.draft.mode,
+        modeDisplay: this.session.modeDisplay,
+        preferredMode: this.session.preferredMode,
+        temporarySourceFallback: this.session.draft.temporarySourceFallback,
         scienceDraft: this.session.draft.science,
         plotDraft: this.session.draft.plot,
+        alsoInsertGraphEquation: this.session.alsoInsertGraphEquation,
         formulaImportDraft: this.session.draft.formulaImport, matrixDraft: this.session.draft.matrix, systemDraft: this.session.draft.system,
         graphOnly: this.session.graphOnly,
         compact: true,
@@ -58,10 +70,23 @@ class EquationWidget extends WidgetType {
           updateLabel();
           return this.session.onLanguageChange(language);
         },
+        onModeDisplayChange: modeDisplay => {
+          this.session.modeDisplay = modeDisplay;
+          return this.session.onModeDisplayChange?.(modeDisplay);
+        },
+        onPreferredModeChange: preferredMode => {
+          this.session.preferredMode = preferredMode;
+          return this.session.onPreferredModeChange?.(preferredMode);
+        },
+        onAlsoInsertGraphEquationChange: enabled => {
+          this.session.alsoInsertGraphEquation = enabled;
+          return this.session.onAlsoInsertGraphEquationChange?.(enabled);
+        },
         onSave: this.session.onSave,
         onSaveGraph: this.session.onSaveGraph,
         onCancel: this.session.onCancel,
       });
+      this.unregisterEditor = this.session.registerEditor?.(this.mounted, updateLabel);
       this.observer = new ResizeObserver(() => view.requestMeasure());
       this.observer.observe(panel);
       view.requestMeasure();
@@ -72,6 +97,8 @@ class EquationWidget extends WidgetType {
   destroy(): void {
     if (this.frame !== undefined) window.cancelAnimationFrame(this.frame);
     this.observer?.disconnect();
+    this.unregisterEditor?.();
+    this.unregisterEditor = undefined;
     if (this.mounted) {
       this.session.draft = this.mounted.getDraft();
       this.mounted.destroy();
@@ -131,11 +158,15 @@ export function focusInlineEditor(view: EditorView): void {
     const mode = panel.querySelector<HTMLElement>('[data-testid="visual-math-editor"]')?.dataset.mode;
     if (panel.querySelector<HTMLElement>('[data-testid="visual-math-editor"]')?.dataset.subject === 'graph') {
       const kind = panel.querySelector<HTMLSelectElement>('[data-testid="plot-kind"]')?.value;
-      const focusId = kind === 'geometry' ? 'geometry-shape' : kind === 'complex' ? 'complex-points' : 'plot-expression';
+      const focusId = kind === 'geometry' ? 'geometry-shape' : kind === 'complex' ? 'complex-points' : 'plot-mathfield';
       panel.querySelector<HTMLElement>(`[data-testid="${focusId}"]`)?.focus({ preventScroll: true }); return;
     }
-    if (mode === "latex" || field?.hidden) source?.focus({ preventScroll: true });
-    else field?.focus({ preventScroll: true });
+    if (mode === "latex" || (mode === "hybrid" && field?.hidden)) source?.focus({ preventScroll: true });
+    else if (field?.hidden) {
+      const blockedTarget = panel.querySelector<HTMLElement>('[data-testid="temporary-source-fallback"]:not([hidden])')
+        ?? panel.querySelector<HTMLElement>('[data-action="mode-latex"]:not([hidden])');
+      blockedTarget?.focus({ preventScroll: true });
+    } else field?.focus({ preventScroll: true });
   };
   // A virtualized widget mounts on its own frame after the scroll transaction.
   view.dom.ownerDocument.defaultView?.requestAnimationFrame(() => {

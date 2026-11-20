@@ -1,4 +1,4 @@
-import convert, { type Length, type Time, type Unit } from 'convert';
+import convert, { type Energy, type Length, type Time, type Unit } from 'convert';
 
 /** UI identities are explicit: US and Imperial volumes never share an id. */
 export interface ConversionUnit {
@@ -17,15 +17,27 @@ export interface UnitCategory {
 }
 interface UnitDefinition extends ConversionUnit {
   libraryUnit?: Unit;
+  energyUnit?: Energy;
   speed?: { length: Length; time: Time };
+  /** Scale factor in electronvolts (1 eV = 1.602176634e-19 J exact in the 2019 SI). */
+  electronvolts?: number;
 }
 interface CategoryDefinition extends Omit<UnitCategory, 'units'> { units: UnitDefinition[] }
+
+/** Exact 2019 SI definition of 1 electronvolt in joules. */
+const EV_IN_JOULES = 1.602176634e-19;
 
 function unit(id: string, label: string, labelEn: string, symbol: string, libraryUnit: Unit, input = symbol): UnitDefinition {
   return { id, label, labelEn, symbol, libraryUnit, input };
 }
+function energy(id: string, label: string, labelEn: string, symbol: string, energyUnit: Energy, input = symbol): UnitDefinition {
+  return { id, label, labelEn, symbol, libraryUnit: energyUnit, energyUnit, input };
+}
 function speed(id: string, label: string, labelEn: string, symbol: string, length: Length, time: Time): UnitDefinition {
   return { id, label, labelEn, symbol, input: symbol, speed: { length, time } };
+}
+function evUnit(id: string, label: string, labelEn: string, symbol: string, electronvolts: number): UnitDefinition {
+  return { id, label, labelEn, symbol, input: symbol, electronvolts };
 }
 
 // Conversion factors and temperature offsets come from pinned Convert 8.0.2.
@@ -99,11 +111,14 @@ const definitions: CategoryDefinition[] = [
     unit('psi', '磅力/平方英寸', 'Pound-force per square inch', 'psi', 'psi'),
   ] },
   { id: 'energy', label: '能量', labelEn: 'Energy', units: [
-    unit('J', '焦耳', 'Joule', 'J', 'J'),
-    unit('kJ', '千焦', 'Kilojoule', 'kJ', 'kJ'),
-    unit('MJ', '兆焦', 'Megajoule', 'MJ', 'MJ'),
-    unit('Wh', '瓦时', 'Watt-hour', 'Wh', 'Wh', 'W*h'),
-    unit('kWh', '千瓦时', 'Kilowatt-hour', 'kWh', 'kWh', 'kW*h'),
+    energy('J', '焦耳', 'Joule', 'J', 'J'),
+    energy('kJ', '千焦', 'Kilojoule', 'kJ', 'kJ'),
+    energy('MJ', '兆焦', 'Megajoule', 'MJ', 'MJ'),
+    energy('Wh', '瓦时', 'Watt-hour', 'Wh', 'Wh', 'W*h'),
+    energy('kWh', '千瓦时', 'Kilowatt-hour', 'kWh', 'kWh', 'kW*h'),
+    evUnit('eV', '电子伏特', 'Electronvolt', 'eV', 1),
+    evUnit('keV', '千电子伏特', 'Kiloelectronvolt', 'keV', 1e3),
+    evUnit('MeV', '兆电子伏特', 'Megaelectronvolt', 'MeV', 1e6),
   ] },
   { id: 'power', label: '功率', labelEn: 'Power', units: [
     unit('W', '瓦特', 'Watt', 'W', 'W'),
@@ -120,7 +135,7 @@ const definitions: CategoryDefinition[] = [
 
 export const UNIT_CATEGORIES: UnitCategory[] = definitions.map(({ units, ...category }) => ({
   ...category,
-  units: units.map(({ libraryUnit: _library, speed: _speed, ...option }) => option),
+  units: units.map(({ libraryUnit: _library, energyUnit: _energy, speed: _speed, electronvolts: _ev, ...option }) => option),
 }));
 const lookup = new Map<string, { category: string; unit: UnitDefinition }>();
 for (const category of definitions) {
@@ -163,6 +178,14 @@ export function convertQuantity(value: number, from: string, to: string): number
     // Form the ratio first to avoid unnecessary overflow in large quantities.
     const ratio = convert(1, a.length).to(b.length) / convert(1, a.time).to(b.time);
     result = value * ratio;
+  } else if (origin.unit.electronvolts !== undefined && target.unit.electronvolts !== undefined) {
+    result = value * (origin.unit.electronvolts / target.unit.electronvolts);
+  } else if (origin.unit.electronvolts !== undefined) {
+    const targetPerJoule = convert(1, 'J').to(target.unit.energyUnit!);
+    result = value * (origin.unit.electronvolts * EV_IN_JOULES * targetPerJoule);
+  } else if (target.unit.electronvolts !== undefined) {
+    const joulesPerOrigin = convert(1, origin.unit.energyUnit!).to('J');
+    result = (value * joulesPerOrigin) / (target.unit.electronvolts * EV_IN_JOULES);
   } else {
     // Definition types ensure both are known library units in the same category.
     result = convert(value, origin.unit.libraryUnit!).to(target.unit.libraryUnit!);

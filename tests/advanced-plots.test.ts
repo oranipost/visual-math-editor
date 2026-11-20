@@ -119,7 +119,7 @@ test('definite integrals compute signed values and shade the selected interval',
     assert.ok(result.ok, result.ok ? '' : result.error);
     near(result.integralValue!, expected, 1e-6);
     assert.ok(Number.isFinite(result.integralError));
-    assert.match(result.svg, /data-integral-shading="true" fill="#93c5fd"[^>]*><path d="M/);
+    assert.match(result.svg, /data-integral-shading="true" fill="#8b7ef0" fill-opacity="0\.28"><path d="M/);
     assert.match(result.svg, /numerical estimate/);
   }
 });
