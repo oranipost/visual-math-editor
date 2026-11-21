@@ -3,7 +3,7 @@ import { analyzeFormulaImport, formulaVisualBudgetIssue } from './formula-import
 import { mountFormulaImport } from './formula-import-ui';
 import { hasIncompleteSlots } from './validation';
 import { validateLatexSource } from './source-validation';
-import { mountScienceTools, type ScienceDraft } from './science-ui';
+import { mountScienceTools, type ScienceDraft, type Subject } from './science-ui';
 import { localizeEditor, type Language } from './i18n';
 import { mountPlotTools, type PlotDraft } from './plot-ui';
 import { graphFromLatex } from './plot-latex';
@@ -11,6 +11,7 @@ import type { PlotSpec } from './plot-engine';
 import { createHtml, createSvgElement } from './dom';
 import { mountMatrixTools, type MatrixDraft } from './matrix-ui';
 import { mountAdvancedMathTools } from './advanced-math-ui';
+import { EDITOR_INLINE_SHORTCUTS, mountGreekTools } from './greek-tools';
 import { mountMathSymbolTools } from './math-symbols-ui';
 import { mountEquationSystemTools, type SystemDraft } from './equation-system-ui';
 import { mountSetSequenceTools } from './set-sequence-ui';
@@ -97,22 +98,14 @@ const structures: Structure[] = [
 const symbols = [
   ['alpha', 'α', '阿尔法', '\\alpha'],
   ['beta', 'β', '贝塔', '\\beta'],
-  ['gamma', 'γ', '伽马', '\\gamma'],
   ['theta', 'θ', '西塔', '\\theta'],
-  ['lambda', 'λ', '拉姆达', '\\lambda'],
-  ['mu', 'μ', '缪', '\\mu'],
   ['pi', 'π', '圆周率', '\\pi'],
   ['rho', 'ρ', '柔', '\\rho'],
-  ['sigma', 'σ', '西格玛', '\\sigma'],
-  ['varphi', 'φ', '斐', '\\varphi'],
-  ['varepsilon', 'ε', '艾普西隆', '\\varepsilon'],
-  ['omega', 'ω', '欧米伽', '\\omega'],
   ['delta', 'Δ', '德尔塔', '\\Delta'],
   ['infinity', '∞', '无穷大', '\\infty'],
   ['plus-minus', '±', '正负号', '\\pm'],
   ['times', '×', '乘号', '\\times'],
   ['divide', '÷', '除号', '\\div'],
-  ['not-equal', '≠', '不等于', '\\ne'],
   ['less-equal', '≤', '小于或等于', '\\le'],
   ['greater-equal', '≥', '大于或等于', '\\ge'],
 ] as const;
@@ -196,8 +189,11 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): Mou
   let matrixEditing = initialMatrixDraft?.open ?? false;
   let systemEditing = options.systemDraft?.open ?? false;
   const structureEditing = (): boolean => matrixEditing || systemEditing;
-  let graphSelected = false;
-  let equationGraphOpen = Boolean(!options.graphOnly && options.plotDraft?.equationLinked);
+  let activeSubject: Subject = options.graphOnly ? 'graph' : (options.scienceDraft?.subject ?? 'math');
+  let graphSelected = activeSubject === 'graph';
+  const shouldHideEquationGraph = (): boolean =>
+    graphSelected || activeSubject === 'chemistry' || activeSubject === 'elements' || activeSubject === 'units';
+  let equationGraphOpen = Boolean(!options.graphOnly && !shouldHideEquationGraph() && options.plotDraft?.equationLinked);
 
   const heading = el('div', 'vme-heading');
   const headingCopy = el('div', 'vme-heading-copy');
@@ -499,6 +495,7 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): Mou
   canvasTop.append(canvasLabel, history);
 
   const quickOperators = el('div', 'vme-quick-operators');
+  quickOperators.dataset.testid = 'math-quick-operators';
   quickOperators.setAttribute('role', 'group');
   quickOperators.setAttribute('aria-label', '常用运算与间距');
   const operatorButtons: HTMLButtonElement[] = [];
@@ -520,7 +517,42 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): Mou
   newlineButton.addEventListener('pointerdown', (event) => event.preventDefault());
   operatorButtons.push(newlineButton);
   quickOperators.append(newlineButton);
+
+  const chemOperators = el('div', 'vme-quick-operators vme-chem-operators');
+  chemOperators.dataset.testid = 'chem-quick-operators';
+  chemOperators.setAttribute('role', 'group');
+  chemOperators.setAttribute('aria-label', '化学方程式符号');
+  const chemOperatorDefs: readonly [string, string, string, () => string, boolean][] = [
+    ['chem-op-plus', '+', '反应加号', () => '+', true],
+    ['chem-op-yields', '→', '生成箭头', () => '\\longrightarrow ', true],
+    ['chem-op-reversible', '⇌', '可逆反应箭头', () => '\\rightleftharpoons ', true],
+    ['chem-op-heat', 'Δ 加热', '加热反应箭头', () => '\\xrightarrow{\\Delta}', false],
+    ['chem-op-gas', '↑', '气体生成符号', () => '\\uparrow ', true],
+    ['chem-op-precipitate', '↓', '沉淀生成符号', () => '\\downarrow ', true],
+    ['chem-op-subscript', '下标 ₂', '化学计量下标', () => `${!field.selectionIsCollapsed ? '#0' : hasPreviousInGroup() ? '' : '#?'}_{#?}`, false],
+    ['chem-op-charge-plus', '电荷 ⁺', '正电荷上标', () => `${hasPreviousInGroup() ? '' : '#?'}^{+}`, false],
+    ['chem-op-charge-minus', '电荷 ⁻', '负电荷上标', () => `${hasPreviousInGroup() ? '' : '#?'}^{-}`, false],
+    ['chem-op-valence', '价态 n±', '离子价态上标', () => `${!field.selectionIsCollapsed ? '#0' : hasPreviousInGroup() ? '' : '#?'}^{#?}`, false],
+    ['chem-op-state-s', '(s)', '固态标记', () => '\\mathrm{(s)}', true],
+    ['chem-op-state-l', '(l)', '液态标记', () => '\\mathrm{(l)}', true],
+    ['chem-op-state-g', '(g)', '气态标记', () => '\\mathrm{(g)}', true],
+    ['chem-op-state-aq', '(aq)', '水溶液标记', () => '\\mathrm{(aq)}', true],
+  ];
+  for (const [id, glyphText, label, getTemplate, invariantGlyph] of chemOperatorDefs) {
+    const tool = button('', 'vme-operator-button vme-chem-operator-button', id, () => insert(getTemplate()));
+    const caption = el('span', '', glyphText);
+    if (invariantGlyph) caption.dataset.i18nIgnore = '';
+    tool.append(caption);
+    tool.title = `插入${label}`;
+    tool.setAttribute('aria-label', `插入${label}`);
+    tool.addEventListener('pointerdown', (event) => event.preventDefault());
+    operatorButtons.push(tool);
+    chemOperators.append(tool);
+  }
+  quickOperators.hidden = activeSubject === 'elements';
+  chemOperators.hidden = activeSubject !== 'elements';
   canvasTop.insertBefore(quickOperators, history);
+  canvasTop.insertBefore(chemOperators, history);
 
   const navigation = el('div', 'vme-navigation');
   const hint = el('p', 'vme-hint', '点击方框填写；用 Tab 或方向键移动。');
@@ -672,20 +704,26 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): Mou
     plotTools: [advancedPlotHost],
     graphOnly: options.graphOnly,
     onSubjectChange: subject => {
+      activeSubject = subject;
       graphSelected = subject === 'graph';
       root.dataset.subject = subject;
+      quickOperators.hidden = subject === 'elements';
+      chemOperators.hidden = subject !== 'elements';
       workspace.hidden = layout.hidden = save.hidden = graphSelected;
       subjectTools.hidden = mode === 'latex' && !graphSelected;
       syncModeChrome();
       importOpen.hidden = graphSelected || Boolean(options.graphOnly);
       importHost.hidden = graphSelected || Boolean(options.graphOnly);
-      equationGraph.hidden = graphSelected || Boolean(options.graphOnly);
-      if (graphSelected) {
-        equationGraphOpen = false;
-        equationGraphHost.hidden = true;
+      const hideGraph = shouldHideEquationGraph() || Boolean(options.graphOnly);
+      equationGraph.hidden = hideGraph;
+      if (shouldHideEquationGraph()) {
+        if (equationGraphOpen) {
+          equationGraphOpen = false;
+          equationGraphHost.hidden = true;
+          plotTools.setEquationLinked(false);
+          updateEquationGraphToggle();
+        }
         if (plotHost.parentElement !== advancedPlotHost) advancedPlotHost.append(plotHost);
-        plotTools.setEquationLinked(false);
-        updateEquationGraphToggle();
       }
       status.hidden = graphSelected || !status.textContent;
     },
@@ -714,7 +752,11 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): Mou
 
   field.defaultMode = 'math';
   field.smartMode = false;
-  field.smartSuperscript = false;
+  field.smartSuperscript = true;
+  field.inlineShortcuts = {
+    ...field.inlineShortcuts,
+    ...EDITOR_INLINE_SHORTCUTS,
+  };
   field.popoverPolicy = 'off';
   field.mathVirtualKeyboardPolicy = 'manual';
   field.environmentPopoverPolicy = 'off';
@@ -815,6 +857,7 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): Mou
     onApply: applyStructuredDraft,
   });
   const advancedMathTools = mountAdvancedMathTools(secondaryTools, { onInsert: insert });
+  const greekTools = mountGreekTools(secondaryTools, { onInsert: insert });
   secondaryTools.append(importOpen);
   detailsDrawers.push(...Array.from(secondaryTools.querySelectorAll('details')));
   for (const drawer of detailsDrawers) {
@@ -916,10 +959,13 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): Mou
     systemTools.setDisabled(saving || (visualBlocked && !systemEditing));
     const equationLocked = locked || structureEditing();
     advancedMathTools.setDisabled(equationLocked || visualBlocked);
+    greekTools.setDisabled(equationLocked || visualBlocked);
     mathSymbolTools.setDisabled(equationLocked || visualBlocked);
     setSequenceTools.setDisabled(equationLocked || visualBlocked);
+    quickOperators.hidden = activeSubject === 'elements';
+    chemOperators.hidden = activeSubject !== 'elements';
     workspace.hidden = graphSelected || subpanelOpen;
-    equationGraph.hidden = graphSelected || Boolean(options.graphOnly) || (subpanelOpen && !equationGraphOpen);
+    equationGraph.hidden = shouldHideEquationGraph() || Boolean(options.graphOnly) || (subpanelOpen && !equationGraphOpen);
     previous.hidden = next.hidden = !incomplete;
     inlineButton.disabled = displayButton.disabled = equationLocked;
     for (const control of [...structureGrid.querySelectorAll('button'), ...symbolGroup.querySelectorAll('button'), ...operatorButtons, previous, next, jumpEnd]) {
@@ -1309,6 +1355,7 @@ export function mountEditor(container: HTMLElement, options: EditorOptions): Mou
       systemTools.destroy();
       setSequenceTools.destroy();
       advancedMathTools.destroy();
+      greekTools.destroy();
       mathSymbolTools.destroy();
       localization.destroy();
       scienceTools.destroy();

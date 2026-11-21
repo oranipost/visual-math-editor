@@ -2,15 +2,15 @@
 
 Documentation: [English](README.md) · [简体中文](README.zh-CN.md) · [Español](README.es.md) · [日本語](README.ja.md) · [Deutsch](README.de.md) · [Français](README.fr.md). Each README covers installation, editing, graphing, numerical limits and feedback; interface language selection remains separate.
 
-## 1.1.1 6-language coverage
+## 1.1.2 6-language coverage
 
-Visual Math 1.1.1 provides full local interface translations in **six languages**: **English (`en`), Simplified Chinese (`zh`), Spanish (`es`), Japanese (`ja`), German (`de`), and French (`fr`)**.
+Visual Math 1.1.2 provides full local interface translations in **six languages**: **English (`en`), Simplified Chinese (`zh`), Spanish (`es`), Japanese (`ja`), German (`de`), and French (`fr`)**.
 
 All plugin-owned UI surfaces follow the selected language (or **Follow Obsidian**):
-- Visual, LaTeX, and Hybrid equation workspaces, Greek symbol tooltips/hints, and mode-display settings (both in the editor header and in Obsidian's native plugin settings tab).
+- Visual, LaTeX, and Hybrid equation workspaces, the 41-symbol Greek letters drawer (`αβ Greek letters`), Greek symbol tooltips/hints, and mode-display settings (both in the editor header and in Obsidian's native plugin settings tab).
 - Single-formula import review, `1×1`–`6×6` visual matrix builder, `2–6` row equation-system builder, 19 set/sequence tools, trigonometric/geometry symbols, and 9 advanced-math templates.
 - 2D function/calculus, polar, complex-plane, 3D surface, 9 primitive 3D solids, `2–6` part composite 3D solid builder, 3 spatial-relation scenes, `EquationPicker` formula/graph/3D model rows, 1-click PNG copy statuses, and scoped SVG accessibility captions.
-- Chemistry `\ce` reaction checks, 24 physics templates, 66 preset units across 11 categories (including `eV`, `keV`, `MeV`), and all 118 periodic-table element names and multilingual element search.
+- Chemistry `\ce` reaction checks, 24 physics templates, 66 preset units across 11 categories (including `eV`, `keV`, `MeV`), all 118 periodic-table element names and multilingual element search, and the Periodic Table chemical equation bar.
 
 Actual automation, browser, and native checks are recorded in [TEST-REPORT.md](TEST-REPORT.md); dictionary coverage does not claim external native-speaker certification on every platform.
 
@@ -36,7 +36,7 @@ Changing the language updates mounted controls, plugin settings labels, and save
 
 ## Historical language milestones
 
-- **1.1.0 / 1.1.1 (2026-11)**: Expanded from three languages to **six languages** (`en`, `zh`, `es`, `ja`, `de`, `fr`) with matching 6-language READMEs, 118-element localized names/search, composite 3D geometry labels, and persisted language preferences in `data.json`.
+- **1.1.0 – 1.1.2 (2026-11)**: Expanded from three languages to **six languages** (`en`, `zh`, `es`, `ja`, `de`, `fr`) with matching 6-language READMEs, 41-symbol Greek drawer & chemical equation bar labels, 118-element localized names/search, composite 3D geometry labels, and persisted language preferences in `data.json`.
 - **1.0.0 (2026-10-31)**: Extended English, Simplified Chinese, and Spanish across single-formula import, matrices, equation systems, sets/sequences, advanced math, and 3D geometry; removed custom formula keywords.
 - **0.7.0 (2026-10-18)**: Added bundled Spanish (`es`) alongside English (`en`) and Simplified Chinese (`zh`). Earlier `0.6.x` builds shipped English and Simplified Chinese only.
 

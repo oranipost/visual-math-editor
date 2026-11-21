@@ -248,3 +248,36 @@ test('configureMathLive safely coexists with compatible cross-version math-field
     });
   }, /math-field/);
 });
+
+test('1.1.2 Liquid Glass top chrome, Group 18 periodic table fit, zero Scorecard CSS warnings, and 6-README version sync', () => {
+  const css = readFileSync(join(ROOT, 'styles.css'), 'utf8');
+  assert.doesNotMatch(css, /!important/i, 'styles.css must contain zero !important declarations');
+  assert.doesNotMatch(css, /display\s*:\s*contents/i, 'styles.css must contain zero display: contents rules');
+  assert.doesNotMatch(css, /url\s*\(/i, 'styles.css must contain zero inline url(...) masks or backgrounds');
+
+  // Liquid Glass scoped to top chrome (.vme-heading & .vme-subject-tabs)
+  assert.match(css, /\.vme-heading\s*\{[^}]*backdrop-filter:\s*blur\(18px\)\s*saturate\(180%\)/);
+  assert.match(css, /\.vme-subject-tabs\s*\{[^}]*padding:\s*4px;[^}]*border-radius:\s*12px;[^}]*backdrop-filter:\s*blur\(18px\)\s*saturate\(180%\)/);
+  assert.match(css, /\.vme-editor\s+\.vme-subject-tab\s*\{[^}]*border-radius:\s*9px;/);
+  assert.match(css, /\.vme-editor\s+\.vme-subject-tab\[aria-selected="true"\]\s*\{[^}]*box-shadow:\s*inset 0 1px 0\.5px/);
+  assert.match(css, /field-sizing:\s*content/);
+  assert.match(css, /@supports not \(\(backdrop-filter:\s*blur\(1px\)\)/);
+  assert.match(css, /@media \(prefers-reduced-motion:\s*reduce\)/);
+
+  // Group 18 periodic table fits comfortably inside 760px modal without clipping
+  assert.match(css, /\.vme-periodic-table\s*\{[^}]*repeat\(18,\s*minmax\(34px,\s*1fr\)\)[^}]*gap:\s*2px;\s*min-width:\s*646px;/);
+  assert.match(css, /\.vme-greek-grid/);
+  assert.match(css, /\.vme-editor\s+\.vme-chem-operator-button\s*\{[\s\S]*?border-radius:\s*999px;/);
+
+  // README.md === README.en.md and all 6 language READMEs match manifest version 1.1.2
+  const manifest = JSON.parse(readFileSync(join(ROOT, 'manifest.json'), 'utf8')) as { version: string };
+  assert.equal(manifest.version, '1.1.2');
+  const readmeRoot = readFileSync(join(ROOT, 'README.md'), 'utf8');
+  const readmeEn = readFileSync(join(ROOT, 'README.en.md'), 'utf8');
+  assert.equal(readmeRoot, readmeEn);
+  for (const file of ['README.md', 'README.en.md', 'README.zh-CN.md', 'README.es.md', 'README.ja.md', 'README.de.md', 'README.fr.md']) {
+    const text = readFileSync(join(ROOT, file), 'utf8');
+    assert.ok(text.includes(`visual-math-editor-${manifest.version}.zip`), `${file} missing ${manifest.version} ZIP link`);
+    assert.ok(!text.includes('1.1.1'), `${file} still contains stale 1.1.1 reference`);
+  }
+});

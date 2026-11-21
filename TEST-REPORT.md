@@ -1,5 +1,21 @@
 # Test report / 测试记录
 
+## 1.1.2 — pre-publication validation (2026-11-21)
+
+**Prepared version: Visual Math 1.1.2 / Oliver, desktop release.** The plugin ID remains `visual-math-editor` (minimum Obsidian `1.14.4`, desktop only). Older sections below retain their original build identities and dates.
+
+### Completed local checks
+
+- **309 automated tests passed** (`npm run check`), with TypeScript `tsc --noEmit` (`0` errors, `0` warnings) and the production build (`dist/main.js`, `dist/manifest.json`, `dist/styles.css`) passing. Coverage includes:
+  - Collapsible **Full Greek letters** drawer (`src/greek-tools.ts`, mounted beside `Advanced math` in `.vme-secondary-tools`) with **41** valid MathLive buttons across three groups (**24** lowercase `α–ω` including `o`, **6** common variants `\varepsilon, \varphi, \vartheta, \varrho, \varsigma, \varkappa`, and **11** uppercase `\Gamma`–`\Omega`), mutual-exclusion single-drawer accordion toggling, `Escape` dismissal, and a single-row **12-symbol** core `symbolBar`;
+  - **Periodic table (`elements`) chemical equation bar & cleaner workspace**: automatic hiding/unlinking of `Graph this equation` on `chemistry`, `elements`, and `units` (and restoration on `math` and `physics`); dedicated **14-button Chemical Equation Bar** (`+`, `→`, `⇌`, `Δ Heat`, `↑`, `↓`, `Subscript ₂`, `Charge ⁺`, `Charge ⁻`, `Valence n±`, `(s)`, `(l)`, `(g)`, `(aq)`) inside `.vme-canvas-top` when `elements` is active; and removal of redundant `title` / host `mouseover` black hover tooltips on all 118 `.vme-element-button` cells while preserving `aria-label` accessibility and `.vme-element-details`;
+  - **Apple Liquid Glass top chrome & Group 18 periodic table fit**: translucent optical glass header bar (`.vme-heading` and capsule controls) and subject segmented track (`.vme-subject-tabs` / `.vme-subject-tab`) across light and dark themes, plus `min-width: 646px` 18-column periodic table sizing so Group 18 fits cleanly inside the `760px` modal without right-edge clipping;
+  - Main `<math-field>` `smartSuperscript = true` and purely local Greek, arrow, and inequality `inlineShortcuts` (`0` global `window.*` bridges), plus full **6-language** (`zh`, `en`, `es`, `ja`, `de`, `fr`) UI coverage with zero Han-script leakage in `en`/`es`/`de`/`fr`.
+- **1,278 browser component checks across six suites + 32 live Headless Chrome Shadow DOM/CSS layout assertions passed** (verifying single-row `symbolBar` geometry, `greek-tools` 41-button drawer, `elements` vs `math` `display: flex`/`none` toolbar & `equation-graph` transitions, `0` element `title` attributes, and real MathLive `smartSuperscript` & `inlineShortcuts`).
+- **Packaging validation passed (`npm run package`)**: produced `release/visual-math-editor-1.1.2.zip`, `release/visual-math-editor-source-1.1.2.zip`, and `release/SHA256SUMS.txt`.
+
+1.1.2 发布前本地验收：`npm run check` 全部通过（TypeScript 零报错零警告、**309 项自动化测试**通过、生产构建通过），六套真实 Headless Chrome 组件回归共 **1,278 项检查 + 32 项实时布局与 Shadow DOM 校验**全部通过，`npm run package` 打包校验通过。
+
 ## 1.1.1 — pre-publication validation (2026-11-20)
 
 **Prepared version: Visual Math 1.1.1 / Oliver, desktop release.** The plugin ID remains `visual-math-editor` (minimum Obsidian `1.14.4`, desktop only). Older sections below retain their original build identities and dates.

@@ -2,6 +2,14 @@
 
 This file records version changes. Builds before 0.6.2 were local MVP releases; 0.6.2 prepares the first public desktop beta. Publication status is shown on GitHub Releases. Neither a local package nor a public GitHub release implies Obsidian community-directory approval.
 
+## 1.1.2 — 2026-11-21 · Desktop release
+
+### What's New in 1.1.2
+- **Full Greek letters drawer (`αβ Greek letters`) & clean single-row symbol bar**: Added a collapsible **Greek letters** drawer right beside `Advanced math` in `.vme-secondary-tools` (integrated with single-drawer accordion toggling and `Escape` dismissal), organized into **Lowercase (`α–ω`, all 24 letters)**, **Common variants (`\varepsilon`, `\varphi`, `\vartheta`, `\varrho`, `\varsigma`, `\varkappa`)**, and **Uppercase (`\Gamma`–`\Omega`, all 11 standard TeX capitals)**, while trimming the persistent top symbol bar back to 12 core symbols so it stays cleanly on one line.
+- **Periodic table chemical equation bar & cleaner workspace**: Selecting `Periodic table` (`elements`) now swaps the equation header toolbar from math `+ − =` to a dedicated **Chemical Equation Bar** (`+`, `→`, `⇌`, `Δ Heat`, `↑`, `↓`, `Subscript ₂`, `Charge ⁺`, `Charge ⁻`, `Valence n±`, `(s)`, `(l)`, `(g)`, `(aq)`). `Graph this equation` is automatically hidden on `Chemistry`, `Periodic table`, and `Units` tabs (and restored on `Math` and `Physics`), and redundant black host hover tooltips on element cells are suppressed so only the `.vme-element-details` card appears while retaining `aria-label` accessibility.
+- **Smoother main visual math typing**: Enabled `smartSuperscript` and explicit local Greek, arrow, and inequality `inlineShortcuts` in the main `<math-field>` editor (100% offline and self-contained).
+- **Apple Liquid Glass top chrome & Group 18 periodic table fit**: Upgraded the editor header bar (`.vme-heading` and capsule controls) and subject segmented track (`.vme-subject-tabs` / `.vme-subject-tab`) to translucent light/dark optical glass styling while keeping the equation canvas and graph views crisp; tightened the 18-column periodic table grid (`min-width: 646px`) so Group 18 fits cleanly inside the standard `760px` modal without right-edge clipping; and completed 6-language translations across `en`, `zh`, `es`, `ja`, `de`, and `fr`.
+
 ## 1.1.1 — 2026-11-20 · Desktop release
 
 ### What's New in 1.1.1

@@ -732,7 +732,10 @@ export function mountScienceTools(host: HTMLElement, options: ScienceOptions): {
       showElementDetails(cell);
     });
     button.className = 'vme-element-button';
+    button.removeAttribute('title');
     button.setAttribute('aria-label', `${item.number} ${item.name} ${item.symbol}`);
+    // Prevent Obsidian's global [aria-label] mouseover listener from rendering a redundant black host tooltip over .vme-element-details.
+    button.addEventListener('mouseover', (event) => event.stopPropagation());
     const cell: ElementCell = { button, item };
     cellsByButton.set(button, cell);
     button.addEventListener('pointerenter', () => {

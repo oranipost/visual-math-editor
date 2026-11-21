@@ -1,12 +1,12 @@
 # 提交到 Obsidian 社区插件目录
 
-## 1.1.1 正式版与当前目录资料
+## 1.1.2 正式版与当前目录资料
 
-当前发行目标为 **Visual Math 1.1.1 正式版**，名称/作者 **Visual Math / Oliver**，保留插件 ID、目录条目和仓库 `visual-math-editor`。不要新建重复条目，也不改写旧版标签或程序附件。发布为普通 GitHub Release 并设为 latest，不勾选 pre-release。
+当前发行目标为 **Visual Math 1.1.2 正式版**，名称/作者 **Visual Math / Oliver**，保留插件 ID、目录条目和仓库 `visual-math-editor`。不要新建重复条目，也不改写旧版标签或程序附件。发布为普通 GitHub Release 并设为 latest，不勾选 pre-release。
 
-当前范围：三模式正文编辑、框内多行公式换行（`↵ New line` / `Shift+Enter`）、单行紧凑二级工具栏、实时预览的 1–6 行/列矩阵编辑器（支持 Excel/TSV 多格粘贴）与 2–6 行单列方程组大括号、保留原文的单式导入、9 个高等数学记号模板、19 个集合/数列工具、三角与几何符号，以及 9 种几何图元（含半球、圆台/正棱台）、2–6 部件组合几何体 3D 建模和 3 种基础空间关系场景。保留化学/物理（24 个模板）、单位（11 类 66 种单位，含 `eV`/`keV`/`MeV`）、10 分区 118 元素周期表、已有函数/极坐标/XYZ/复平面功能、一键复制 PNG 图像与六国语言界面（中/英/西/日/德/法）。已有笔记和设置保留，导入预算不保证任意复杂长公式流畅。
+当前范围：三模式正文编辑、框内多行公式换行（`↵ New line` / `Shift+Enter`）、单行紧凑二级工具栏、全套 41 符号希腊字母抽屉（`αβ 希腊字母`）、实时预览的 1–6 行/列矩阵编辑器（支持 Excel/TSV 多格粘贴）与 2–6 行单列方程组大括号、保留原文的单式导入、9 个高等数学记号模板、19 个集合/数列工具、三角与几何符号，以及 9 种几何图元（含半球、圆台/正棱台）、2–6 部件组合几何体 3D 建模和 3 种基础空间关系场景。保留化学/物理（24 个模板）、单位（11 类 66 种单位，含 `eV`/`keV`/`MeV`）、10 分区 118 元素周期表（配套化学方程式快捷符号栏）、已有函数/极坐标/XYZ/复平面功能、一键复制 PNG 图像与六国语言界面（中/英/西/日/德/法）。已有笔记和设置保留，导入预算不保证任意复杂长公式流畅。
 
-**1.1.1 的托管发行、附件来源证明、目录扫描和应用内更新结果必须分别实测。** 本文中的旧版 Review Passed 不代表本版已通过；准确结果统一见 [TEST-REPORT.md](../TEST-REPORT.md)。1.1.1 使用既有条目的 Check for new releases / Request review 等实际入口，按页面显示处理，不重复首次提交。
+**1.1.2 的托管发行、附件来源证明、目录扫描和应用内更新结果必须分别实测。** 本文中的旧版 Review Passed 不代表本版已通过；准确结果统一见 [TEST-REPORT.md](../TEST-REPORT.md)。1.1.2 使用既有条目的 Check for new releases / Request review 等实际入口，按页面显示处理，不重复首次提交。
 
 ## 0.8.0 历史检查
 
@@ -78,7 +78,7 @@ Obsidian 当前的[官方提交指南](https://docs.obsidian.md/Plugins/Releasin
 流程如下：
 
 1. 在 GitHub 公开源代码，仓库根目录放好 `README.md`、`LICENSE`、`manifest.json`。
-2. 发布与 manifest 版本号完全一致的 GitHub Release。1.1.1 使用 tag **`1.1.1`**，不要加 `v`；不得改写旧标签或替换旧版程序附件；0.6.2–0.6.5 当前保留为可恢复草稿，旧 MIT 授权不变。
+2. 发布与 manifest 版本号完全一致的 GitHub Release。1.1.2 使用 tag **`1.1.2`**，不要加 `v`；不得改写旧标签或替换旧版程序附件；0.6.2–0.6.5 当前保留为可恢复草稿，旧 MIT 授权不变。
 3. Release 附件单独上传 **`main.js`、`manifest.json`、`styles.css`**；安装 ZIP 和源码 ZIP 是额外的便利下载，不能替代这三个单独附件。
 4. 在社区网站登录 Obsidian 账号，在个人资料的 **GitHub → Connect** 关联 `oranipost`。这是网站用来验证仓库所有权的步骤。
 5. 进入侧栏 **Plugins → New plugin**，填入仓库 URL，Owner 选择自己，阅读开发者政策与维护承诺后提交。
@@ -95,7 +95,7 @@ Obsidian 当前的[官方提交指南](https://docs.obsidian.md/Plugins/Releasin
 | ID | `visual-math-editor` |
 | Author | `Oliver` |
 | Author URL | `https://github.com/oranipost` |
-| Version / release tag | `1.1.1`（正式版；GitHub、目录审核与原生验证分别核实，详见 TEST-REPORT） |
+| Version / release tag | `1.1.2`（正式版；GitHub、目录审核与原生验证分别核实，详见 TEST-REPORT） |
 | Minimum Obsidian version | `1.14.4` |
 | Platforms | Desktop only；目前实际验证 macOS，Windows / Linux 尚未做原生应用测试 |
 | License | 0.7.0 新代码／本版整体：GPLv3 加 Obsidian 链接例外；0.6.5 及此前 MIT 授权保持有效，第三方 MIT／Apache 2.0 不变，见 [Third-party notices](../THIRD-PARTY-NOTICES.md) |
@@ -109,19 +109,19 @@ Obsidian 当前的[官方提交指南](https://docs.obsidian.md/Plugins/Releasin
 
 > Write math, chemistry, and physics notes visually or in LaTeX. Build matrices, equation systems, 2D/3D graphs, and geometry scenes offline.
 
-中文详细介绍可用（1.1.1）：
+中文详细介绍可用（1.1.2）：
 
-> 我做 Visual Math 是为了让在 Obsidian 里写数学、化学和物理笔记更省力，不用每次都纯手敲生硬的 LaTeX 代码。打开笔记里的编辑器后，可以直接点分数、根号、积分、求和、1–6 阶矩阵或带左大括号的 2–6 行方程组并填空；熟悉 LaTeX 的用户也可以切换到 LaTeX 或 Hybrid 模式，左边改源码、右边看公式。需要多行推导时，按 `↵ 换行`（`Shift+Enter`）就能在同一个公式块里直接换行。
+> 我做 Visual Math 是为了让在 Obsidian 里写数学、化学和物理笔记更省力，不用每次都纯手敲生硬的 LaTeX 代码。打开笔记里的编辑器后，可以直接点分数、根号、积分、求和、全套 41 个希腊字母、1–6 阶矩阵或带左大括号的 2–6 行方程组并填空；熟悉 LaTeX 的用户也可以切换到 LaTeX 或 Hybrid 模式，左边改源码、右边看公式。需要多行推导时，按 `↵ 换行`（`Shift+Enter`）就能在同一个公式块里直接换行。
 >
-> 图像工具支持在公式下方直接绘制 `y=f(x)` 函数（含一阶/二阶数值导数与定积分阴影）、极坐标 `r=f(theta)`、三维曲面 `z=f(x,y)` 和复平面 `Re/Im` 点，内置 9 种三维几何图元、2–6 部件组合几何体 3D 建模与 3 种空间相交场景，并支持一键复制高清 PNG 图像。科学面板包含化学方程式（`\ce`）与配平检查、24 个物理常用公式、11 类 66 种单位离线换算（`\pu`，含 `eV`/`keV`/`MeV`）和 10 分区 118 号元素周期表。所有公式都保存为标准 `$…$` 或 `$$…$$` Markdown，字体、单位表与绘图引擎 100% 在本地离线运行（无 AI、无付费订阅），支持简体中文、英语、西班牙语、日语、德语和法语。
+> 图像工具支持在公式下方直接绘制 `y=f(x)` 函数（含一阶/二阶数值导数与定积分阴影）、极坐标 `r=f(theta)`、三维曲面 `z=f(x,y)` 和复平面 `Re/Im` 点，内置 9 种三维几何图元、2–6 部件组合几何体 3D 建模与 3 种空间相交场景，并支持一键复制高清 PNG 图像。科学面板包含化学方程式（`\ce`）与配平检查、24 个物理常用公式、11 类 66 种单位离线换算（`\pu`，含 `eV`/`keV`/`MeV`）和带化学方程式快捷符号栏的 10 分区 118 号元素周期表。所有公式都保存为标准 `$…$` 或 `$$…$$` Markdown，字体、单位表与绘图引擎 100% 在本地离线运行（无 AI、无付费订阅），支持简体中文、英语、西班牙语、日语、德语和法语。
 >
 > 官方网站与功能指南：[oranipost.github.io/visual-math](https://oranipost.github.io/visual-math/) · 视频教程频道：[@VisualMathForObsidian](https://www.youtube.com/@VisualMathForObsidian) · 开发者：[Oliver / oranipost](https://github.com/oranipost) · 问题反馈：[GitHub Issues](https://github.com/oranipost/visual-math-editor/issues) 或 [oranipost@outlook.com](mailto:oranipost@outlook.com)。
 
-英文详细介绍可用（1.1.1）：
+英文详细介绍可用（1.1.2）：
 
-> I built Visual Math so you can write math, chemistry, and physics notes in Obsidian without typing raw LaTeX by hand every time. Click fractions, roots, integrals, sums, 1×1 to 6×6 matrices, or 2–6 row equation systems and fill in the boxes directly, or switch to LaTeX and Hybrid mode to edit source code and rendered formulas side by side. Press `↵ New line` (`Shift+Enter`) whenever you need multiple lines inside the same equation block.
+> I built Visual Math so you can write math, chemistry, and physics notes in Obsidian without typing raw LaTeX by hand every time. Click fractions, roots, integrals, sums, all 41 Greek letters, 1×1 to 6×6 matrices, or 2–6 row equation systems and fill in the boxes directly, or switch to LaTeX and Hybrid mode to edit source code and rendered formulas side by side. Press `↵ New line` (`Shift+Enter`) whenever you need multiple lines inside the same equation block.
 >
-> Graph tools let you plot 2D functions `y = f(x)` (with numerical derivatives and definite integral shading), polar curves `r = f(theta)`, 3D surfaces `z = f(x, y)`, complex plane points, 9 adjustable 3D geometry primitives, 2–6 part composite 3D solids, and 3 spatial intersection scenes, with one-click PNG image copy. Science panels include chemical reactions (`\ce`) with balance checks, 24 physics templates, offline conversion across 66 units in 11 categories (`\pu`, including `eV`, `keV`, `MeV`), and a 10-category 118-element periodic table. Everything saves as standard `$…$` or `$$…$$` Markdown and `vme-plot` blocks, and runs 100% locally offline (no AI, no paid subscriptions) in English, Simplified Chinese, Spanish, Japanese, German, and French.
+> Graph tools let you plot 2D functions `y = f(x)` (with numerical derivatives and definite integral shading), polar curves `r = f(theta)`, 3D surfaces `z = f(x, y)`, complex plane points, 9 adjustable 3D geometry primitives, 2–6 part composite 3D solids, and 3 spatial intersection scenes, with one-click PNG image copy. Science panels include chemical reactions (`\ce`) with balance checks, 24 physics templates, offline conversion across 66 units in 11 categories (`\pu`, including `eV`, `keV`, `MeV`), and a 10-category 118-element periodic table with a chemical equation bar. Everything saves as standard `$…$` or `$$…$$` Markdown and `vme-plot` blocks, and runs 100% locally offline (no AI, no paid subscriptions) in English, Simplified Chinese, Spanish, Japanese, German, and French.
 >
 > Official Website: [oranipost.github.io/visual-math](https://oranipost.github.io/visual-math/) · YouTube Tutorials: [@VisualMathForObsidian](https://www.youtube.com/@VisualMathForObsidian) · Developer: [Oliver / oranipost](https://github.com/oranipost) · Feedback: [GitHub Issues](https://github.com/oranipost/visual-math-editor/issues) or [oranipost@outlook.com](mailto:oranipost@outlook.com).
 

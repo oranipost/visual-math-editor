@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { validateLatex } from 'mathlive';
 import { mountEditor } from '../src/editor-ui';
+import { GREEK_GROUPS, GREEK_TOOLS } from '../src/greek-tools';
 import { localizeEditor, translateUiText } from '../src/i18n';
 import { findMathRanges } from '../src/math-ranges';
 import { mountMatrixTools } from '../src/matrix-ui';
@@ -580,6 +581,7 @@ class FakeElement extends FakeNode {
     }
     if (this.localName === 'summary' && this.parentElement?.localName === 'details') {
       this.parentElement.open = !this.parentElement.open;
+      this.parentElement.dispatchEvent(new FakeEvent('toggle'));
     }
     this.dispatchEvent(new FakeEvent('click', { bubbles: true, cancelable: true }));
   }
@@ -595,6 +597,7 @@ class FakeMathfieldElement extends FakeElement {
   defaultMode = 'math';
   smartMode = false;
   smartSuperscript = false;
+  inlineShortcuts: Record<string, unknown> = {};
   popoverPolicy = 'off';
   mathVirtualKeyboardPolicy = 'manual';
   environmentPopoverPolicy = 'off';
@@ -1374,9 +1377,11 @@ test('Graph panel top-to-bottom flow places preview and navigation above commit 
     });
     try {
       await new Promise(resolve => setTimeout(resolve, 10));
-      // Verify expanded Greek symbol buttons and inline Greek typing tip in Visual mode
-      for (const greekId of ['gamma', 'lambda', 'mu', 'rho', 'sigma', 'varphi', 'varepsilon', 'omega']) {
-        assert.ok(host.querySelector(`[data-action="${greekId}"]`), `missing Greek symbol button: ${greekId}`);
+      // Verify single-row trimmed symbolBar (10..12 core symbols) + full Greek letters drawer
+      const symbolBarButtons = host.querySelectorAll('.vme-symbol-bar .vme-symbol-button');
+      assert.ok(symbolBarButtons.length >= 10 && symbolBarButtons.length <= 12, `expected 10..12 symbolBar buttons, got ${symbolBarButtons.length}`);
+      for (const greekId of ['gamma', 'lambda', 'mu', 'rho', 'sigma', 'varphi', 'varepsilon', 'omega', 'varkappa', 'Upsilon']) {
+        assert.ok(host.querySelector(`[data-action="greek-${greekId}"]`), `missing Greek drawer button: greek-${greekId}`);
       }
       assert.match(host.querySelector('[data-testid="greek-typing-hint"]')!.textContent, /rho.*lambda.*omega/);
 
@@ -1571,6 +1576,142 @@ test('Hemisphere, Frustum, and Composite 3D Solids builder UI supports templates
     } finally {
       i18n.destroy();
       tools.destroy();
+    }
+  }, 'zh-CN');
+});
+
+test('1.1.2 Full Greek drawer (24+6+11), Periodic Table chemical equation bar, hidden Graph this equation, tooltip suppression, smartSuperscript, and 6-language coverage', async () => {
+  assert.equal(GREEK_GROUPS.length, 3);
+  assert.equal(GREEK_GROUPS[0]?.id, 'lowercase');
+  assert.equal(GREEK_GROUPS[0]?.items.length, 24);
+  assert.equal(GREEK_GROUPS[1]?.id, 'variants');
+  assert.equal(GREEK_GROUPS[1]?.items.length, 6);
+  assert.equal(GREEK_GROUPS[2]?.id, 'uppercase');
+  assert.equal(GREEK_GROUPS[2]?.items.length, 11);
+  assert.equal(GREEK_TOOLS.length, 41);
+
+  for (const item of GREEK_TOOLS) {
+    assert.deepEqual(validateLatex(item.latex), [], `Greek command invalid in MathLive: ${item.id} (${item.latex})`);
+  }
+
+  await withFakeDom(async (doc) => {
+    const host = doc.createElement('div');
+    doc.body.append(host);
+    let cancelCount = 0;
+    const editor = mountEditor(asHtml(host), {
+      latex: '',
+      display: true,
+      language: 'zh',
+      onSave: async () => undefined,
+      onCancel: () => { cancelCount++; },
+    });
+
+    try {
+      // 1. Main mathfield enables smartSuperscript and purely local inlineShortcuts
+      const mainField = host.querySelector('.vme-mathfield') as FakeMathfieldElement;
+      assert.equal(mainField.smartSuperscript, true);
+      for (const shortcutKey of ['alpha', 'rho', 'lambda', 'omega', 'varepsilon', 'varphi', 'varkappa', 'Upsilon', '->', '-->', '<->', '<=', '>=', '!=', '+-']) {
+        assert.ok(Object.hasOwn(mainField.inlineShortcuts, shortcutKey), `missing local inlineShortcut: ${shortcutKey}`);
+      }
+
+      // 2. Greek drawer mounts immediately after Advanced math inside .vme-secondary-tools with accordion & Escape support
+      const secondaryChildren = host.querySelector('.vme-secondary-tools')!.children;
+      const advIdx = secondaryChildren.findIndex(el => el.dataset.testid === 'advanced-math-tools');
+      const greekIdx = secondaryChildren.findIndex(el => el.dataset.testid === 'greek-tools');
+      assert.ok(advIdx >= 0 && greekIdx === advIdx + 1, 'greek-tools mounts directly beside advanced-math-tools');
+
+      const advDrawer = host.querySelector('[data-testid="advanced-math-tools"]')!;
+      const greekDrawer = host.querySelector('[data-testid="greek-tools"]')!;
+      assert.equal(greekDrawer.querySelectorAll('button').length, 41);
+
+      advDrawer.querySelector('summary')!.click();
+      assert.equal(advDrawer.open, true);
+      greekDrawer.querySelector('summary')!.click();
+      assert.equal(greekDrawer.open, true);
+      assert.equal(advDrawer.open, false, 'opening Greek drawer closes Advanced math drawer');
+
+      greekDrawer.querySelector('[data-action="greek-rho"]')!.click();
+      assert.equal(editor.getDraft().latex, '\\rho ');
+
+      const esc = new FakeEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true });
+      host.querySelector('.vme-editor')!.dispatchEvent(esc);
+      assert.equal(greekDrawer.open, false, 'Escape closes open Greek drawer');
+      assert.equal(cancelCount, 0, 'Escape on open Greek drawer does not cancel editor');
+
+      // 3. Equation graph visibility & Chemical Equation Quick Bar across subjects
+      const equationGraph = host.querySelector('[data-testid="equation-graph"]')!;
+      const mathQuickOps = host.querySelector('[data-testid="math-quick-operators"]')!;
+      const chemQuickOps = host.querySelector('[data-testid="chem-quick-operators"]')!;
+
+      assert.equal(equationGraph.hidden, false, 'Math shows Graph this equation');
+      assert.equal(mathQuickOps.hidden, false);
+      assert.equal(chemQuickOps.hidden, true);
+      assert.equal(chemQuickOps.querySelectorAll('button').length, 14);
+
+      // Open Graph this equation on Math, then switch to Elements: it must auto-hide & unlink
+      host.querySelector('[data-action="graph-equation"]')!.click();
+      assert.equal(host.querySelector('[data-action="graph-equation"]')!.getAttribute('aria-expanded'), 'true');
+
+      host.querySelector('[data-action="subject-elements"]')!.click();
+      assert.equal(equationGraph.hidden, true, 'Elements hides Graph this equation');
+      assert.equal(host.querySelector('[data-action="graph-equation"]')!.getAttribute('aria-expanded'), 'false');
+      assert.equal(mathQuickOps.hidden, true, 'Elements hides math + - = bar');
+      assert.equal(chemQuickOps.hidden, false, 'Elements shows 14-button chemical equation bar');
+
+      // Build a complete chemical equation using Periodic Table + Chemical Quick Bar
+      host.querySelector('[data-action="clear"]')!.click();
+      host.querySelector('[data-action="element-26"]')!.click();
+      host.querySelector('[data-action="element-insert-symbol"]')!.click();
+      host.querySelector('[data-action="chem-op-charge-plus"]')!.click();
+      host.querySelector('[data-action="chem-op-plus"]')!.click();
+      host.querySelector('[data-action="chem-op-heat"]')!.click();
+      host.querySelector('[data-action="chem-op-state-aq"]')!.click();
+      const builtChem = editor.getDraft().latex;
+      assert.match(builtChem, /\\mathrm\{Fe\}\^\{\+\}\+\\xrightarrow\{\\Delta\}\\mathrm\{\(aq\)\}/);
+      assert.deepEqual(validateLatex(builtChem), []);
+
+      // Verify element buttons have NO redundant title attribute and stop mouseover propagation
+      const elementButtons = host.querySelectorAll('.vme-element-button');
+      assert.equal(elementButtons.length, 118);
+      let bubbledMouseovers = 0;
+      host.addEventListener('mouseover', () => { bubbledMouseovers++; });
+      for (const elBtn of elementButtons) {
+        assert.equal(elBtn.getAttribute('title'), null, 'element button must not carry redundant native title attribute');
+        assert.ok((elBtn.getAttribute('aria-label') ?? '').length > 0, 'element button retains accessible aria-label');
+      }
+      elementButtons[25]!.dispatchEvent(new FakeEvent('mouseover', { bubbles: true, cancelable: true }));
+      assert.equal(bubbledMouseovers, 0, 'element button stops mouseover bubbling to host tooltip listeners');
+
+      // Check Chemistry, Units, Physics, and Math subject transitions for equationGraph
+      host.querySelector('[data-action="subject-chemistry"]')!.click();
+      assert.equal(equationGraph.hidden, true, 'Chemistry hides Graph this equation');
+      assert.equal(mathQuickOps.hidden, false);
+      assert.equal(chemQuickOps.hidden, true);
+
+      host.querySelector('[data-action="subject-units"]')!.click();
+      assert.equal(equationGraph.hidden, true, 'Units hides Graph this equation');
+
+      host.querySelector('[data-action="subject-physics"]')!.click();
+      assert.equal(equationGraph.hidden, false, 'Physics restores Graph this equation');
+
+      host.querySelector('[data-action="subject-math"]')!.click();
+      assert.equal(equationGraph.hidden, false, 'Math restores Graph this equation');
+
+      // 4. Verify all 6 languages translate 1.1.2 Greek & Chemical Equation controls with zero Han leakage
+      for (const lang of ['en', 'es', 'ja', 'de', 'fr'] as const) {
+        editor.setLanguage(lang);
+        await new Promise(resolve => setTimeout(resolve, 5));
+        if (lang !== 'ja') {
+          assert.doesNotMatch(greekDrawer.textContent, /[\p{Script=Han}]/u, `${lang} leaked Han in Greek drawer`);
+          assert.doesNotMatch(chemQuickOps.textContent, /[\p{Script=Han}]/u, `${lang} leaked Han in Chemical quick bar`);
+          for (const btn of [...greekDrawer.querySelectorAll('button'), ...chemQuickOps.querySelectorAll('button')]) {
+            assert.doesNotMatch(btn.getAttribute('title') ?? '', /[\p{Script=Han}]/u, `${lang} leaked Han in title`);
+            assert.doesNotMatch(btn.getAttribute('aria-label') ?? '', /[\p{Script=Han}]/u, `${lang} leaked Han in aria-label`);
+          }
+        }
+      }
+    } finally {
+      editor.destroy();
     }
   }, 'zh-CN');
 });

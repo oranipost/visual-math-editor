@@ -2,7 +2,7 @@
 
 **English** · [简体中文](README.zh-CN.md) · [Español](README.es.md) · [日本語](README.ja.md) · [Deutsch](README.de.md) · [Français](README.fr.md)
 
-**[Install in Obsidian](https://community.obsidian.md/plugins/visual-math-editor)** · **[Official Website](https://oranipost.github.io/visual-math/)** · **[YouTube Tutorials](https://www.youtube.com/@VisualMathForObsidian)** · **[Download 1.1.1 ZIP](https://github.com/oranipost/visual-math-editor/releases/download/1.1.1/visual-math-editor-1.1.1.zip)** · **[Release Notes](https://github.com/oranipost/visual-math-editor/releases/tag/1.1.1)**
+**[Install in Obsidian](https://community.obsidian.md/plugins/visual-math-editor)** · **[Official Website](https://oranipost.github.io/visual-math/)** · **[YouTube Tutorials](https://www.youtube.com/@VisualMathForObsidian)** · **[Download 1.1.2 ZIP](https://github.com/oranipost/visual-math-editor/releases/download/1.1.2/visual-math-editor-1.1.2.zip)** · **[Release Notes](https://github.com/oranipost/visual-math-editor/releases/tag/1.1.2)**
 
 ## Overview
 
@@ -15,17 +15,17 @@ Everything saves as standard `$…$` or `$$…$$` Markdown in your note. All fon
 - **Website & Feature Guide**: [oranipost.github.io/visual-math](https://oranipost.github.io/visual-math/)
 - **Video Walkthroughs**: [@VisualMathForObsidian on YouTube](https://www.youtube.com/@VisualMathForObsidian)
 
-![Visual Math 1.1.1 in Obsidian](docs/images/visual-math-demo.gif)
+![Visual Math 1.1.2 in Obsidian](docs/images/visual-math-demo.gif)
 
 ---
 
 ## What's Inside
 
 - **Visual, LaTeX, and Hybrid editing**: Edit with visual placeholders, raw TeX source, or both at once. Includes multi-line equations (`↵ New line`), undo/redo history, and single-formula LaTeX import.
-- **Matrices, systems, sets, and calculus notation**: Build `1×1` to `6×6` matrices, `2–6` row equation systems with a left brace, 19 set/sequence symbols, trig/geometry notation, and 9 calculus/vector templates.
+- **Matrices, systems, Greek letters, sets, and calculus**: Build `1×1` to `6×6` matrices, `2–6` row equation systems with a left brace, all 41 Greek letters (`α–ω`, variants, and uppercase), 19 set/sequence symbols, trig/geometry notation, and 9 calculus/vector templates.
 - **Function, polar, 3D surface, and complex graphs**: Plot `y = f(x)` (with numerical 1st/2nd derivatives and definite integrals), polar curves `r = f(θ)`, 3D surfaces `z = f(x, y)`, and `Re / Im` complex points right below your equation, or copy any graph as a PNG image in one click.
 - **3D geometry & multi-solid composite modeling**: Rotate and zoom 9 geometric primitives (sphere, hemisphere, cylinder, cone, circular/polygonal frustum, regular pyramid, regular prism, cuboid, plane), combine `2–6` solids into composite 3D figures (with problem templates, per-part offsets/rotations, and solid/translucent/wireframe styles), and explore 3 spatial intersection scenes (two planes, line–plane, sphere–plane).
-- **Chemistry, physics, units, and 10-category periodic table**: Write chemical reactions (`\ce`) with balance checks, insert 24 physics templates, convert across 66 units in 11 categories (`\pu`, including `eV`, `keV`, `MeV`), and look up all 118 elements across 10 standard chemical families.
+- **Chemistry, physics, units, and 10-category periodic table**: Write chemical reactions (`\ce`) with balance checks, insert 24 physics templates, convert across 66 units in 11 categories (`\pu`, including `eV`, `keV`, `MeV`), and look up all 118 elements across 10 standard chemical families with a dedicated chemical equation bar (`→`, `⇌`, `Δ`, `↑`, `↓`, subscripts, charges, and states).
 - **100% local offline & 6 languages**: Runs completely offline with zero AI, zero cloud dependencies, and no subscriptions. Available in **English**, **简体中文**, **Español**, **日本語**, **Deutsch**, and **Français**.
 
 ---
@@ -33,7 +33,7 @@ Everything saves as standard `$…$` or `$$…$$` Markdown in your note. All fon
 ## Quick Start
 
 1. **Open the editor**: Place your cursor in a note and click **∑** in the note header or left ribbon (or run `Visual Math: Insert or edit equation` from the command palette).
-2. **Fill in a structure**: In **Visual** mode, click **fraction**, type `3`, press `Tab`, and type `4`. Use the secondary tool bar (`Trig & geometry`, `Sets & sequences`, `Matrix`, `System`, `Advanced math`, `Import`) whenever you need larger structures.
+2. **Fill in a structure**: In **Visual** mode, click **fraction**, type `3`, press `Tab`, and type `4`. Use the secondary tool bar (`αβ Greek letters`, `Trig & geometry`, `Sets & sequences`, `Matrix`, `System`, `Advanced math`, `Import`) whenever you need larger structures or symbols.
 3. **Save or plot**: Pick **Inline equation** (`$…$`) or **Display equation** (`$$…$$`) at the bottom right of the card and click **Insert equation** (`Ctrl/Cmd + Enter`), or click **Graph this equation** to plot the formula right below the editor.
 
 ---
@@ -46,9 +46,9 @@ Everything saves as standard `$…$` or `$$…$$` Markdown in your note. All fon
 2. Click **Install**, then **Enable** inside Obsidian.
 3. Open any Markdown note and click **∑**.
 
-### Manual ZIP Installation (1.1.1 Desktop Release)
+### Manual ZIP Installation (1.1.2 Desktop Release)
 
-Download **[visual-math-editor-1.1.1.zip](https://github.com/oranipost/visual-math-editor/releases/download/1.1.1/visual-math-editor-1.1.1.zip)** (compiled release archive; do not download GitHub's *Source code* archive):
+Download **[visual-math-editor-1.1.2.zip](https://github.com/oranipost/visual-math-editor/releases/download/1.1.2/visual-math-editor-1.1.2.zip)** (compiled release archive; do not download GitHub's *Source code* archive):
 
 1. Extract the `visual-math-editor` folder into `<your-vault>/.obsidian/plugins/`.
 2. Check that `main.js`, `manifest.json`, `styles.css`, and the license files sit directly inside `.obsidian/plugins/visual-math-editor/`.
@@ -58,10 +58,10 @@ See the [Installation & Updating Guide](docs/INSTALLATION.md#english) for full i
 
 ---
 
-## Screenshots (v1.1.1)
+## Screenshots (v1.1.2)
 
 ### Hybrid Mode, Multi-Line Equations & Compact Tool Bar
-![Hybrid mode and multi-line editing in Visual Math 1.1.1](docs/images/vme-1.1-hybrid-multiline.png)
+![Hybrid mode and multi-line editing in Visual Math 1.1.2](docs/images/vme-1.1-hybrid-multiline.png)
 
 ### Visual Matrices & Equation Systems
 ![Visual matrix and equation system builders with live preview](docs/images/vme-1.1-matrix-system.png)

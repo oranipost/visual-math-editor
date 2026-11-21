@@ -2,7 +2,7 @@
 
 [English](README.md) · [简体中文](README.zh-CN.md) · [Español](README.es.md) · **日本語** · [Deutsch](README.de.md) · [Français](README.fr.md)
 
-**[Obsidian にインストール](https://community.obsidian.md/plugins/visual-math-editor)** · **[公式サイト](https://oranipost.github.io/visual-math/)** · **[YouTube チュートリアル](https://www.youtube.com/@VisualMathForObsidian)** · **[1.1.1 ZIP をダウンロード](https://github.com/oranipost/visual-math-editor/releases/download/1.1.1/visual-math-editor-1.1.1.zip)** · **[リリースノート](https://github.com/oranipost/visual-math-editor/releases/tag/1.1.1)**
+**[Obsidian にインストール](https://community.obsidian.md/plugins/visual-math-editor)** · **[公式サイト](https://oranipost.github.io/visual-math/)** · **[YouTube チュートリアル](https://www.youtube.com/@VisualMathForObsidian)** · **[1.1.2 ZIP をダウンロード](https://github.com/oranipost/visual-math-editor/releases/download/1.1.2/visual-math-editor-1.1.2.zip)** · **[リリースノート](https://github.com/oranipost/visual-math-editor/releases/tag/1.1.2)**
 
 ## 概要
 
@@ -15,17 +15,17 @@ Obsidian で数学・化学・物理のノートを書くときに、毎回 LaTe
 - **公式サイト・機能ガイド**: [oranipost.github.io/visual-math](https://oranipost.github.io/visual-math/)
 - **動画チュートリアル**: [YouTube @VisualMathForObsidian](https://www.youtube.com/@VisualMathForObsidian)
 
-![Obsidian で動作する Visual Math 1.1.1](docs/images/visual-math-demo.gif)
+![Obsidian で動作する Visual Math 1.1.2](docs/images/visual-math-demo.gif)
 
 ---
 
 ## 主な機能
 
 - **Visual・LaTeX・Hybrid の 3 モード**: 視覚的な空欄入力、TeX ソースの直接編集、または左右同時編集に対応。数式内の複数行改行（`↵ 改行`）、元に戻す／やり直し履歴、単一 LaTeX 数式のインポートを備えています。
-- **行列・連立方程式・集合・微積分記法**: `1×1`〜`6×6` の行列、左中括弧付きの `2〜6` 行の連立方程式、19 種類の集合・数列記号、三角関数・幾何記号、9 種類の微積分・ベクトルテンプレートを収録。
+- **行列・連立方程式・全ギリシャ文字・集合・微積分記法**: `1×1`〜`6×6` の行列、左中括弧付きの `2〜6` 行の連立方程式、全 41 種のギリシャ文字（小文字 `α–ω`・異体字・大文字）、19 種類の集合・数列記号、三角関数・幾何記号、9 種類の微積分・ベクトルテンプレートを収録。
 - **関数・極座標・3D 曲面・複素平面グラフ**: 数式のすぐ下に `y = f(x)`（1 階／2 階数値微分および定積分の面積表示に対応）、極座標曲線 `r = f(θ)`、3D 曲面 `z = f(x, y)`、複素平面 `Re / Im` の点プロットを描画でき、ワンクリックで PNG 画像としてクリップボードにコピーできます。
 - **3D 幾何モデル・複合立体モデリング・空間関係**: 9 種類の基本立体（球、半球、円柱、円錐、円錐台／正角錐台、正角錐、正角柱、直方体、平面パッチ）に加え、`2〜6` 個の立体を組み合わせる複合立体モデリング（球に内接する立方体、円柱＋円錐などの問題テンプレート、パーツ別のオフセット・回転・ソリッド／半透明／ワイヤーフレーム表示）、および 3 種類の空間交差シーン（2 平面、直線と平面、球と平面）に対応。
-- **化学・物理・単位換算・10 分類周期表**: 化学反応式（`\ce`）の入力と係数つり合いチェック、24 種類の物理公式テンプレート、11 カテゴリ 66 単位のオフライン換算（`\pu`、`eV`・`keV`・`MeV` 対応）、標準 10 分類で色分けされた全 118 元素の周期表検索に対応。
+- **化学・物理・単位換算・10 分類周期表**: 化学反応式（`\ce`）の入力と係数つり合いチェック、24 種類の物理公式テンプレート、11 カテゴリ 66 単位のオフライン換算（`\pu`、`eV`・`keV`・`MeV` 対応）、化学反応式ショートカットバー（`→`、`⇌`、`Δ`、`↑`、`↓`、下付き、電荷、状態記号）付きの全 118 元素 10 分類周期表に対応。
 - **100% ローカルオフライン・6 言語対応**: AI や外部通信を一切使わず完全オフラインで動作します。**日本語**、**English**、**简体中文**、**Español**、**Deutsch**、**Français** の 6 言語に対応しています。
 
 ---
@@ -33,7 +33,7 @@ Obsidian で数学・化学・物理のノートを書くときに、毎回 LaTe
 ## クイックスタート
 
 1. **エディターを開く**: ノートの本文にカーソルを置き、ノート上部または左リボンにある **∑** をクリックします（またはコマンドパレットから `Visual Math: 数式を挿入または編集` を実行します）。
-2. **構造に入力する**: **Visual** モードで **分数** をクリックし、`3` を入力して `Tab` キーを押し、分母に `4` を入力します。より大きな構造が必要なときは、下部のピル型ツールバー（`三角関数・幾何`、`集合と数列`、`行列`、`連立方程式`、`高等数学`、`数式読込`）を開きます。
+2. **構造に入力する**: **Visual** モードで **分数** をクリックし、`3` を入力して `Tab` キーを押し、分母に `4` を入力します。より多くの記号や構造が必要なときは、下部のピル型ツールバー（`αβ ギリシャ文字`、`三角関数・幾何`、`集合と数列`、`行列`、`連立方程式`、`高等数学`、`数式読込`）を開きます。
 3. **保存またはグラフ描画**: カード右下で **文中の数式**（`$…$`）または **独立した行**（`$$…$$`）を選び、**数式を挿入**（`Ctrl/Cmd + Enter`）をクリックします。**この数式をグラフ化** をクリックすると、エディターの下にそのままグラフを描画できます。
 
 ---
@@ -46,9 +46,9 @@ Obsidian で数学・化学・物理のノートを書くときに、毎回 LaTe
 2. Obsidian 内で **Install** をクリックし、続けて **Enable** をクリックします。
 3. 任意の Markdown ノートを開き、**∑** をクリックして使い始めます。
 
-### ZIP からの手動インストール（1.1.1 デスクトップ版）
+### ZIP からの手動インストール（1.1.2 デスクトップ版）
 
-ビルド済みの **[visual-math-editor-1.1.1.zip](https://github.com/oranipost/visual-math-editor/releases/download/1.1.1/visual-math-editor-1.1.1.zip)** をダウンロードします（GitHub 自動生成の *Source code* アーカイブではなく、リリース ZIP をダウンロードしてください）：
+ビルド済みの **[visual-math-editor-1.1.2.zip](https://github.com/oranipost/visual-math-editor/releases/download/1.1.2/visual-math-editor-1.1.2.zip)** をダウンロードします（GitHub 自動生成の *Source code* アーカイブではなく、リリース ZIP をダウンロードしてください）：
 
 1. 解凍した `visual-math-editor` フォルダを `<あなたの保管庫>/.obsidian/plugins/` に配置します。
 2. `.obsidian/plugins/visual-math-editor/` の直下に `main.js`、`manifest.json`、`styles.css`、およびライセンスファイルがあることを確認します。
@@ -58,10 +58,10 @@ Obsidian で数学・化学・物理のノートを書くときに、毎回 LaTe
 
 ---
 
-## スクリーンショット (v1.1.1)
+## スクリーンショット (v1.1.2)
 
 ### Hybrid モード・複数行数式・コンパクトツールバー
-![Visual Math 1.1.1 の Hybrid モードと複数行編集](docs/images/vme-1.1-hybrid-multiline.png)
+![Visual Math 1.1.2 の Hybrid モードと複数行編集](docs/images/vme-1.1-hybrid-multiline.png)
 
 ### 行列エディターと連立方程式エディター
 ![リアルタイムプレビュー付きの行列・連立方程式ビルダー](docs/images/vme-1.1-matrix-system.png)

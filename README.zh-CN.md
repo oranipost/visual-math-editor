@@ -2,7 +2,7 @@
 
 [English](README.md) · **简体中文** · [Español](README.es.md) · [日本語](README.ja.md) · [Deutsch](README.de.md) · [Français](README.fr.md)
 
-**[在 Obsidian 社区商店安装](https://community.obsidian.md/plugins/visual-math-editor)** · **[官方网站](https://oranipost.github.io/visual-math/)** · **[YouTube 教程频道](https://www.youtube.com/@VisualMathForObsidian)** · **[下载 1.1.1 安装包 ZIP](https://github.com/oranipost/visual-math-editor/releases/download/1.1.1/visual-math-editor-1.1.1.zip)** · **[版本发布说明](https://github.com/oranipost/visual-math-editor/releases/tag/1.1.1)**
+**[在 Obsidian 社区商店安装](https://community.obsidian.md/plugins/visual-math-editor)** · **[官方网站](https://oranipost.github.io/visual-math/)** · **[YouTube 教程频道](https://www.youtube.com/@VisualMathForObsidian)** · **[下载 1.1.2 安装包 ZIP](https://github.com/oranipost/visual-math-editor/releases/download/1.1.2/visual-math-editor-1.1.2.zip)** · **[版本发布说明](https://github.com/oranipost/visual-math-editor/releases/tag/1.1.2)**
 
 ## 简介
 
@@ -15,17 +15,17 @@
 - **官方网站与功能指南**：[oranipost.github.io/visual-math](https://oranipost.github.io/visual-math/)
 - **视频演示与教程**：[@VisualMathForObsidian YouTube 频道](https://www.youtube.com/@VisualMathForObsidian)
 
-![Visual Math 1.1.1 in Obsidian](docs/images/visual-math-demo.gif)
+![Visual Math 1.1.2 in Obsidian](docs/images/visual-math-demo.gif)
 
 ---
 
 ## 主要功能
 
 - **Visual、LaTeX 与 Hybrid 三种模式**：可以用方框填空、直接写 TeX 源码，或者左右对照同时改。支持框内多行公式（`↵ 换行`）、撤销/重做历史，以及粘贴单条 LaTeX 公式导入。
-- **矩阵、方程组、集合与微积分记号**：支持 `1×1` 到 `6×6` 矩阵、带左大括号的 `2–6` 行方程组、19 个集合与数列符号、三角与几何记号，以及 9 个微积分和向量模板。
+- **矩阵、方程组、全套希腊字母、集合与微积分记号**：支持 `1×1` 到 `6×6` 矩阵、带左大括号的 `2–6` 行方程组、全套 41 个希腊字母（小写 `α–ω`、常用变体与大写字母）、19 个集合与数列符号、三角与几何记号，以及 9 个微积分和向量模板。
 - **函数、极坐标、三维曲面与复平面图像**：在公式正下方绘制 `y = f(x)`（含一阶/二阶数值导数与定积分阴影）、极坐标曲线 `r = f(θ)`、三维曲面 `z = f(x, y)` 和复平面 `Re / Im` 点图，并支持一键复制高清 PNG 图像到剪贴板。
 - **三维几何、组合几何体建模与空间关系**：可旋转缩放 9 种基础几何图元（球体、半球体、圆柱、圆锥、圆台/正棱台、正棱锥、正棱柱、长方体、平面片），支持将 `2–6` 个立体自由拼接为组合几何体（内置球内接正方体、圆柱+圆锥等常见题型模板，支持独立偏移、旋转及实心/半透明/线框样式），并提供 3 种空间相交场景（两平面、直线与平面、球体与平面）。
-- **化学、物理、单位换算与 10 分区元素周期表**：输入化学反应式（`\ce`）并检查配平、插入 24 个常用物理公式模板、在 11 类 66 种单位间离线换算（`\pu`，含 `eV`、`keV`、`MeV`），并按 10 类标准化学分区查询全部 118 号元素。
+- **化学、物理、单位换算与 10 分区元素周期表**：输入化学反应式（`\ce`）并检查配平、插入 24 个常用物理公式模板、在 11 类 66 种单位间离线换算（`\pu`，含 `eV`、`keV`、`MeV`），并按 10 类标准化学分区查询全部 118 号元素，配套化学方程式快捷符号栏（`→`、`⇌`、`Δ 加热`、`↑`、`↓`、化学计量下标、电荷与物态标记）。
 - **100% 本地离线与六国语言界面**：完全在本地离线运行，无 AI、无需联网或注册账号。完整支持 **简体中文**、**English**、**Español**、**日本語**、**Deutsch** 和 **Français**。
 
 ---
@@ -33,7 +33,7 @@
 ## 快速上手
 
 1. **打开编辑器**：把光标放在笔记正文里，点击右上角或左侧工具栏的 **∑**（或在命令面板运行 `Visual Math: 插入或编辑公式`）。
-2. **填入公式结构**：在 **Visual** 模式下点 **分数**，输入 `3`，按 `Tab` 跳到分母输入 `4`。需要展开更多工具时，点击下方的胶囊栏（`三角函数与几何符号`、`集合与数列`、`矩阵`、`方程组`、`高等数学模板`、`导入公式`）。
+2. **填入公式结构**：在 **Visual** 模式下点 **分数**，输入 `3`，按 `Tab` 跳到分母输入 `4`。需要展开更多工具时，点击下方的胶囊栏（`αβ 希腊字母`、`三角函数与几何符号`、`集合与数列`、`矩阵`、`方程组`、`高等数学模板`、`导入公式`）。
 3. **保存或画图**：在编辑卡右下角选 **行内公式**（`$…$`）或 **独立一行**（`$$…$$`），点击 **插入公式**（`Ctrl/Cmd + Enter`）；或者点击 **绘制此公式** 在下方直接画出图像。
 
 ---
@@ -46,9 +46,9 @@
 2. 在 Obsidian 中点击 **Install（安装）**，随后点击 **Enable（启用）**。
 3. 打开任意 Markdown 笔记，点击 **∑** 即可使用。
 
-### 手动安装 ZIP（1.1.1 桌面正式版）
+### 手动安装 ZIP（1.1.2 桌面正式版）
 
-下载已编译好的 **[visual-math-editor-1.1.1.zip](https://github.com/oranipost/visual-math-editor/releases/download/1.1.1/visual-math-editor-1.1.1.zip)**（请不要下载 GitHub 自动生成的 *Source code* 源码压缩包）：
+下载已编译好的 **[visual-math-editor-1.1.2.zip](https://github.com/oranipost/visual-math-editor/releases/download/1.1.2/visual-math-editor-1.1.2.zip)**（请不要下载 GitHub 自动生成的 *Source code* 源码压缩包）：
 
 1. 解压并将其中的 `visual-math-editor` 文件夹放入笔记库的 `<你的笔记库>/.obsidian/plugins/` 下。
 2. 确认 `main.js`、`manifest.json`、`styles.css` 与许可证文件直接位于 `.obsidian/plugins/visual-math-editor/` 内。
@@ -58,10 +58,10 @@
 
 ---
 
-## 界面截图 (v1.1.1)
+## 界面截图 (v1.1.2)
 
 ### Hybrid 模式、框内多行公式与紧凑工具栏
-![Visual Math 1.1.1 的 Hybrid 模式与多行公式编辑](docs/images/vme-1.1-hybrid-multiline.png)
+![Visual Math 1.1.2 的 Hybrid 模式与多行公式编辑](docs/images/vme-1.1-hybrid-multiline.png)
 
 ### 可视化矩阵与左大括号方程组
 ![带实时预览的矩阵与方程组编辑器](docs/images/vme-1.1-matrix-system.png)
